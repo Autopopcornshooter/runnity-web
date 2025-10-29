@@ -1,10 +1,10 @@
-package runnityWeb;
+package runnity;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RunnityWebApplicationTests {
+class RunnityApplicationTests {
 
 	@Test
 	void contextLoads() {
