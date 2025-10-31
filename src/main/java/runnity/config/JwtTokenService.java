@@ -1,4 +1,4 @@
-package runnity;
+package runnity.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -26,9 +26,9 @@ public class JwtTokenService {
 
   public JwtTokenService(
       @Value("${security.jwt.secret}") String secret,
-      @Value("${security.jwt.issuer") String issuer,
-      @Value("${security.jwt.access-token-ttl-seconds") long accessTtl,
-      @Value("${security.jwt.refresh-token-ttl-seconds") long refreshTtl) {
+      @Value("${security.jwt.issuer}") String issuer,
+      @Value("${security.jwt.access-token-ttl-seconds}") long accessTtl,
+      @Value("${security.jwt.refresh-token-ttl-seconds}") long refreshTtl) {
     this.key = Keys.hmacShaKeyFor(secret.getBytes());
     this.issuer = issuer;
     this.accessTtl = accessTtl;
