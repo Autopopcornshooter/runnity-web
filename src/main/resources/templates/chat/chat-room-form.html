@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>채팅방 Runnity C/U</title>
+  <link rel="stylesheet" href="/chat/css/chat-room-form.css">
+</head>
+<body>
+<div class="container">
+  <h2 th:text="${isEdit} ? '채팅방 수정' : '채팅방 생성'"></h2>
+
+  <form id="chatRoomForm" th:action="@{/chat-room/{mode}(mode=${isEdit} ? 'edit/' + ${chatRoom.chatRoomId} : 'create')}" method="post" enctype="multipart/form-data">
+
+    <input type="hidden" id="chatRoomId" th:value="${chatRoom != null ? chatRoom.chatRoomId : ''}">
+
+    <div class="image-upload" onclick="document.getElementById('imageInput').click()">
+      <img id="preview" th:src="${chatRoom.imageUrl != null and chatRoom.imageUrl != '' ? chatRoom.imageUrl : '/images/image-upload.png'}" alt="upload icon">
+      <span>채팅방 이미지를 업로드하세요</span>
+      <input type="file" id="imageInput" name="imageUrl" accept="image/*" style="display:none">
+    </div>
+
+    <label>채팅방 이름</label>
+    <input type="text" id="chatRoomName" name="chatRoomName" placeholder="채팅방 이름을 입력해주세요"
+           th:value="${chatRoom != null ? chatRoom.chatRoomName : ''}">
+
+    <label>설명</label>
+    <textarea id="chatRoomDesc" name="description" placeholder="채팅방에 대한 설명을 입력해주세요"
+              th:text="${chatRoom != null ? chatRoom.description : ''}"></textarea>
+
+    <label>지역</label>
+    <input type="text" id="chatRoomRegion" name="region" placeholder="예: 서울 마포구"
+           th:value="${chatRoom != null ? chatRoom.region : ''}">
+
+    <button type="submit" th:disabled="${isEdit} ? !${isOwner} : false">
+      <span th:text="${isEdit} ? '수정 완료' : '등록 완료'"></span>
+    </button>
+    <p th:if="${isEdit} and !${isOwner}" style="color:red; margin-top:8px;">수정 권한이 없습니다.</p>
+  </form>
+</div>
+
+<script src="/chat/js/chat-room-form.js"></script>
+</body>
+</html>

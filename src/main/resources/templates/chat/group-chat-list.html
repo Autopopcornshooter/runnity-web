@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Runnity</title>
+  <link rel="stylesheet" href="/chat/css/group-chat-list.css">
+</head>
+<body>
+<header>
+  <h1>
+    <img src="/images/unit-logo.png" alt="Runnity Logo" width="32">
+    Runnity
+  </h1>
+  <div class="buttons">
+    <button class="my-chat-btn" onclick="location.href='/chat-room/my-chat-list'">나의 채팅방</button>
+    <button class="logout-btn" onclick="location.href='/logout'">로그아웃</button>
+  </div>
+</header>
+
+<div class="search-bar">
+  <input type="text" placeholder="모임명, 지역을 검색해 주세요">
+</div>
+
+<div class="chat-rooms">
+  <div th:each="room : ${chatRooms}" class="chat-room-card" th:onclick="'location.href=\'/chat/room/' + ${room.chatRoomId} + '\';'">
+    <img th:src="${room.imageUrl != null and room.imageUrl != '' ? room.imageUrl : '/images/image-upload.png'}" alt="채팅방 이미지">
+    <div class="chat-room-info">
+      <h2 th:text="${room.chatRoomName}">채팅방 이름</h2>
+      <p th:text="${room.description}">채팅방 설명</p>
+      <div class="chat-room-meta">
+        <span><img src="/images/runnity-address.png" style="width: 20px; height: 25px;"> <span th:text="${room.region}">지역</span></span>
+        <span><img src="/images/runnity-person.png" style="width: 20px; height: 26px;"> <span th:text="${#lists.size(room.members)}">0</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

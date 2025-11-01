@@ -1,0 +1,169 @@
+body {
+  margin: 0;
+  font-family: "Noto Sans KR", sans-serif;
+  background: #f8f9ff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 2px solid #e0e3ff;
+  background: white;
+}
+
+/*.logo {*/
+/*  font-size: 22px;*/
+/*  font-weight: 600;*/
+/*  color: #4169e1;*/
+/*}*/
+
+#searchInput {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 24px;
+  padding: 8px 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+}
+
+.header-btns .btn {
+  background: #4169e1;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chat-container {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+/* 왼쪽 목록 */
+.chat-list {
+  width: 260px;
+  background: #f0f3ff;
+  border-right: 2px solid #d5dbf7;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: space-around;
+  background: white;
+  padding: 8px 0;
+}
+
+.tab-buttons button.active {
+  background: #4169e1;
+  color: white;
+  border-radius: 12px;
+}
+
+#chatRooms {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+}
+
+.chat-room-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.chat-room-item img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.room-name {
+  font-weight: 600;
+}
+
+.room-members {
+  font-size: 12px;
+  color: #555;
+}
+
+/* 오른쪽 채팅창 */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#chatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  border-bottom: 2px solid #e0e3ff;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.chat-input {
+  display: none;
+  border-top: 1px solid #ccc;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  outline: none;
+}
+
+.chat-input button {
+  background: #4169e1;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.chat-header-btn {
+  display: flex;
+  gap: 8px; /* 버튼 사이 간격 */
+}
+
+.exit-btn {
+  display: none; /* 초기에는 숨김 */
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.edit-btn {
+  display: none;
+  background: #ff9800;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-left: 8px;
+}
