@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Runnity 회원가입</title>
+  <link rel="stylesheet" th:href="@{/css/signup.css}">
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <img alt="Runnity 로고" th:src="@{/image/topbarLogo.png}">
+    <h1>Runnity</h1>
+  </div>
+</header>
+<div class="container">
+  <!-- 회원가입 폼 -->
+  <div class="signup-section">
+
+
+    <form method="post" th:action="@{/api/auth/signUp}">
+
+      <label for="username">아이디</label>
+      <input id="username" name="username" placeholder="아이디를 입력하세요" required type="text">
+
+      <label for="password">비밀번호</label>
+      <input id="password" name="password" placeholder="비밀번호를 입력하세요" required type="password">
+
+      <label for="passwordConfirm">비밀번호 확인</label>
+      <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"
+             required type="password">
+
+      <label for="nickname">닉네임</label>
+      <input id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required type="text">
+
+      <label for="level">레벨</label>
+      <select id="level" name="level" required>
+        <option disabled selected value="">선택하세요</option>
+        <option value="BEGINNER">초급 👶️ 10분 이상, 2km 이상 러닝 가능</option>
+        <option value="INTERMEDIATE">중급 🚶🏻‍➡️️ 20분 이상, 5km 이상 러닝 가능</option>
+        <option value="ADVANCED">고급 🏃🏻‍➡️ 30분 이상, 10km 이상 러닝 가능</option>
+      </select>
+    </form>
+  </div>
+
+
+  <div class="location-section">
+    <h2>내 위치 설정</h2>
+
+    <div class="location-search">
+      <input placeholder="현재 주소를 입력해 주세요" type="text">
+      <button class="set-location-btn" type="button">내 위치 설정</button>
+    </div>
+
+    <div class="map-container">
+      <img alt="지도 미리보기" class="map-preview" th:src="@{/images/map_sample.png}">
+    </div>
+
+    <button class="join-btn" type="submit">같이 달리러 가기</button>
+  </div>
+</div>
+</body>
+</html>
