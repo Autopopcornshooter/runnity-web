@@ -158,8 +158,21 @@ public class UserAuthController {
   }
 
   @PostMapping("/signUp")
-  public void signUp(SignUpRequest request, Model model) {
+  public String signUp(SignUpRequest request, Model model) {
+
+    log.info(request.getNickname());
+
+    if(userAuthService.isLoginIdExist(request.getLoginId())){
+      model.addAttribute("formData",request);
+      model.addAttribute("errorMessage","이미 존재하는 아이디입니다.");
+      return "signUp";
+    }
+    if(!request.getPassword().equals(request.getPasswordConfirm())){
+      model.addAttribute("formData",request);
+      return "signUp";
+    }
     userAuthService.saveUserInfo(request);
+    return "redirect:";
   }
 
 

@@ -1,7 +1,6 @@
 package runnity.service;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import org.springframework.stereotype.Service;
 import runnity.domain.User;
 import runnity.dto.SignUpRequest;
@@ -26,6 +25,9 @@ public class UserAuthService {
     );
   }
 
+  public boolean isLoginIdExist(String loginId){
+    return userRepository.existsByLoginId(loginId);
+  }
   public void deleteUserInfo(Long id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new UserNotFoundException(id));

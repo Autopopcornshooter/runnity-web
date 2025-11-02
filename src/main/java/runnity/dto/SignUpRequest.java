@@ -13,6 +13,7 @@ public class SignUpRequest {
   private String nickname;
   private String loginId;
   private String password;
+  private String passwordConfirm;
   private LocalDateTime createdAt;
   private RunnerLevel runnerLevel;
 }
