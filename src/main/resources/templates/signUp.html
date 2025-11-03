@@ -17,7 +17,7 @@
   <div class="signup-section">
 
 
-    <form method="post" th:action="@{/api/auth/signUp}" id="signUpForm">
+    <form id="signUpForm" method="post" th:action="@{/api/auth/signUp}">
 
       <label for="loginId">아이디</label>
       <input id="loginId" name="username" placeholder="아이디를 입력하세요" required type="text">
@@ -55,7 +55,7 @@
       <img alt="지도 미리보기" class="map-preview" th:src="@{/images/map_sample.png}">
     </div>
 
-    <button class="join-btn" type="submit" form="signUpForm">같이 달리러 가기</button>
+    <button class="join-btn" form="signUpForm" type="submit">같이 달리러 가기</button>
   </div>
 </div>
 <script>
@@ -68,7 +68,6 @@
 
     }
   })
-
 
 </script>
 </body>

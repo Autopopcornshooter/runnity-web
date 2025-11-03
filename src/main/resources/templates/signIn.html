@@ -12,7 +12,7 @@
 </header>
 
 <div class="container">
-  <form id="loginForm" >
+  <form id="loginForm">
 
     <label for="username">아이디</label>
     <input id="username" name="username" placeholder="아이디를 입력하세요" required type="text">
@@ -35,32 +35,56 @@
 </div>
 <script>
 
-  document.getElementById("loginForm").addEventListener("submit",e=>{
+  document.getElementById("loginForm").addEventListener("submit", e => {
     e.preventDefault();
     loginUser();
-  })
+  });
 
-  async function loginUser(){
-    const username=document.getElementById("username").value;
-    const password=document.getElementById("password").value;
+  async function callTestEndpoint() {
+    const token = localStorage.getItem("access_token");
 
-
-
-    const response= await fetch("/api/auth/signIn",{
-      method:"POST",
-      headers:{
-        "Content-type":"application/json"
+    const response = await fetch("http://localhost:8080/api/auth/test", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
       },
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      const data = await response.text();
+      console.log("인증 성공:", data);
+
+      // ✅ 페이지 이동
+      window.location.href = "/api/auth/test";
+
+    } else {
+      console.error("인증 실패:", response.status);
+      console.error(await response.text());
+    }
+  }
+
+  async function loginUser() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const response = await fetch("/api/auth/signIn", {
+      method: "POST",
+      credentials: "include",
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({username, password})
     });
 
-    if(response.ok){
-      const data= await response.json();
-      localStorage.setItem("access_token",data.accessToken);
-      console.error("로그인 성공!");
-    }else{
-      console.error("로그인 실패!");
-      console.error(response);
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("access_token", data.accessToken);
+
+      console.log("로그인 성공! Access Token:", data.accessToken);
+      callTestEndpoint(); // 페이지 이동 포함
+
+    } else {
+      console.error("로그인 실패!", response.status);
     }
   }
 

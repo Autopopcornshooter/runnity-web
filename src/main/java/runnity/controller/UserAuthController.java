@@ -2,9 +2,10 @@ package runnity.controller;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import runnity.config.JwtTokenService;
 import runnity.dto.LoginRequest;
 import runnity.dto.LoginResponse;
@@ -41,56 +43,104 @@ public class UserAuthController {
 
 
   @GetMapping("/signIn")
-  public String signInPage() {
+  public String signInPage(Authentication authentication) {
     return "signIn";
   }
 
   @GetMapping("/signUp")
-  public String signUpPage() {
+  public String signUpPage(Authentication authentication) {
     return "signUp";
   }
 
   @GetMapping("/test")
-  public String test() {
-    return "signUp";
+  public String testPage() {
+    return "test";
   }
 
   @PostMapping("/signIn")
-  public ResponseEntity<LoginResponse> signIn(@RequestBody @Valid LoginRequest request,
+  public ResponseEntity<?> signIn(@RequestBody LoginRequest request,
       HttpServletResponse response) {
-    Authentication auth = authManager.authenticate(
-        new UsernamePasswordAuthenticationToken(request.username(), request.password())
-    );
-    String username = auth.getName();
-    List<String> roles = auth.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .toList();
-    log.info("User Roles: " + roles);
-    // Access/Refresh 발급
-    String access = jwtService.generateAccessToken(username, roles);
-    String refreshJti = UUID.randomUUID().toString();
-    String refresh = jwtService.generateRefreshToken(username, refreshJti);
-    log.info("Access Token 발급");
 
-    // Refresh 보관 (만료는 토큰 exp와 동일 주기 관리 권장)
-    Instant exp = jwtService.parse(refresh).getBody().getExpiration().toInstant();
-    refreshStore.save(refreshJti, username, exp);
-    log.info("Refresh 저장소 보관");
-    log.info(refresh);
+    String username = request.username();
+    String password = request.password();
 
-    // HttpOnly Secure 쿠키로 전달(프론트가 JS로 못 읽게)
-    ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh)
-        .httpOnly(true).secure(true).path("/auth").sameSite("Strict") // 프론트 상황에 맞게 Lax/None
-        .maxAge(exp.getEpochSecond() - Instant.now().getEpochSecond())
-        .build();
-    response.addHeader("Set-Cookie", cookie.toString());
-    log.info("Refresh token 쿠키로 전달");
+    var auth = authManager.authenticate(
+        new UsernamePasswordAuthenticationToken(username, password));
 
-    long expiresIn =
-        jwtService.parse(access).getBody().getExpiration().getTime() / 1000 - Instant.now()
-            .getEpochSecond();
-    log.info("만료 시점 지정");
-    return ResponseEntity.ok(new LoginResponse(access, expiresIn));
+    var roles = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+    String access = jwtService.generateAccessToken(auth.getName(), roles);
+    String refresh = jwtService.generateRefreshToken(auth.getName(), UUID.randomUUID().toString());
+
+    // ★ Access 토큰 쿠키
+    response.addHeader("Set-Cookie",
+        ResponseCookie.from("access_token", access)
+            .httpOnly(true)
+            .secure(false)        // 로컬 http면 false, 배포 https면 true
+            .sameSite("Lax")      // 크로스 도메인이면 None+secure
+            .path("/")            // 전역
+            .maxAge(Duration.ofMinutes(30)) // access 만료에 맞춰
+            .build().toString());
+
+    // (선택) Refresh 토큰 쿠키
+    response.addHeader("Set-Cookie",
+        ResponseCookie.from("refresh_token", refresh)
+            .httpOnly(true).secure(false).sameSite("Lax").path("/")
+            .maxAge(Duration.ofDays(7))
+            .build().toString());
+
+    // ★ 페이지 이동
+    return ResponseEntity.ok(Map.of("accessToken", access));
+
+//    Authentication auth = authManager.authenticate(
+//        new UsernamePasswordAuthenticationToken(username, password)
+//    );
+//
+//    List<String> roles = auth.getAuthorities().stream()
+//        .map(GrantedAuthority::getAuthority)
+//        .toList();
+//    log.info("User Roles: " + roles);
+//    // JWT 발급
+//    String access = jwtService.generateAccessToken(auth.getName(),
+//        auth.getAuthorities().stream()
+//            .map(GrantedAuthority::getAuthority).
+//            toList());
+//    String refreshJti = UUID.randomUUID().toString();
+//    String refresh = jwtService.generateRefreshToken(auth.getName(), refreshJti);
+//    log.info("JWT 발급(Access/Refresh)");
+//
+//    ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh)
+//        .httpOnly(true)
+//        .secure(false)
+//        .path("/")
+//        .sameSite("Lax")
+//        .build();
+//    response.addHeader("Set-Cookie", cookie.toString());
+//
+//    return "redirect:/api/auth/test";
+
+//
+//    // Refresh 보관 (만료는 토큰 exp와 동일 주기 관리 권장)
+//    Instant exp = jwtService.parse(refresh).getBody().getExpiration().toInstant();
+//    refreshStore.save(refreshJti, username, exp);
+//    log.info("Refresh 저장소 보관");
+//    log.info(refresh);
+//
+//    // HttpOnly Secure 쿠키로 전달(프론트가 JS로 못 읽게)
+//    ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh)
+//        .httpOnly(true)
+//        .secure(true)
+//        .path("/")
+//        .sameSite("Lax") // 프론트 상황에 맞게 Lax/None
+//        .build();
+//    response.addHeader("Set-Cookie", cookie.toString());
+//    log.info("Refresh token 쿠키로 전달");
+//
+//    long expiresIn =
+//        jwtService.parse(access).getBody().getExpiration().getTime() / 1000 - Instant.now()
+//            .getEpochSecond();
+//    log.info("만료 시점 지정");
+//    return ResponseEntity.ok(new LoginResponse(access, expiresIn));
   }
 
   @PostMapping("/refresh")
@@ -128,7 +178,10 @@ public class UserAuthController {
     log.info("Refresh rotate 수행");
 
     ResponseCookie cookie = ResponseCookie.from("refresh_token", newRefresh)
-        .httpOnly(true).secure(true).path("/auth").sameSite("Strict")
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .sameSite("Strict")
         .maxAge(newExp.getEpochSecond() - Instant.now().getEpochSecond())
         .build();
     response.addHeader("Set-Cookie", cookie.toString());
@@ -156,7 +209,10 @@ public class UserAuthController {
     }
     // 쿠키 제거
     ResponseCookie expired = ResponseCookie.from("refresh_token", "")
-        .httpOnly(true).secure(true).path("/auth").maxAge(0).build();
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(0).build();
     res.addHeader("Set-Cookie", expired.toString());
     log.info("쿠키 제거");
     return ResponseEntity.noContent().build();
