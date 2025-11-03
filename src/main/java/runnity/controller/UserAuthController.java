@@ -50,6 +50,10 @@ public class UserAuthController {
     return "signUp";
   }
 
+  @GetMapping("/test")
+  public String test() {
+    return "signUp";
+  }
 
   @PostMapping("/signIn")
   public ResponseEntity<LoginResponse> signIn(@RequestBody @Valid LoginRequest request,
@@ -61,7 +65,7 @@ public class UserAuthController {
     List<String> roles = auth.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .toList();
-
+    log.info("User Roles: " + roles);
     // Access/Refresh 발급
     String access = jwtService.generateAccessToken(username, roles);
     String refreshJti = UUID.randomUUID().toString();
@@ -72,6 +76,7 @@ public class UserAuthController {
     Instant exp = jwtService.parse(refresh).getBody().getExpiration().toInstant();
     refreshStore.save(refreshJti, username, exp);
     log.info("Refresh 저장소 보관");
+    log.info(refresh);
 
     // HttpOnly Secure 쿠키로 전달(프론트가 JS로 못 읽게)
     ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh)
@@ -158,8 +163,21 @@ public class UserAuthController {
   }
 
   @PostMapping("/signUp")
-  public void signUp(SignUpRequest request, Model model) {
+  public String signUp(SignUpRequest request, Model model) {
+
+    log.info(request.getNickname());
+
+    if (userAuthService.isLoginIdExist(request.getUsername())) {
+      model.addAttribute("formData", request);
+      model.addAttribute("errorMessage", "이미 존재하는 아이디입니다.");
+      return "signUp";
+    }
+    if (!request.getPassword().equals(request.getPasswordConfirm())) {
+      model.addAttribute("formData", request);
+      return "signUp";
+    }
     userAuthService.saveUserInfo(request);
+    return "redirect:/api/auth/signIn";
   }
 
 

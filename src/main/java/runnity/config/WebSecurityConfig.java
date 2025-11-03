@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import runnity.UserRole;
 
 @EnableWebSecurity
 @Configuration
@@ -28,7 +29,8 @@ public class WebSecurityConfig {
   @Bean
   public WebSecurityCustomizer configure() {
     return web -> web.ignoring()
-        .requestMatchers("/static/**", "/templates/**", "/h2-console/**");
+        .requestMatchers("/static/**", "/templates/**", "/h2-console/**", "/images/**", "/error",
+            "/css/**", "/js/**");
   }
 
   @Bean
@@ -42,16 +44,18 @@ public class WebSecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
+
   @Bean
-  @Order(1)
+  @Order(1) //for Test
   public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
+    log.info("SecurityFilterChain1 enabled");
     http
-        .securityMatcher("/**") // ✅ 웹 페이지 전체에 적용
+        .securityMatcher("/**") // 웹 페이지 전체에 적용(테스트용)
         .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
-                "/", "/index", "/login", "/error",
-                "/css/**", "/js/**", "/images/**", "/static/**", "/h2-console/**"
+                "/**"
             ).permitAll()
             .anyRequest().permitAll() // HTML은 모두 허용
         );
@@ -61,17 +65,18 @@ public class WebSecurityConfig {
   @Bean
   @Order(2)
   public SecurityFilterChain userSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    log.info("SecurityFilterChain2 enabled");
     httpSecurity
         .securityMatcher("/api/**")
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/signIn", "/api/auth/refresh", "/public/**").permitAll()
-            .anyRequest().authenticated()
-        )
+            .requestMatchers("/api/auth/signIn", "/api/auth/signUp", "/api/auth/refresh",
+                "/public/**").permitAll()
+            .anyRequest()
+            .hasAuthority(UserRole.ROLE_USER.name()))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     return httpSecurity.build();
-
   }
 
 
