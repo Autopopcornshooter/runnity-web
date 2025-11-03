@@ -24,9 +24,9 @@ async function openChat(roomId) {
   document.getElementById("chat-input").style.display = "flex";
 
   const editBtn = document.getElementById("editBtn");
-  console.log(roomData.ownerId);
-  console.log(currentUserId);
-  console.log(roomData.ownerId === currentUserId);
+  // console.log(roomData.ownerId);
+  // console.log(currentUserId);
+  // console.log(roomData.ownerId === currentUserId);
   if (roomData.ownerId === currentUserId) {
     editBtn.style.display = "inline-block";
     editBtn.onclick = () => {
@@ -37,32 +37,57 @@ async function openChat(roomId) {
     editBtn.onclick = null;
   }
 
-  // const res = await fetch(`/api/chats/${roomId}/messages`);
-  // if (res.ok) {
-  //   const messages = await res.json();
-  //   messages.forEach(msg => addMessage(msg.senderName, msg.message, msg.isMine));
-  // }
+  try {
+    const res = await fetch(`/api/chatrooms/${roomId}/messages?page=0&size=30`);
+    if (res.ok) {
+      const page = await res.json();
+      const list = page.content.reverse(); // 서버가 desc라면 역순으로 정렬
+      list.forEach(m => {
+        const mine = (m.senderId === userId);
+        addMessage(m.senderId, m.message, mine);
+      });
+    }
+  } catch (err) {
+    console.error("메시지 로드 실패:", err);
+  }
 
   connectWebSocket(roomId);
 }
 
 function addMessage(sender, text, isMine) {
-  const div = document.createElement("div");
-  div.classList.add("message", isMine ? "mine" : "other");
-  div.innerHTML = `<b>${sender}</b>: ${text}`;
-  document.getElementById("chatMessages").appendChild(div);
+  const container = document.getElementById("chatMessages");
+  const messageDiv = document.createElement("div");
+  messageDiv.classList.add("message");
+  messageDiv.classList.add(isMine ? "mine" : "other");
+
+  const bubble = document.createElement("div");
+  bubble.classList.add("bubble");
+  bubble.textContent = text;
+
+  if (!isMine) {
+    const senderSpan = document.createElement("span");
+    senderSpan.classList.add("sender");
+    senderSpan.textContent = sender;
+    messageDiv.appendChild(senderSpan);
+  }
+
+  messageDiv.appendChild(bubble);
+  container.appendChild(messageDiv);
+
+  container.scrollTop = container.scrollHeight;
 }
 
 function connectWebSocket(roomId) {
   if (stompClient) stompClient.disconnect();
 
-  const socket = new SockJS("/ws-stomp");
+  const socket = new SockJS("/ws-chat");
   stompClient = Stomp.over(socket);
 
   stompClient.connect({}, () => {
-    stompClient.subscribe(`/topic/chat/${roomId}`, (msg) => {
+    stompClient.subscribe(`/topic/rooms.${roomId}`, (msg) => {
       const data = JSON.parse(msg.body);
-      addMessage(data.senderName, data.message, data.isMine);
+      const isMine = (data.senderId === userId);
+      addMessage(data.senderId, data.message, isMine);
     });
   });
 }
@@ -71,8 +96,9 @@ document.getElementById("sendBtn").addEventListener("click", () => {
   const input = document.getElementById("messageInput");
   const message = input.value.trim();
   if (message && stompClient && currentRoomId) {
-    stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({
-      roomId: currentRoomId,
+    stompClient.send("/app/chat.send", {}, JSON.stringify({
+      chatRoomId: currentRoomId,
+      senderId: userId,
       message: message
     }));
     input.value = "";
