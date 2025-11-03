@@ -31,12 +31,14 @@ public class ChatRoomViewController {
     @GetMapping("/my-chat-list")
     public String myChatList(Model model, Principal principal) {
         // String nickname = principal.getName();
-        // Long user = chatRoomService.getCheckUserId(nickname);
+        // Long userId = chatRoomService.getCheckUserId(nickname);
 
+        // Test 용 코드. 실제 배포할 때는 제거
         Long userId = 1L;
 
         List<ChatRoomResponse> list = chatRoomService.getMyChatRoom(userId);
 
+        // model.addAttribute("currentUserId", userId);
         model.addAttribute("chatRooms", list);
 
         return "chat/my-chat-list";
