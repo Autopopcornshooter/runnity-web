@@ -32,7 +32,8 @@ public class UserAuthController {
   }
 
   @GetMapping("/signUp")
-  public String signUpPage() {
+  public String signUpPage(Model model) {
+    model.addAttribute("formData", new SignUpRequest());
     return "signUp";
   }
 

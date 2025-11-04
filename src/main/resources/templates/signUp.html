@@ -20,20 +20,26 @@
     <form id="signUpForm" method="post" th:action="@{/api/auth/signUp}">
 
       <label for="loginId">아이디</label>
-      <input id="loginId" name="username" placeholder="아이디를 입력하세요" required type="text">
+      <input id="loginId" name="username" placeholder="아이디를 입력하세요" required
+             th:value="${formData.username}"
+             type="text">
       <span id="idMessage"></span>
 
       <label for="password">비밀번호</label>
-      <input id="password" name="password" placeholder="비밀번호를 입력하세요" required type="password">
+      <input id="password" name="password" placeholder="비밀번호를 입력하세요" required
+             th:value="${formData.password}"
+             type="password">
       <span id="pwMessage"></span>
 
       <label for="passwordConfirm">비밀번호 확인</label>
       <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"
-             required type="password">
+             required th:value="${formData.passwordConfirm}" type="password">
       <span id="pwConfirmMessage"></span>
 
       <label for="nickname">닉네임</label>
-      <input id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required type="text">
+      <input id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required
+             th:value="${formData.nickname}"
+             type="text">
       <span id="nicknameMessage"></span>
 
       <label for="runnerLevel">레벨</label>
@@ -119,10 +125,10 @@
     let valid = true;
     if (!idRegex.test(loginId.value)) {
       valid = false;
-      idMessage.textContent = "아이디는 영문과 숫자가 포함된 8~12자로 제한됩니다."
-      idMessage.style.color = "red";
+      loginIdMessage.textContent = "아이디는 영문과 숫자가 포함된 8~12자로 제한됩니다."
+      loginIdMessage.style.color = "red";
     } else {
-      idMessage.textContent = "";
+      loginIdMessage.textContent = "";
     }
     if (!pwRegex.test(password.value)) {
       valid = false;
