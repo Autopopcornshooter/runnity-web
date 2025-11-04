@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Runnity</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link th:href="@{/css/basic-header.css}" rel="stylesheet"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+    <style>
+        .main-section {
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px 5%;
+            margin: 60px auto;
+            max-width: 1500px;
+            height: 700px;
+            /*gap: 50px;*/
+        }
+        .left-section {
+            display:flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 0 0 400px;
+            min-width: 250px;
+            align-items: flex-end;
+            /*max-width: 400px;*/
+        }
+
+        .matchingcrew-card {
+            border: 1px solid transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+            background: #fff;
+            width: 100%;      /* 부모 영역에 맞춤 */
+            max-width: 300px;
+            height: 300px;
+            display: flex;           /* 카드 내부 정렬을 위한 flex */
+            flex-direction: column;  /* 세로 배치 */
+            align-items: center;     /* 가로 중앙 */
+            justify-content: center; /* 세로 중앙 */
+            text-align: center;
+            text-decoration: none; /* 밑줄 제거 */
+        }
+        .matchingcrew-card img {
+            width: 70%;
+            height: 60%;
+            margin-bottom: 25px;
+        }
+        .matchingcrew-card p {
+            font-weight: bold;
+            margin:0;
+            font-size: 20px;
+            color: black;
+        }
+        .matchingcrew-card:hover {
+            transform: translateY(-3px);
+            border: 1px solid #00bfa5;
+            box-shadow: 0 0 12px rgba(0, 150, 250, 0.25);
+        }
+
+        .weather-section {
+            flex: 0 0 400px;
+            min-width: 250px;
+            min-height: 620px;
+            display: flex;
+            flex-direction: column; /* 세로로 쌓이게 변경 */
+            align-items: flex-start;
+            justify-content: flex-start;
+            background-color: rgba(147, 112, 219, 0.5);
+            border-radius: 10px;
+            text-align: left;
+            padding: 20px 30px;
+        }
+        .weather-section h3{
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .weather-content {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .location-section {
+            flex: 0 0 400px;
+            min-width: 250px;
+            min-height: 620px;
+            display: flex;
+            flex-direction: column; /* 세로로 쌓이게 변경 */
+            align-items: flex-start;
+            justify-content: flex-start;
+            border: 5px solid indigo;
+            border-radius: 10px;
+            text-align: left;
+            padding: 20px;
+        }
+        .location-section h3{
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+    </style>
+
+</head>
+<body>
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
+<section class="main-section">
+    <div class = "left-section">
+        <a href="#" class="matchingcrew-card">
+            <img src="/images/duo.png">
+            <p>러닝 듀오 매칭</p>
+        </a>
+        <a href="#" class="matchingcrew-card">
+            <img src="/images/group.png">
+            <p>러닝 모임 찾기</p>
+        </a>
+    </div>
+
+
+    <div class="weather-section">
+        <!-- 임시 데이터-->
+        <h3>날씨 정보</h3><br>
+        <div class="weather-content">
+            <img src="/images/sun-7920966_1280.png" alt="아이콘"\ width="100px" height="100px">
+            <ul>
+                <li>온도: 23°C</li>
+                <li>날씨: 맑음</li>
+                <li>습도: 60%</li>
+                <li>풍속: 5 m/s</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="location-section">
+        <h3>장소 정보</h3>
+        <div class="location-card">
+            <p>장소: 한강공원</p>
+            <p>주소: 서울시 강남구</p>
+            <p>거리: 3km</p>
+            <p>혼잡도: 보통</p>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

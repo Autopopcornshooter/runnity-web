@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Runnity</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link th:href="@{/css/basic-header.css}" rel="stylesheet"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+    <style>
+        /* Hero 배너 */
+        .hero-section {
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px 10%;
+            margin: 60px auto;
+            max-width: 2000px;
+            /*min-height: 900px;*/
+            min-height: min(80vh, 900px); /* 화면 높이의 80% 또는 최대 900px */
+            gap: clamp(40px, 20vw, 300px);
+        }
+
+        .hero-section img {
+            width: 70%;
+            max-width: 800px;
+            height: auto;
+            max-height: 80vh; /* 뷰포트 높이의 80%를 넘지 않음 */
+            object-fit: contain; /* 비율 유지하며 부모에 맞게 */
+            align-items: flex-start;
+            flex: 1 1 auto;     /* 이미지 영역은 필요한 만큼만 공간 차지 */
+            display: flex;
+        }
+
+        .hero-text {
+            max-width: 50%;
+            flex: 0 0 auto;      /* 성장 가능, 축소 가능, 기본 너비 45% */
+            min-width: 250px;       /* 중요: flex 아이템 내부 텍스트가 줄바꿈/overflow 되도록 허용 */
+            flex-direction: column;   /* 세로로 쌓기 */
+            justify-content: flex-end;
+            display: flex;            /* 추가: flex 컨테이너 */
+            gap: 50px;                /* 텍스트와 버튼 사이 간격 */
+            overflow-wrap: break-word; /* 글자 영역 안에서 줄바꿈 가능 */
+        }
+
+        .hero-text h2 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #222;
+            text-align: left;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            background-color: #0066ff;
+            color: white;
+            padding: clamp(12px, 1.5vw, 20px) clamp(28px, 3vw, 40px); /* 반응형 padding */
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.2rem;        /* 글자 크기 키우기 */
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease;
+            align-self: center;
+            white-space: nowrap;
+        }
+
+        .hero-btn:hover {
+            background-color: #0052cc;
+            transform: translateY(-2px);
+        }
+
+        /* 러닝메이트 섹션 */
+        .mate-section {
+            text-align: center;
+            background-color: rgba(147, 112, 219, 0.5);
+            width: 100%;
+            margin: 0 auto 60px auto;
+            padding: 60px 5%;
+            min-height: min(80vh, 900px); /* 화면 높이의 80% 또는 최대 900px */
+        }
+
+        .mate-section h3 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .mate-section img {
+            width: 80%;
+            max-width: 1000px;
+            border-radius: 10px;
+        }
+
+        /*third section*/
+        .feature-section {
+            background-color: white;
+            display: flex;
+            justify-content: center; /* 전체 가운데 정렬 */
+            padding: 50px 10%;
+            border-radius: 15px;
+            margin: 60px auto;
+            max-width: 1500px;
+            min-height: min(80vh, 900px); /* 화면 높이의 80% 또는 최대 900px */
+            gap: clamp(40px, 100vw, 300px);
+        }
+
+        .feature-items {
+            display: flex;
+            justify-content: space-between; /* 왼쪽 텍스트, 오른쪽 아이콘 분리 */
+            align-items: center;
+            width: 100%;
+            gap: 40px; /* 텍스트와 아이콘 사이 간격 */
+        }
+
+        .feature-text h3 {
+            font-size: 3rem;       /* 좀 더 굵직하게 */
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+
+        .feature-icons {
+            display: flex;
+            flex-direction: column; /* 세로로 아이콘 쌓기 */
+            gap: 20px;              /* 아이콘 간격 */
+            align-items: center;
+        }
+
+        .feature-icons .icon-row {
+            display: flex;
+            justify-content: left;
+            gap: 20px; /* 아이콘 간격 */
+        }
+
+        .feature-icons img {
+            width: 200px;    /* 작게 표시 */
+            height: 200px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
+
+<!--hero section-->
+<section class="hero-section">
+    <img src="/images/duo.png" alt="로고 이미지">
+    <div class="hero-text">
+        <h2>혼자보다 함께,<br>Runnity</h2>
+        <a href="/main" class="hero-btn">함께 시작하기</a>
+    </div>
+</section>
+
+<section class="mate-section">
+    <h3>내 지역에서 러닝메이트를 찾아보세요</h3>
+    <img src="/images/map.png" alt="지도 샘플 이미지">
+</section>
+
+<section class="feature-section">
+    <div class="feature-items">
+        <div class="feature-text">
+            <h3>날씨 정보 제공</h3>
+            <h3>러닝 코스 추천</h3>
+        </div>
+
+        <div class="feature-icons">
+            <div class="icon-row">
+                <img src="/images/sun-7920966_1280.png" alt="날씨 아이콘">
+                <img src="/images/running-track.png" alt="트랙 아이콘">
+            </div>
+            <div class="icon-row">
+                <img src="/images/runner.png" alt="러너 아이콘">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
