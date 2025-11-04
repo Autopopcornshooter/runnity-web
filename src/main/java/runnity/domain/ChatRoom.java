@@ -63,6 +63,9 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomMember> members = new ArrayList<>();
 
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messages = new ArrayList<>();
+
     @Setter(AccessLevel.NONE)
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

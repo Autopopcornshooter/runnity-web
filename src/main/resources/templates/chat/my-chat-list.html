@@ -27,7 +27,7 @@
       <button id="duoTab">듀오</button>
     </div>
     <ul id="chatRooms">
-      <li th:each="room : ${chatRooms}" th:data-id="${room.chatRoomId}" class="chat-room-item"
+      <li th:each="room : ${chatRooms}" th:data-id="${room.chatRoomId}" th:data-type="${room.chatRoomType}" class="chat-room-item"
           onclick="openChat(this.getAttribute('data-id'))">
         <img th:if="${room.imageUrl != null}" th:src="${room.imageUrl}" alt="chat image">
         <img th:unless="${room.imageUrl != null}" th:src="@{/images/image-upload.png}" alt="default image">
@@ -70,7 +70,7 @@
 <script th:inline="javascript">
   /*<![CDATA[*/
   const chatRoomsData = /*[[${chatRooms}]]*/ [];
-  const currentUserId = 1;
+  const currentUserId = /*[[${currentUserId}]]*/ 0;
   /*]]>*/
 </script>
 <script src="/chat/js/my-chat-list.js"></script>

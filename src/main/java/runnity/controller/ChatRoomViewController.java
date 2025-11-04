@@ -30,23 +30,35 @@ public class ChatRoomViewController {
 
     @GetMapping("/my-chat-list")
     public String myChatList(Model model, Principal principal) {
-        // String nickname = principal.getName();
-        // Long userId = chatRoomService.getCheckUserId(nickname);
-
-        // Test 용 코드. 실제 배포할 때는 제거
-        Long userId = 1L;
+        if (principal == null) return "redirect:/api/auth/signIn";
+        String loginId = principal.getName();
+        Long userId = chatRoomService.getCheckUserId(loginId);
 
         List<ChatRoomResponse> list = chatRoomService.getMyChatRoom(userId);
 
-        // model.addAttribute("currentUserId", userId);
+        model.addAttribute("currentUserId", userId);
         model.addAttribute("chatRooms", list);
 
         return "chat/my-chat-list";
     }
 
+    @GetMapping("/my-chat-list/{chatRoomId}")
+    public String openRoom(@PathVariable Long chatRoomId, Principal principal, Model model) {
+        if (principal == null) return "redirect:/api/auth/signIn";
+        String loginId = principal.getName();
+        Long userId = chatRoomService.getCheckUserId(loginId);
+
+        List<ChatRoomResponse> myRooms = chatRoomService.getMyChatRoom(userId);
+
+        model.addAttribute("chatRooms", myRooms);
+        model.addAttribute("currentUserId", userId);
+        return "chat/my-chat-list"; // 같은 화면 재사용
+    }
+
     // 채팅방 생성 페이지
     @GetMapping("/create")
-    public String createChatRoomForm(Model model) {
+    public String createChatRoomForm(Model model, Principal principal) {
+        if (principal == null) return "redirect:/api/auth/signIn";
         model.addAttribute("isEdit", false);
         model.addAttribute("chatRoom", new ChatRoomResponse()); // 빈 객체 전달
         return "chat/chat-room-form";
@@ -59,8 +71,7 @@ public class ChatRoomViewController {
 
         // 로그인한 유저가 만든 방인지 확인
         String nickName = chatRoomService.getCheckNickName(chatRoom.getOwnerId());
-        // boolean isOwner = nickName.equals(principal.getName());
-        boolean isOwner = nickName.equals("runner01");
+        boolean isOwner = nickName.equals(principal.getName());
 
         model.addAttribute("isEdit", true);
         model.addAttribute("isOwner", isOwner);
