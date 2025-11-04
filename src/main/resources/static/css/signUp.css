@@ -47,6 +47,10 @@ form {
   gap: 15px;
 }
 
+form span {
+  font-size: 15px;
+}
+
 label {
   font-weight: bold;
   text-align: left;
@@ -128,4 +132,20 @@ select {
   font-size: 17px;
   font-weight: bold;
   cursor: pointer;
+}
+
+.signIn-section {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.signIn-section a {
+  color: #20277A;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.signIn-section a:hover {
+  text-decoration: underline;
 }
