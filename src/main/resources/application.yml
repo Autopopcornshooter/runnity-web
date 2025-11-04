@@ -2,13 +2,31 @@ server:
   port: 8080
 
 security:
-  jwt:
-    issuer: "runnity-auth"
-    access-token-ttl-seconds: 900      # 15분
-    refresh-token-ttl-seconds: 1209600 # 14일
-    secret: "${JWT_SECRET:change-this-in-prod}"  # 운영은 256bit 이상 키/환경변수로
+
 
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_OAUTH_CLIENT_ID}
+            client-secret: ${GOOGLE_OAUTH_SECRET_PW}
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+  google:
+    maps:
+      api:
+        key: ${GOOGLE_MAPS_API_KEY}
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
