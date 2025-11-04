@@ -11,7 +11,8 @@ import runnity.repository.UserRepository;
 
 @Service
 @AllArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+public class
+CustomUserDetailService implements UserDetailsService {
 
   private final UserRepository userRepository;
 

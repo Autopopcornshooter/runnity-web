@@ -12,8 +12,17 @@
 </header>
 
 <div class="container">
-  <form id="loginForm">
+  <form autocomplete="on" id="loginForm" method="post" th:action="@{/api/auth/signIn}">
+    <!-- CSRF -->
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
 
+    <!-- 알림 메시지: ?error=, ?logout= -->
+    <div class="alert alert--error" role="alert" th:if="${param.error}">
+      아이디 또는 비밀번호가 올바르지 않습니다.
+    </div>
+    <div class="alert alert--info" role="status" th:if="${param.signOut}">
+      로그아웃 되었습니다.
+    </div>
     <label for="username">아이디</label>
     <input id="username" name="username" placeholder="아이디를 입력하세요" required type="text">
 
@@ -34,59 +43,13 @@
   </div>
 </div>
 <script>
-
-  document.getElementById("loginForm").addEventListener("submit", e => {
-    e.preventDefault();
-    loginUser();
+  const loginForm = document.getElementById("loginForm");
+  loginForm.addEventListener("submit", () => {
+    console.log("로그인 시도");
+  })
+  window.addEventListener("load", () => {
+    console.log("리소스 로드 완료");
   });
-
-  async function callTestEndpoint() {
-    const token = localStorage.getItem("access_token");
-
-    const response = await fetch("http://localhost:8080/api/auth/test", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      credentials: "include"
-    });
-
-    if (response.ok) {
-      const data = await response.text();
-      console.log("인증 성공:", data);
-
-      // ✅ 페이지 이동
-      window.location.href = "/api/auth/test";
-
-    } else {
-      console.error("인증 실패:", response.status);
-      console.error(await response.text());
-    }
-  }
-
-  async function loginUser() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-
-    const response = await fetch("/api/auth/signIn", {
-      method: "POST",
-      credentials: "include",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({username, password})
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("access_token", data.accessToken);
-
-      console.log("로그인 성공! Access Token:", data.accessToken);
-      callTestEndpoint(); // 페이지 이동 포함
-
-    } else {
-      console.error("로그인 실패!", response.status);
-    }
-  }
 
 </script>
 </body>

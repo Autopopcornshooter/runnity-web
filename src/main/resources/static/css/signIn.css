@@ -85,3 +85,24 @@ button {
 .join-section a:hover {
   text-decoration: underline;
 }
+
+/* 알림 */
+.alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.alert--error {
+  background: #fff0f0;
+  color: #c62828;
+  border: 1px solid #ffd7d7;
+}
+
+.alert--info {
+  background: #f0f8ff;
+  color: #1565c0;
+  border: 1px solid #d6ecff;
+}
