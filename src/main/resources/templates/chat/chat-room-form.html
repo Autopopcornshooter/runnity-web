@@ -21,6 +21,7 @@
 
   <form id="chatRoomForm" th:action="@{/chat-room/{mode}(mode=${isEdit} ? 'edit/' + ${chatRoom.chatRoomId} : 'create')}" method="post" enctype="multipart/form-data">
 
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
     <input type="hidden" id="chatRoomId" th:value="${chatRoom != null ? chatRoom.chatRoomId : ''}">
 
     <div class="image-upload" onclick="document.getElementById('imageInput').click()">

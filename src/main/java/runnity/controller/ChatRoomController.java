@@ -49,7 +49,7 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomResponse);
     }
 
-    @PutMapping("/{chatRoomId}")
+    @PutMapping(value = "/{chatRoomId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> editGroupChatRoom(@ModelAttribute ChatRoomRequest request, @PathVariable Long chatRoomId, @RequestParam(name = "chatRoomImage", required = false) MultipartFile chatRoomImage, Principal principal) {
         String loginId = principal.getName();
         Long userId = chatRoomService.getCheckUserId(loginId);
