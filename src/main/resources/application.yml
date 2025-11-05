@@ -4,12 +4,12 @@ server:
 
 spring:
   security:
-  jwt:
-    issuer: "runnity-auth"
-    access-token-ttl-seconds: 900      # 15분
-    refresh-token-ttl-seconds: 1209600 # 14일
-    secret: "${JWT_SECRET:change-this-in-prod}"  # 운영은 256bit 이상 키/환경변수로
-#    secret: "${JWT_SECRET:thisIsAReallyLongAndSecureJwtSecretKey123456}"
+    #  jwt:
+    #    issuer: "runnity-auth"
+    #    access-token-ttl-seconds: 900      # 15분
+    #    refresh-token-ttl-seconds: 1209600 # 14일
+    #    secret: "${JWT_SECRET:change-this-in-prod}"  # 운영은 256bit 이상 키/환경변수로
+    #    #    secret: "${JWT_SECRET:thisIsAReallyLongAndSecureJwtSecretKey123456}"
     oauth2:
       client:
         registration:
