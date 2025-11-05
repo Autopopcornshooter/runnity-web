@@ -26,20 +26,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     event.preventDefault();
 
     const fd = new FormData();
-    // const payload = {
-    //   chatRoomName: document.getElementById("chatRoomName").value,
-    //   description: document.getElementById("chatRoomDesc").value,
-    //   region: document.getElementById("chatRoomRegion").value,
-    //   chatRoomType: "GROUP"
-    //   // imageUrl: "/images/test-image.png"
-    // };
+
     fd.append("chatRoomName", document.getElementById("chatRoomName").value);
     fd.append("description", document.getElementById("chatRoomDesc").value);
     fd.append("region", document.getElementById("chatRoomRegion").value);
     fd.append("chatRoomType", "GROUP");
 
     const file = document.getElementById("imageInput").files?.[0];
-    if (file) fd.append("imageUrl", file);
+    if (file) fd.append("chatRoomImage", file);
 
     let url = "/api/chats";
     let method = "POST";
