@@ -100,11 +100,19 @@
             border: 5px solid indigo;
             border-radius: 10px;
             text-align: left;
-            padding: 20px;
+            padding: 20px 30px;
         }
         .location-section h3{
             font-size: 1.5rem;
             font-weight: 700;
+        }
+        .location-content {
+            display: flex;
+            align-items: center;
+            white-space: pre-wrap;   /* 줄바꿈과 공백 유지 */
+            word-wrap: break-word;   /* 단어 단위로 줄바꿈 */
+            overflow-wrap: break-word; /* 최신 브라우저용 */
+            gap: 30px;
         }
 
     </style>
@@ -127,32 +135,37 @@
 
 
     <div class="weather-section">
-        <!-- 임시 데이터-->
         <h3>날씨 정보</h3><br>
-        <div class="weather-content">
-            <img src="/images/sun-7920966_1280.png" alt="아이콘"\ width="100px" height="100px">
-            <ul>
-                <li>온도: 23°C</li>
-                <li>날씨: 맑음</li>
-                <li>습도: 60%</li>
-                <li>풍속: 5 m/s</li>
-            </ul>
-        </div>
-
+        <div class="weather-content" id="weather-content">날씨 정보를 불러오는 중입니다...</div>
     </div>
 
     <div class="location-section">
-        <h3>장소 정보</h3>
-        <div class="location-card">
-            <p>장소: 한강공원</p>
-            <p>주소: 서울시 강남구</p>
-            <p>거리: 3km</p>
-            <p>혼잡도: 보통</p>
-        </div>
+        <h3>추천 코스 정보</h3><br>
+        <div class="location-content" id="location-content">추천 코스 정보를 불러오는 중입니다...</div>
     </div>
 
 </section>
 
+<script>
+    fetch('/api/alan/chat/weather')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('weather-content').innerText = data.weather || "응답 없음";
+        })
+        .catch(err => {
+            document.getElementById('weather-content').innerText = "AI 응답 불가";
+            console.error(err);
+        });
+    fetch('/api/alan/chat/location')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('location-content').innerText = data.place || "응답 없음";
+        })
+        .catch(err => {
+            document.getElementById('location-content').innerText = "AI 응답 불가";
+            console.error(err);
+        });
+</script>
 
 <!-- Footer -->
 <div th:replace="partials/footer :: footer"></div>

@@ -1,7 +1,9 @@
 package runnity.service;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import runnity.domain.ChatRoom;
@@ -30,8 +32,8 @@ public class ChatRoomService {
     }
 
     // 채팅방 owner 체크 (userId 가져오기)
-    public Long getCheckUserId(String nickname) {
-        return userRepository.findByNickname(nickname)
+    public Long getCheckUserId(String loginId) {
+        return userRepository.findByLoginId(loginId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."))
             .getUserId();
     }
@@ -132,6 +134,7 @@ public class ChatRoomService {
     }
 
     // 채팅방 JOIN 메서드
+    @Transactional
     public void joinGroupChatRoom(Long chatRoomId, Long userId) {
         ChatRoom room = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
@@ -139,18 +142,28 @@ public class ChatRoomService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
 
-        boolean exists = room.getMembers().stream()
-            .anyMatch(m -> m.getUser().getUserId().equals(userId));
+        Optional<ChatRoomMember> activeOpt = chatRoomMemberRepository.findActiveByRoomAndUser(chatRoomId, userId);
+        if (activeOpt.isPresent()) {
+            return;
+        }
 
-        if (exists) return;
+        Optional<ChatRoomMember> anyMembership = chatRoomMemberRepository.findByRoomAndUser(chatRoomId, userId);
 
-        ChatRoomMember member = ChatRoomMember.builder()
-            .chatRoom(room)
-            .user(user)
-            .build();
+        if (anyMembership.isPresent()) {
+            ChatRoomMember member = anyMembership.get();
+            member.joinGroupChatRoom();
+            chatRoomMemberRepository.save(member);
+        } else {
+            ChatRoomMember member = ChatRoomMember.builder()
+                .chatRoom(room)
+                .user(user)
+                .joinedAt(LocalDateTime.now())
+                .build();
+            member.joinGroupChatRoom();
+            room.addMember(member);
+            chatRoomRepository.save(room);
+        }
 
-        room.addMember(member);
-        chatRoomRepository.save(room);
     }
 
     // 1:1 채팅방 생성 메서드 (미완성)
@@ -202,10 +215,17 @@ public class ChatRoomService {
         ChatRoom room = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
 
-        chatRoomMemberRepository.deleteByChatRoomIdAndUserId(chatRoomId, userId);
+        ChatRoomMember membership = chatRoomMemberRepository
+            .findActiveByRoomAndUser(chatRoomId, userId)
+            .orElseThrow(() -> new IllegalStateException("현재 방에 속해있지 않습니다."));
+
+        membership.leaveGroupChatRoom();
+        chatRoomMemberRepository.save(membership);
+
+        // chatRoomMemberRepository.deleteByChatRoomIdAndUserId(chatRoomId, userId);
         int remaining = chatRoomMemberRepository.countActiveMembersByChatRoomId(chatRoomId);
 
-        if (room.getChatRoomType() != ChatRoomType.RANDOM && remaining == 0) {
+        if ((room.getChatRoomType() != ChatRoomType.RANDOM && remaining == 0) || room.getOwner().getUserId().equals(userId)) {
             chatRoomRepository.delete(room);
         }
     }
