@@ -25,7 +25,7 @@
 
     <div class="image-upload" onclick="document.getElementById('imageInput').click()">
       <img id="preview" th:src="${chatRoom.imageUrl != null and chatRoom.imageUrl != '' ? chatRoom.imageUrl : '/images/image-upload.png'}" alt="upload icon">
-      <input type="file" id="imageInput" name="imageUrl" accept="image/*" style="display:none">
+      <input type="file" id="imageInput" name="chatRoomImage" accept="image/*" style="display:none">
     </div>
 
     <label>채팅방 이름</label>
