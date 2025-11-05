@@ -18,4 +18,7 @@ public class SignUpRequest {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private RunnerLevel runnerLevel;
+  private String address;
+  private Double lat;
+  private Double lng;
 }

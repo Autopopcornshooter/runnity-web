@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Runnity 회원가입</title>
+  <script
+      th:src="@{|https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder|}"
+      type="text/javascript"></script>
+  <script defer th:src="@{/js/mapAPI.js}"></script>
   <link rel="stylesheet" th:href="@{/css/signup.css}">
 </head>
 <body>
@@ -18,6 +22,8 @@
 
 
     <form id="signUpForm" method="post" th:action="@{/api/auth/signUp}">
+      <!-- CSRF -->
+      <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
 
       <label for="loginId">아이디</label>
       <input id="loginId" name="username" placeholder="아이디를 입력하세요" required
@@ -49,7 +55,9 @@
         <option value="INTERMEDIATE">중급 🚶🏻‍➡️️ 20분 이상, 5km 이상 러닝 가능</option>
         <option value="ADVANCED">고급 🏃🏻‍➡️ 30분 이상, 10km 이상 러닝 가능</option>
       </select>
-      <span id="runnerLevelMessage"></span>
+      <input id="lat" name="lat" type="hidden">
+      <input id="lng" name="lng" type="hidden">
+      <input id="address" name="address" type="hidden">
     </form>
   </div>
 
@@ -58,12 +66,15 @@
     <h2>내 위치 설정</h2>
 
     <div class="location-search">
-      <input placeholder="현재 주소를 입력해 주세요" type="text">
-      <button class="set-location-btn" type="button">내 위치 설정</button>
+      <input id="searchInput" placeholder="현재 주소를 입력해 주세요(ex. ~구/~동)" type="text">
+      <button class="set-location-btn" id="searchBtn">검색</button>
+      <button class="set-location-btn" id="currentBtn">내 위치 설정</button>
     </div>
 
     <div class="map-container">
-      <img alt="지도 미리보기" class="map-preview" th:src="@{/images/map_sample.png}">
+      <div class="map" id="map"></div>
+      <div class="map-info" id="info">지도에서 내 위치를 선택하세요</div>
+      <!--      <img alt="지도 미리보기" class="map-preview" th:src="@{/images/map_sample.png}">-->
     </div>
 
     <button class="join-btn" form="signUpForm" type="submit">같이 달리러 가기</button>
@@ -141,6 +152,7 @@
       event.preventDefault();
     }
   });
+
 
 </script>
 </body>

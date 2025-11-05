@@ -1,7 +1,10 @@
 package runnity.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +16,14 @@ import runnity.service.UserAuthService;
 import runnity.util.CustomSecurityUtil;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @Slf4j
 public class UserAuthController {
 
   private final UserAuthService userAuthService;
+  @Value("${naver.map.client-id}")
+  private String naverClientId;
 
   //테스트용
   @GetMapping("/main")
@@ -40,6 +45,7 @@ public class UserAuthController {
 
   @GetMapping("/signUp")
   public String signUpPage(Model model) {
+    model.addAttribute("naverClientId", naverClientId);
     model.addAttribute("formData", new SignUpRequest());
     return "signUp";
   }
@@ -79,7 +85,12 @@ public class UserAuthController {
       return "signUp";
     }
     User user = userAuthService.saveUserInfo(request);
-    log.info("회원가입 성공- loginId:" + user.getLoginId());
+    if (user != null) {
+      log.info("회원가입 성공- loginId:" + user.getLoginId());
+    } else {
+      log.info("회원가입 실패");
+    }
+
     return "redirect:/api/auth/signIn";
   }
 
