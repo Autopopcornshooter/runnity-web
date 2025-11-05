@@ -12,7 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import runnity.UserRole;
-import runnity.handler.FormLoginSuccessHandler;
+import runnity.handler.LoginSuccessHandler;
+import runnity.service.CustomOAuth2UserService;
 
 
 @EnableWebSecurity
@@ -21,7 +22,8 @@ import runnity.handler.FormLoginSuccessHandler;
 @Slf4j
 public class WebSecurityConfig {
 
-  FormLoginSuccessHandler formLoginSuccessHandler;
+  LoginSuccessHandler loginSuccessHandler;
+  CustomOAuth2UserService customOAuth2UserService;
 
   @Bean
   public WebSecurityCustomizer configure() {
@@ -43,7 +45,9 @@ public class WebSecurityConfig {
         .authorizeHttpRequests(auth ->
             auth
                 .requestMatchers(
-                    "/api/auth/signIn"
+                    "/"
+                    , "/login/oauth2/**"
+                    , "/api/auth/signIn"
                     , "/api/auth/signUp"
                     , "/api/auth/access-denied"
                     , "/api/auth/signOut"
@@ -59,7 +63,13 @@ public class WebSecurityConfig {
         .formLogin(auth ->
             auth
                 .loginPage("/api/auth/signIn")
-                .successHandler(formLoginSuccessHandler))
+                .successHandler(loginSuccessHandler))
+        .oauth2Login(oauth2 ->
+            oauth2
+                .loginPage("/api/auth/signIn")
+                .successHandler(loginSuccessHandler)
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)))// 구글 로그인 DB 연동 처리
         .logout(auth ->
             auth
                 .logoutUrl("/api/auth/signOut")

@@ -17,7 +17,7 @@ import runnity.util.CustomSecurityUtil;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
   private final UserRepository userRepository;
 
@@ -30,7 +30,7 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
     User user = userRepository.findByLoginId(loginId)
         .orElseThrow(() -> new UserNotFoundException(loginId));
 
-    getRedirectStrategy().sendRedirect(request, response, "/api/auth/main");
+    getRedirectStrategy().sendRedirect(request, response, "/main");
 
   }
 }

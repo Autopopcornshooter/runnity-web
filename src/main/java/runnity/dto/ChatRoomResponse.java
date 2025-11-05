@@ -28,6 +28,7 @@ public class ChatRoomResponse {
 
     public static ChatRoomResponse from(ChatRoom chatRoom) {
         List<Long> members = chatRoom.getMembers().stream()
+            .filter(m -> m.isActive())
             .map(m -> m.getUser().getUserId())
             .toList();
 
