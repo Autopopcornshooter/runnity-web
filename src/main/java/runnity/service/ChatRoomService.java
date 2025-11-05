@@ -25,10 +25,10 @@ public class ChatRoomService {
     private final UserRepository userRepository;
 
     // 채팅방 owner 체크 (nickname 가져오기)
-    public String getCheckNickName(Long ownerId) {
+    public String getLoginId(Long ownerId) {
         return userRepository.findById(ownerId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."))
-            .getNickname();
+            .getLoginId();
     }
 
     // 채팅방 owner 체크 (userId 가져오기)

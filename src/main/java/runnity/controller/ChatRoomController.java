@@ -29,11 +29,11 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ChatRoomResponse> createGroupChatRoom(@ModelAttribute ChatRoomRequest request, @RequestParam(name = "imageUrl", required = false) MultipartFile imageUrl, Principal principal) {
+    public ResponseEntity<ChatRoomResponse> createGroupChatRoom(@ModelAttribute ChatRoomRequest request, @RequestParam(name = "chatRoomImage", required = false) MultipartFile chatRoomImage, Principal principal) {
         String loginId = principal.getName();
         Long userId = chatRoomService.getCheckUserId(loginId);
         request.setOwnerId(userId);
-        if (imageUrl == null || imageUrl.isEmpty()) {
+        if (chatRoomImage == null || chatRoomImage.isEmpty()) {
             request.setImageUrl("/images/image-upload.png");
         } else {
             // 나중에 S3 추가되면 적용
@@ -41,7 +41,7 @@ public class ChatRoomController {
             // System.out.println("저장된 이미지 URL : " + fileUrl);
             // request.setImageUrl(fileUrl);
             // return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomResponse);
-            String testFileName = imageUrl.getOriginalFilename();
+            String testFileName = chatRoomImage.getOriginalFilename();
             request.setImageUrl(testFileName);
         }
 
@@ -49,11 +49,22 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomResponse);
     }
 
-    @PutMapping("/{chatRoomId}")
-    public ResponseEntity<String> editGroupChatRoom(@RequestBody ChatRoomRequest request, @PathVariable Long chatRoomId, Principal principal) {
+    @PutMapping(value = "/{chatRoomId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> editGroupChatRoom(@ModelAttribute ChatRoomRequest request, @PathVariable Long chatRoomId, @RequestParam(name = "chatRoomImage", required = false) MultipartFile chatRoomImage, Principal principal) {
         String loginId = principal.getName();
         Long userId = chatRoomService.getCheckUserId(loginId);
         request.setOwnerId(userId);
+        if (chatRoomImage == null || chatRoomImage.isEmpty()) {
+            request.setImageUrl("/images/image-upload.png");
+        } else {
+            // 나중에 S3 추가되면 적용
+            // String fileUrl = s3Service.uploadFile(imageUrl);
+            // System.out.println("저장된 이미지 URL : " + fileUrl);
+            // request.setImageUrl(fileUrl);
+            // return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomResponse);
+            String testFileName = chatRoomImage.getOriginalFilename();
+            request.setImageUrl(testFileName);
+        }
         chatRoomService.editGroupChatRoom(chatRoomId, request);
         return ResponseEntity.status(HttpStatus.OK).body("채팅방이 수정되었습니다.");
     }

@@ -112,6 +112,10 @@ document.getElementById("sendBtn").addEventListener("click", () => {
 });
 
 document.getElementById("exitBtn").addEventListener("click", async () => {
+  // csrf 토큰
+  const token  = document.querySelector('meta[name="_csrf"]').content;
+  const header = document.querySelector('meta[name="_csrf_header"]').content;
+
   // 알림창 띄우기
   const confirmExit = confirm("채팅방에서 나가시겠습니까?");
   if (!confirmExit) return;
@@ -124,7 +128,8 @@ document.getElementById("exitBtn").addEventListener("click", async () => {
 
   let method = "DELETE";
   const res = await fetch(url, {
-    method
+    method,
+    headers: {[header]: token}
   });
 
   if(res.ok) {

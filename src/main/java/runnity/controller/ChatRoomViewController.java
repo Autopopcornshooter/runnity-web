@@ -70,8 +70,8 @@ public class ChatRoomViewController {
         ChatRoomResponse chatRoom = chatRoomService.findById(chatRoomId);
 
         // 로그인한 유저가 만든 방인지 확인
-        String nickName = chatRoomService.getCheckNickName(chatRoom.getOwnerId());
-        boolean isOwner = nickName.equals(principal.getName());
+        String loginId = chatRoomService.getLoginId(chatRoom.getOwnerId());
+        boolean isOwner = loginId.equals(principal.getName());
 
         model.addAttribute("isEdit", true);
         model.addAttribute("isOwner", isOwner);

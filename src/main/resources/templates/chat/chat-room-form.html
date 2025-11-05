@@ -21,11 +21,12 @@
 
   <form id="chatRoomForm" th:action="@{/chat-room/{mode}(mode=${isEdit} ? 'edit/' + ${chatRoom.chatRoomId} : 'create')}" method="post" enctype="multipart/form-data">
 
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
     <input type="hidden" id="chatRoomId" th:value="${chatRoom != null ? chatRoom.chatRoomId : ''}">
 
     <div class="image-upload" onclick="document.getElementById('imageInput').click()">
       <img id="preview" th:src="${chatRoom.imageUrl != null and chatRoom.imageUrl != '' ? chatRoom.imageUrl : '/images/image-upload.png'}" alt="upload icon">
-      <input type="file" id="imageInput" name="imageUrl" accept="image/*" style="display:none">
+      <input type="file" id="imageInput" name="chatRoomImage" accept="image/*" style="display:none">
     </div>
 
     <label>채팅방 이름</label>

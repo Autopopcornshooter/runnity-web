@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <title>Runnity</title>
   <link rel="stylesheet" href="/chat/css/group-chat-list.css">
 </head>
@@ -23,6 +25,7 @@
 
 <div class="chat-rooms">
   <div th:each="room : ${chatRooms}" class="chat-room-card" th:onclick="'joinAndGo(' + ${room.chatRoomId} + ')'">
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
     <img th:src="${room.imageUrl != null and room.imageUrl != '' ? room.imageUrl : '/images/image-upload.png'}" alt="채팅방 이미지">
     <div class="chat-room-info">
       <h2 th:text="${room.chatRoomName}">채팅방 이름</h2>
