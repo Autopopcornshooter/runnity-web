@@ -4,9 +4,18 @@ let chatRooms = [];
 let userId;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // chatRooms를 Thymeleaf로 JS에 넣기
+  // chatRooms와 userId를 Thymeleaf로 JS에 넣기
   chatRooms = chatRoomsData;
   userId = currentUserId;
+
+  initTabs();
+  filterRooms("GROUP");
+  setActiveTab("GROUP");
+
+  const m = location.pathname.match(/\/chat-room\/my-chat-list\/(\d+)$/);
+  if (m && m[1]) {
+    openChat(Number(m[1]));
+  }
 });
 
 async function openChat(roomId) {
@@ -24,9 +33,6 @@ async function openChat(roomId) {
   document.getElementById("chat-input").style.display = "flex";
 
   const editBtn = document.getElementById("editBtn");
-  // console.log(roomData.ownerId);
-  // console.log(currentUserId);
-  // console.log(roomData.ownerId === currentUserId);
   if (roomData.ownerId === currentUserId) {
     editBtn.style.display = "inline-block";
     editBtn.onclick = () => {
@@ -38,13 +44,13 @@ async function openChat(roomId) {
   }
 
   try {
-    const res = await fetch(`/api/chatrooms/${roomId}/messages?page=0&size=30`);
+    const res = await fetch(`/api/chat-rooms/${roomId}/messages?page=0&size=30`);
     if (res.ok) {
       const page = await res.json();
-      const list = page.content.reverse(); // 서버가 desc라면 역순으로 정렬
+      const list = page.content.reverse(); // 역순으로 정렬
       list.forEach(m => {
         const mine = (m.senderId === userId);
-        addMessage(m.senderId, m.message, mine);
+        addMessage(m.senderNickname, m.message, mine);
       });
     }
   } catch (err) {
@@ -87,7 +93,7 @@ function connectWebSocket(roomId) {
     stompClient.subscribe(`/topic/rooms.${roomId}`, (msg) => {
       const data = JSON.parse(msg.body);
       const isMine = (data.senderId === userId);
-      addMessage(data.senderId, data.message, isMine);
+      addMessage(data.senderNickname, data.message, isMine);
     });
   });
 }
@@ -134,3 +140,44 @@ document.getElementById("exitBtn").addEventListener("click", async () => {
   // 채팅 제목 초기화
   document.getElementById("chatTitle").textContent = "채팅방 선택";
 });
+
+function initTabs() {
+  const groupTabBtn = document.getElementById("groupTab");
+  const duoTabBtn   = document.getElementById("duoTab");
+
+  groupTabBtn?.addEventListener("click", () => {
+    setActiveTab("GROUP");
+    filterRooms("GROUP");
+  });
+
+  duoTabBtn?.addEventListener("click", () => {
+    setActiveTab("DUO");
+    filterRooms("DUO");
+  });
+}
+
+// mode: "GROUP" | "DUO"
+function filterRooms(mode) {
+  const chatRoomsUl = document.getElementById("chatRooms");
+  if (!chatRoomsUl) return;
+
+  const items = chatRoomsUl.querySelectorAll(".chat-room-item");
+  items.forEach(li => {
+    const type = (li.getAttribute("data-type") || "").toUpperCase();
+    const isGroup = type === "GROUP";
+    const isDuo = type === "DIRECT" || type === "RANDOM";
+    let visible = false;
+
+    if (mode === "GROUP") visible = isGroup;
+    else if (mode === "DUO") visible = isDuo;
+
+    li.style.display = visible ? "" : "none";
+  });
+}
+
+function setActiveTab(tab) {
+  const groupTabBtn = document.getElementById("groupTab");
+  const duoTabBtn   = document.getElementById("duoTab");
+  groupTabBtn?.classList.toggle("active", tab === "GROUP");
+  duoTabBtn?.classList.toggle("active", tab === "DUO");
+}

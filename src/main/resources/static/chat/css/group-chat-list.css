@@ -121,3 +121,27 @@ header button {
   align-items: center;
   gap: 10px;
 }
+
+/* 채팅방 추가 버튼 */
+.floating-create-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #3B82F6; /* 파란색 (Tailwind의 blue-500 톤) */
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+  z-index: 999;
+}
+
+.floating-create-btn:hover {
+  background-color: #2563EB; /* 조금 진한 파란색 */
+  transform: scale(1.1);
+}
