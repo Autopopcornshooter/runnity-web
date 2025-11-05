@@ -42,7 +42,7 @@ public class AlanService {
         String url = UriComponentsBuilder.fromHttpUrl(apiBaseUrl + "/api/v1/question")
                 .queryParam("content", request.getMessage())  // ChatRequest에 들어있는 사용자의 질문
                 .queryParam("client_id", apiKey)
-                .toUriString(); // 실제 endpoint
+                .toUriString();
 
         // 헤더 설정
         HttpHeaders headers = new HttpHeaders();

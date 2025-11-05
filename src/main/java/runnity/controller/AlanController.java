@@ -19,7 +19,10 @@ public class AlanController {
 
     @GetMapping("/chat/weather")
     public Map<String, String> getWeatherInfo(Model model) {
-        ChatRequest weatherRequest = alanService.createRequest("현재 대전의 날씨는 어떠한가요?");
+        ChatRequest weatherRequest = alanService.createRequest("대전광역시 유성구에서 현재 날씨와 날씨를 토대로 러닝하기 좋은 날씨인지 판별해줘.\n" +
+                "예시) 현재 날씨 \n" +
+                "온도, 습도, 강수확률, 강수량, 최고/최저 기온, 미세먼지\n" +
+                "추후 5시간 후까지 1시간 간격으로 온도 변화와 강수 확률 5개 예시 ");
         ChatResponse weatherResponse = alanService.getResonse(weatherRequest);
 
         Map<String, String> weatherInfo = new HashMap<>();
@@ -29,7 +32,12 @@ public class AlanController {
 
     @GetMapping("/chat/location")
     public Map<String, String> getLocationInfo(Model model) {
-        ChatRequest locationRequest = alanService.createRequest("현재 대전에서 러닝하기 좋은 장소는 어디인가요? 장소 명칭과 간단한 1줄 설명으로 요약해주세요. 출처 정보는 제외해주세요");
+        ChatRequest locationRequest = alanService.createRequest("대전광역시 유성구에서 사람들이 가장 많이 애용하는 러닝 코스를 알려줘. 결과물은 러닝 코스는 대전광역시 유성구 위치 기준으로 구단위 내에서 사람들이 많이 다니는 순서로 내림차순으로 리스트화 해줘.\n" +
+                "예시) 러닝 코스 장소 이름. \n" +
+                "1. 러닝 코스 길이\n" +
+                "2. 다녀간 사람들의 추천 수 \n" +
+                "3. 러닝 코스 한 줄 요약 소개 \n" +
+                "출처 정보는 제외");
         ChatResponse locationResponse = alanService.getResonse(locationRequest);
 
         Map<String, String> locationInfo = new HashMap<>();

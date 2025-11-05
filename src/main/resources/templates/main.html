@@ -101,6 +101,8 @@
             border-radius: 10px;
             text-align: left;
             padding: 20px 30px;
+            overflow-y: auto;      /* 세로 스크롤 활성화 */
+            max-height: 620px;     /* 영역 높이 제한 */
         }
         .location-section h3{
             font-size: 1.5rem;
@@ -150,7 +152,7 @@
     fetch('/api/alan/chat/weather')
         .then(res => res.json())
         .then(data => {
-            document.getElementById('weather-content').innerText = data.weather || "응답 없음";
+            document.getElementById('weather-content').innerHTML = data.weather || "응답 없음";
         })
         .catch(err => {
             document.getElementById('weather-content').innerText = "AI 응답 불가";
@@ -159,7 +161,7 @@
     fetch('/api/alan/chat/location')
         .then(res => res.json())
         .then(data => {
-            document.getElementById('location-content').innerText = data.place || "응답 없음";
+            document.getElementById('location-content').innerHTML = data.place || "응답 없음";
         })
         .catch(err => {
             document.getElementById('location-content').innerText = "AI 응답 불가";
