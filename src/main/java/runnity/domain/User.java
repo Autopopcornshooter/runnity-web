@@ -44,18 +44,18 @@ public class User implements UserDetails {
   @Column(name = "login_id", nullable = false, unique = true)
   private String loginId;
 
-  @Column(name = "nickname", nullable = false, unique=true)
+  @Column(name = "nickname", nullable = false, unique = true)
   private String nickname;
 
-  @Column(name = "password", nullable = false)
+  @Column(name = "password")
   private String password;
 
   @CreatedDate
-  @Column(name = "created_at",updatable = false, nullable = false)
+  @Column(name = "created_at", updatable = false, nullable = false)
   private LocalDateTime createdAt;
 
   @LastModifiedDate
-  @Column(name = "updated_at",  nullable = false)
+  @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
   @Enumerated(EnumType.STRING)

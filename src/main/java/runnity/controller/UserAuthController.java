@@ -20,10 +20,17 @@ public class UserAuthController {
 
   private final UserAuthService userAuthService;
 
+  //테스트용
   @GetMapping("/main")
   public String toMain() {
 
     return "mainPage";
+  }
+
+  //테스트용
+  @GetMapping("/test")
+  public String testPage() {
+    return "test";
   }
 
   @GetMapping("/signIn")
@@ -37,10 +44,6 @@ public class UserAuthController {
     return "signUp";
   }
 
-  @GetMapping("/test")
-  public String testPage() {
-    return "test";
-  }
 
   @PostMapping("/signIn")
   public void signIn() {
