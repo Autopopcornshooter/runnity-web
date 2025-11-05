@@ -1,7 +1,11 @@
 async function joinAndGo(chatRoomId) {
   try {
+    const token  = document.querySelector('meta[name="_csrf"]').content;
+    const header = document.querySelector('meta[name="_csrf_header"]').content;
+
     const res = await fetch(`/api/chats/${chatRoomId}/join`, {
-      method: 'POST'
+      method: 'POST',
+      headers: {[header]: token}
     });
 
     if (res.status === 201 || res.ok) {
@@ -12,7 +16,7 @@ async function joinAndGo(chatRoomId) {
 
     if (res.status === 401) {
       alert('로그인이 필요합니다');
-      location.href = '/login';
+      location.href = '/api/auth/signIn';
       return;
     }
     if (res.status === 403) {
