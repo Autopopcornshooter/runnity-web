@@ -66,6 +66,9 @@ public class User implements UserDetails {
   @Column(name = "user_role", nullable = false)
   private UserRole userRole;
 
+  @Enumerated(EnumType.STRING)
+  @Column(name = "user_match_state", nullable = false)
+  private UserMatchState matchState;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

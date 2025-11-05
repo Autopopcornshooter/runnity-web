@@ -32,6 +32,8 @@ public class ChatRoomResponse {
             .map(m -> m.getUser().getUserId())
             .toList();
 
+        Long ownerId = (chatRoom.getOwner() != null) ? chatRoom.getOwner().getUserId() : null;
+
         return ChatRoomResponse.builder()
             .chatRoomId(chatRoom.getChatRoomId())
             .chatRoomType(chatRoom.getChatRoomType())
@@ -40,7 +42,7 @@ public class ChatRoomResponse {
             .region(chatRoom.getRegion())
             .imageUrl(chatRoom.getImageUrl())
             .active(chatRoom.isActive())
-            .ownerId(chatRoom.getOwner().getUserId())
+            .ownerId(ownerId)
             .members(members)
             .build();
     }

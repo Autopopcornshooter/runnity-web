@@ -3,6 +3,13 @@ server:
 
 
 spring:
+  # Redis 서버 (듀오 매칭 시스템에 필요)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2s
+
   security:
     #  jwt:
     #    issuer: "runnity-auth"

@@ -10,6 +10,7 @@ import runnity.domain.ChatRoom;
 import runnity.domain.ChatRoomMember;
 import runnity.domain.ChatRoomType;
 import runnity.domain.User;
+import runnity.domain.UserMatchState;
 import runnity.dto.ChatRoomRequest;
 import runnity.dto.ChatRoomResponse;
 import runnity.repository.ChatRoomMemberRepository;
@@ -59,6 +60,15 @@ public class ChatRoomService {
     // 채팅방 전체 목록
     public List<ChatRoomResponse> getAllChatRoom() {
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+
+        return chatRooms.stream()
+            .map(r -> ChatRoomResponse.from(r))
+            .toList();
+    }
+
+    // GROUP 채팅방 전체 목록
+    public List<ChatRoomResponse> getAllGroupChatRoom() {
+        List<ChatRoom> chatRooms = chatRoomRepository.findByChatRoomType(ChatRoomType.GROUP);
 
         return chatRooms.stream()
             .map(r -> ChatRoomResponse.from(r))
@@ -210,7 +220,7 @@ public class ChatRoomService {
         }
     }
 
-    // 채팅방 나가기 메서드
+    // 채팅방 나가기 메서드 & 운동완료 메서드
     public void leaveRoom(Long chatRoomId, Long userId) {
         ChatRoom room = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
@@ -222,11 +232,23 @@ public class ChatRoomService {
         membership.leaveGroupChatRoom();
         chatRoomMemberRepository.save(membership);
 
-        // chatRoomMemberRepository.deleteByChatRoomIdAndUserId(chatRoomId, userId);
         int remaining = chatRoomMemberRepository.countActiveMembersByChatRoomId(chatRoomId);
 
-        if ((room.getChatRoomType() != ChatRoomType.RANDOM && remaining == 0) || room.getOwner().getUserId().equals(userId)) {
+        if ((room.getChatRoomType() != ChatRoomType.RANDOM && remaining == 0) || (room.getChatRoomType() == ChatRoomType.GROUP && room.getOwner().getUserId().equals(userId))) {
             chatRoomRepository.delete(room);
+        } else if (room.getChatRoomType() == ChatRoomType.RANDOM && remaining == 1) {
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+            user.setMatchState(UserMatchState.IDLE);
+            userRepository.save(user);
+        } else if (room.getChatRoomType() == ChatRoomType.RANDOM && remaining == 0) {
+            // 채팅방 유저의 Active 가 보두 left 일 때 삭제
+            chatRoomRepository.delete(room);
+            // 랜덤 채팅방 운동 완료 후 매칭 상태 복원
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+            user.setMatchState(UserMatchState.IDLE);
+            userRepository.save(user);
         }
     }
 

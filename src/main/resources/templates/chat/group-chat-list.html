@@ -9,10 +9,12 @@
 </head>
 <body>
 <header>
-  <h1>
-    <img src="/images/unit-logo.png" alt="Runnity Logo" width="32">
-    Runnity
-  </h1>
+  <a th:href="@{/main}" class="main-logo">
+    <h1>
+      <img src="/images/unit-logo.png" alt="Runnity Logo" width="32">
+      Runnity
+    </h1>
+  </a>
   <div class="buttons">
     <button class="my-chat-btn" onclick="location.href='/chat-room/my-chat-list'">나의 채팅방</button>
     <button class="logout-btn" onclick="location.href='/logout'">로그아웃</button>

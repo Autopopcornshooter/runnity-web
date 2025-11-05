@@ -35,6 +35,10 @@ header button {
   font-weight: bold;
 }
 
+.main-logo {
+  text-decoration: none;
+}
+
 .my-chat-btn {
   background-color: #4f8ef7;
   color: #fff;

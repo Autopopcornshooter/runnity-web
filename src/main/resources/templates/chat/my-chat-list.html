@@ -10,10 +10,12 @@
 <body>
 
 <header class="header">
-  <h1>
-    <img src="/images/unit-logo.png" alt="Runnity Logo" width="32">
-    Runnity
-  </h1>
+  <a th:href="@{/main}" class="main-logo">
+    <h1>
+      <img src="/images/unit-logo.png" alt="Runnity Logo" width="32">
+      Runnity
+    </h1>
+  </a>
   <input type="text" id="searchInput" placeholder="모임명, 지역을 검색해 주세요">
   <div class="header-btns">
     <button class="btn" onclick="location.href='/chat-room/list'">채팅 목록</button>
@@ -67,8 +69,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-<!--<script src="/webjars/sockjs-client/sockjs.min.js"></script>-->
-<!--<script src="/webjars/stomp-websocket/stomp.min.js"></script>-->
 <script th:inline="javascript">
   /*<![CDATA[*/
   const chatRoomsData = /*[[${chatRooms}]]*/ [];

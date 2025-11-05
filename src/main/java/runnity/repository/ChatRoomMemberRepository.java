@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import runnity.domain.ChatRoom;
 import runnity.domain.ChatRoomMember;
+import runnity.domain.ChatRoomType;
 
 public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, Long> {
 
@@ -36,5 +37,9 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
     @Modifying
     @Query("DELETE FROM ChatRoom m WHERE m.chatRoomId = :roomId")
     void deleteAllByChatRoomId(@Param("roomId") Long roomId);
+
+    // 듀오 매칭 관련 코드
+    @Query(" select count(m) from ChatRoomMember m where m.user.userId = :userId and m.active = true and m.chatRoom.active = true and m.chatRoom.chatRoomType = :randomType")
+    long countActiveByUserAndType(@Param("userId") Long userId, @Param("randomType") ChatRoomType randomType);
 
 }

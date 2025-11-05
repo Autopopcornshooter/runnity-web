@@ -40,6 +40,10 @@ body {
   cursor: pointer;
 }
 
+.main-logo {
+  text-decoration: none;
+}
+
 /* ========== Main Split ========== */
 .chat-container {
   flex: 1 1 auto;           /* 남은 높이 모두 사용 */
@@ -124,6 +128,26 @@ body {
   border-color: #4169e1;
   box-shadow: 0 8px 18px rgba(65,105,225,.2);
   background: #f5f7ff;
+}
+.chat-room-item {
+  position: relative;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+}
+.chat-room-item:hover {
+  background: rgba(99, 102, 241, 0.07);
+}
+
+.chat-room-item.active {
+  background: rgba(79, 70, 229, 0.1);
+  border-left: 4px solid transparent;
+  box-shadow: inset 4px 0 0 0 #4f46e5;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { box-shadow: inset 4px 0 0 0 #4f46e5; }
+  to { box-shadow: inset 4px 0 0 0 #818cf8; }
 }
 .chat-room-item img {
   width: 48px;
@@ -214,6 +238,29 @@ body {
   cursor: pointer;
   border-radius: 6px;
   margin-left: 8px;
+}
+
+.exit-btn {
+  background-color: #dc3545;  /* 빨강 */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.exit-btn:hover {
+  background-color: #b02a37;
+}
+
+/* RANDOM 채팅방일 때 (운동 완료용) */
+.exit-btn.random-exit {
+  background-color: #198754; /* 초록 */
+}
+
+.exit-btn.random-exit:hover {
+  background-color: #157347;
 }
 
 /* Messages */

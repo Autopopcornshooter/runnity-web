@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import runnity.UserRole;
 import runnity.domain.User;
+import runnity.domain.UserMatchState;
 import runnity.dto.SignUpRequest;
 import runnity.exceptions.UserNotFoundException;
 import runnity.repository.UserRepository;
@@ -30,6 +31,7 @@ public class UserAuthService {
             .updatedAt(request.getUpdatedAt())
             .runnerLevel(request.getRunnerLevel())
             .userRole(UserRole.ROLE_USER)
+            .matchState(UserMatchState.IDLE)
             .build()
     );
   }
