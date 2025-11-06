@@ -40,11 +40,17 @@ public class UserAuthController {
 
   @GetMapping("/signIn")
   public String signInPage() {
+    if (CustomSecurityUtil.isAuthenticated()) {
+      return "redirect:/main";
+    }
     return "signIn";
   }
 
   @GetMapping("/signUp")
   public String signUpPage(Model model) {
+    if (CustomSecurityUtil.isAuthenticated()) {
+      return "redirect:/main";
+    }
     model.addAttribute("naverClientId", naverClientId);
     model.addAttribute("formData", new SignUpRequest());
     return "signUp";

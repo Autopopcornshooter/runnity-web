@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import runnity.RunnerLevel;
 import runnity.UserRole;
 import runnity.domain.User;
+import runnity.domain.UserMatchState;
 import runnity.dto.CustomOAuth2User;
 import runnity.exceptions.UserNotFoundException;
 import runnity.repository.UserRepository;
@@ -39,6 +40,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .nickname(name)
                 .userRole(UserRole.ROLE_USER)
                 .runnerLevel(RunnerLevel.BEGINNER)
+                .matchState(UserMatchState.IDLE)
                 .build()
         ));
     Map<String, Object> attributes = oAuth2User.getAttributes();

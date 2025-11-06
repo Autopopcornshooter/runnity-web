@@ -5,21 +5,24 @@
   <meta name="_csrf" th:content="${_csrf.token}">
   <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <title>내 채팅방 | Runnity</title>
-  <link rel="stylesheet" href="/chat/css/my-chat-list.css">
+  <link href="/chat/css/my-chat-list.css" rel="stylesheet">
 </head>
 <body>
 
 <header class="header">
-  <a th:href="@{/main}" class="main-logo">
+  <a class="main-logo" th:href="@{/main}">
     <h1>
-      <img src="/images/unit-logo.png" alt="Runnity Logo" width="32">
+      <img alt="Runnity Logo" src="/images/unit-logo.png" width="32">
       Runnity
     </h1>
   </a>
-  <input type="text" id="searchInput" placeholder="모임명, 지역을 검색해 주세요">
+  <input id="searchInput" placeholder="모임명, 지역을 검색해 주세요" type="text">
   <div class="header-btns">
     <button class="btn" onclick="location.href='/chat-room/list'">채팅 목록</button>
-    <button class="btn logout">로그아웃</button>
+
+    <button class="logout-btn" form="signOutForm" type="submit">로그아웃</button>
+    <form id="signOutForm" method="post" style="display : none" th:action="@{/api/auth/signOut}">
+    </form>
   </div>
 </header>
 
@@ -27,18 +30,21 @@
   <!-- 채팅방 목록 -->
   <aside class="chat-list">
     <div class="tab-buttons">
-      <button id="groupTab" class="active">그룹</button>
+      <button class="active" id="groupTab">그룹</button>
       <button id="duoTab">듀오</button>
     </div>
     <ul id="chatRooms">
-      <li th:each="room : ${chatRooms}" th:data-id="${room.chatRoomId}" th:data-type="${room.chatRoomType}" class="chat-room-item"
-          onclick="openChat(this.getAttribute('data-id'))">
-        <img th:if="${room.imageUrl != null}" th:src="${room.imageUrl}" alt="chat image">
-        <img th:unless="${room.imageUrl != null}" th:src="@{/images/image-upload.png}" alt="default image">
+      <li class="chat-room-item" onclick="openChat(this.getAttribute('data-id'))"
+          th:data-id="${room.chatRoomId}" th:data-type="${room.chatRoomType}"
+          th:each="room : ${chatRooms}">
+        <img alt="chat image" th:if="${room.imageUrl != null}" th:src="${room.imageUrl}">
+        <img alt="default image" th:src="@{/images/image-upload.png}"
+             th:unless="${room.imageUrl != null}">
         <div class="room-info">
           <span class="room-name" th:text="${room.chatRoomName}">채팅방 이름</span>
           <span class="room-members">
-            <img src="/images/runnity-person.png" style="width: 15px; height: 19px; padding-top: 5px">
+            <img src="/images/runnity-person.png"
+                 style="width: 15px; height: 19px; padding-top: 5px">
             <span th:text="${#lists.size(room.members)}">0</span>
           </span>
         </div>
@@ -51,17 +57,17 @@
     <div id="chatHeader">
       <h2 id="chatTitle">채팅방 선택</h2>
       <div class="chat-header-btn">
-        <button id="editBtn" class="edit-btn">채팅방 수정</button>
-        <button id="exitBtn" class="exit-btn">나가기</button>
+        <button class="edit-btn" id="editBtn">채팅방 수정</button>
+        <button class="exit-btn" id="exitBtn">나가기</button>
       </div>
     </div>
 
-    <div id="chatMessages" class="chat-messages">
+    <div class="chat-messages" id="chatMessages">
       <p class="placeholder">왼쪽에서 채팅방을 선택하세요.</p>
     </div>
 
     <div class="chat-input" id="chat-input">
-      <input type="text" id="messageInput" placeholder="메시지를 입력하세요.">
+      <input id="messageInput" placeholder="메시지를 입력하세요." type="text">
       <button id="sendBtn">전송</button>
     </div>
   </section>
