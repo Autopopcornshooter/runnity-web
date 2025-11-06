@@ -68,7 +68,6 @@ public class MatchWorker {
 
             } catch (Exception e) {
                 log.warn("Match finalize failed for users=({}, {}): {}", a, b, e.toString());
-                // 실패 시 재큐
                 redis.opsForSet().add(QUEUE_KEY, String.valueOf(a), String.valueOf(b));
             } finally {
                 redis.delete(lockKey(a));

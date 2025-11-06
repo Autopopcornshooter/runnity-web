@@ -8,8 +8,9 @@ spring:
   # Redis 서버 (듀오 매칭 시스템에 필요)
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: redis-14469.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com
+      port: 14469
+      password: ${REDIS_PASSWORD}
       timeout: 2s
 
   security:
