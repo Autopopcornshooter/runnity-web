@@ -30,6 +30,10 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     User user = userRepository.findByLoginId(loginId)
         .orElseThrow(() -> new UserNotFoundException(loginId));
 
+    if (user.getRegion() == null) {
+      getRedirectStrategy().sendRedirect(request, response, "/userInfo/region");
+      return;
+    }
     getRedirectStrategy().sendRedirect(request, response, "/main");
 
   }

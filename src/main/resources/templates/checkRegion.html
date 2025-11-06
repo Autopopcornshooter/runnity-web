@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Runnity 지역 선택</title>
+  <script
+      th:src="@{|https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder|}"
+      type="text/javascript"></script>
+  <script defer th:src="@{/js/mapAPI.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/checkRegion.css}">
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <img alt="Runnity 로고" th:src="@{/image/topbarLogo.png}">
+    <h1>Runnity</h1>
+  </div>
+</header>
+
+<div class="container">
+  <div class="location-section">
+    <h2>내 위치 설정</h2>
+    <form id="setRegion" method="post" style="display: none" th:action="@{/userInfo/region}">
+      <input id="lat" name="lat" type="hidden">
+      <input id="lng" name="lng" type="hidden">
+      <input id="address" name="address" type="hidden">
+    </form>
+    <div class="location-search">
+      <input id="searchInput" placeholder="현재 주소를 입력해 주세요(ex. ~구/~동)" type="text">
+      <button class="set-location-btn" id="searchBtn">검색</button>
+      <button class="set-location-btn" id="currentBtn">내 위치 설정</button>
+    </div>
+
+    <div class="map-container">
+      <div class="map" id="map"></div>
+      <div class="map-info" id="info">지도에서 내 위치를 선택하세요</div>
+
+    </div>
+
+    <button class="join-btn" form="setRegion" type="submit">같이 달리러 가기</button>
+
+
+  </div>
+</div>
+</body>
+</html>

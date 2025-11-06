@@ -1,7 +1,5 @@
 package runnity.controller;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import runnity.domain.User;
 import runnity.dto.SignUpRequest;
-import runnity.service.UserAuthService;
+import runnity.service.UserService;
 import runnity.util.CustomSecurityUtil;
 
 @Controller
@@ -21,22 +19,10 @@ import runnity.util.CustomSecurityUtil;
 @Slf4j
 public class UserAuthController {
 
-  private final UserAuthService userAuthService;
+  private final UserService userService;
   @Value("${naver.map.client-id}")
   private String naverClientId;
 
-  //테스트용
-  @GetMapping("/main")
-  public String toMain() {
-
-    return "mainPage";
-  }
-
-  //테스트용
-  @GetMapping("/test")
-  public String testPage() {
-    return "test";
-  }
 
   @GetMapping("/signIn")
   public String signInPage() {
@@ -75,12 +61,12 @@ public class UserAuthController {
 
     log.info(request.getNickname());
 
-    if (userAuthService.isLoginIdExist(request.getUsername())) {
+    if (userService.isLoginIdExist(request.getUsername())) {
       model.addAttribute("formData", request);
       model.addAttribute("loginIdErrorMessage", "이미 존재하는 아이디입니다.");
       return "signUp";
     }
-    if (userAuthService.isLoginIdExist(request.getNickname())) {
+    if (userService.isLoginIdExist(request.getNickname())) {
       model.addAttribute("formData", request);
       model.addAttribute("nickNameErrorMessage", "이미 존재하는 닉네임입니다.");
       return "signUp";
@@ -90,7 +76,7 @@ public class UserAuthController {
       model.addAttribute("formData", request);
       return "signUp";
     }
-    User user = userAuthService.saveUserInfo(request);
+    User user = userService.saveUserInfo(request);
     if (user != null) {
       log.info("회원가입 성공- loginId:" + user.getLoginId());
     } else {

@@ -1,6 +1,5 @@
 package runnity.service;
 
-import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +8,7 @@ import runnity.UserRole;
 import runnity.domain.Region;
 import runnity.domain.User;
 import runnity.domain.UserMatchState;
+import runnity.dto.ChangeUserInfoRequest;
 import runnity.dto.SignUpRequest;
 import runnity.exceptions.UserNotFoundException;
 import runnity.repository.RegionRepository;
@@ -18,7 +18,7 @@ import runnity.util.CustomSecurityUtil;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UserAuthService {
+public class UserService {
 
   private final UserRepository userRepository;
   private final RegionRepository regionRepository;
@@ -51,9 +51,31 @@ public class UserAuthService {
     );
   }
 
+  public void changeUserInfo(ChangeUserInfoRequest request) {
+    User user = authenticatedUser();
+
+    if (!request.getAddress().isBlank() && !request.getLat().isNaN() && !request.getLng().isNaN()) {
+      Region region = regionRepository.findByLatAndLng(request.getLat(), request.getLng())
+          .orElseGet(() -> {
+            Region newRegion = Region.builder()
+                .address(request.getAddress())
+                .lat(request.getLat())
+                .lng(request.getLng())
+                .build();
+            return regionRepository.save(newRegion);
+          });
+      user.setRegion(region);
+    }
+    if (!request.getNickname().isBlank()) {
+
+    }
+    userRepository.save(user);
+  }
+
   public boolean isLoginIdExist(String loginId) {
     return userRepository.existsByLoginId(loginId);
   }
+
 
   public boolean isNicknameExist(String nickName) {
     return userRepository.existsByNickname(nickName);
