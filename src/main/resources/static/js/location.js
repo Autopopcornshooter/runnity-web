@@ -22,7 +22,7 @@ fetch('/api/alan/chat/location')
             li.innerHTML = `
                 <strong>${data.courseName || "이름 없음"}</strong><br>
                 🏃 코스 길이: ${data.courseLength || "정보 없음"}<br>
-                👍 평가별점: ${data.recommend || "정보 없음"}<br>
+                👍 평가 별점: ${data.recommend || "정보 없음"}<br>
                 🛣️ 코스 소개: ${data.courseInfo || "소개 없음"}
             `.trim();
             ul.appendChild(li);
