@@ -1,5 +1,6 @@
 package runnity.service;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,8 +9,8 @@ import runnity.UserRole;
 import runnity.domain.Region;
 import runnity.domain.User;
 import runnity.domain.UserMatchState;
-import runnity.dto.ChangeUserInfoRequest;
 import runnity.dto.SignUpRequest;
+import runnity.dto.UpdateUserInfoRequest;
 import runnity.exceptions.UserNotFoundException;
 import runnity.repository.RegionRepository;
 import runnity.repository.UserRepository;
@@ -51,25 +52,14 @@ public class UserService {
     );
   }
 
-  public void changeUserInfo(ChangeUserInfoRequest request) {
+  public void updateUserInfo(UpdateUserInfoRequest request) {
     User user = authenticatedUser();
-
-    if (!request.getAddress().isBlank() && !request.getLat().isNaN() && !request.getLng().isNaN()) {
-      Region region = regionRepository.findByLatAndLng(request.getLat(), request.getLng())
-          .orElseGet(() -> {
-            Region newRegion = Region.builder()
-                .address(request.getAddress())
-                .lat(request.getLat())
-                .lng(request.getLng())
-                .build();
-            return regionRepository.save(newRegion);
-          });
-      user.setRegion(region);
-    }
-    if (!request.getNickname().isBlank()) {
-
-    }
+    user.setLoginId(request.getLoginId());
+    user.setPassword(request.getPassword());
+    user.setNickname(request.getNickName());
+    user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
+
   }
 
   public boolean isLoginIdExist(String loginId) {
