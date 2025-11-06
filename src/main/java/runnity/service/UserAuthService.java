@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import runnity.UserRole;
 import runnity.domain.Region;
 import runnity.domain.User;
+import runnity.domain.UserMatchState;
 import runnity.dto.SignUpRequest;
 import runnity.exceptions.UserNotFoundException;
 import runnity.repository.RegionRepository;
@@ -45,6 +46,7 @@ public class UserAuthService {
             .runnerLevel(request.getRunnerLevel())
             .region(region)
             .userRole(UserRole.ROLE_USER)
+            .matchState(UserMatchState.IDLE)
             .build()
     );
   }

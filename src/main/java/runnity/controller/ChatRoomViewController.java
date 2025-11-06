@@ -21,7 +21,7 @@ public class ChatRoomViewController {
     @GetMapping("/list")
     public String chatList(Model model) {
 
-        List<ChatRoomResponse> list = chatRoomService.getAllChatRoom();
+        List<ChatRoomResponse> list = chatRoomService.getAllGroupChatRoom();
 
         model.addAttribute("chatRooms", list);
 

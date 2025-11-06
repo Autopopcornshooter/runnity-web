@@ -1,53 +1,95 @@
 let stompClient = null;
 let currentRoomId = null;
+let currentRoomType = null;
 let chatRooms = [];
 let userId;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // chatRooms와 userId를 Thymeleaf로 JS에 넣기
   chatRooms = chatRoomsData;
   userId = currentUserId;
 
   initTabs();
-  filterRooms("GROUP");
-  setActiveTab("GROUP");
 
+  // URL에 /my-chat-list/{roomId} 로 들어온 경우 먼저 탭 타입을 결정해서 세팅
   const m = location.pathname.match(/\/chat-room\/my-chat-list\/(\d+)$/);
   if (m && m[1]) {
-    openChat(Number(m[1]));
+    const preRoomId = Number(m[1]);
+    const preRoom = chatRooms.find(r => r.chatRoomId === preRoomId);
+    const preTab = calcTabByType(preRoom?.chatRoomType); // "GROUP" | "DUO"
+    setActiveTab(preTab);
+    filterRooms(preTab);
+    openChat(preRoomId);
+  } else {
+    // 기본은 그룹 탭
+    setActiveTab("GROUP");
+    filterRooms("GROUP");
   }
 });
+
+// 방 타입에 따라 탭 변경 : GROUP vs DUO(DIRECT, RANDOM 포함)
+function calcTabByType(type) {
+  const t = (type || "").toUpperCase();
+  if (t === "GROUP") return "GROUP";
+  // DIRECT 또는 RANDOM(= 듀오/랜덤 1:1)
+  return "DUO";
+}
+
+// 리스트의 활성 표시 관리
+function updateActiveListItem(roomId) {
+  const items = document.querySelectorAll("#chatRooms .chat-room-item");
+  items.forEach(li => {
+    const id = Number(li.getAttribute("data-id"));
+    li.classList.toggle("active", id === Number(roomId));
+  });
+}
 
 async function openChat(roomId) {
   currentRoomId = Number(roomId);
   document.getElementById("chatMessages").innerHTML = "";
 
-  // 선택한 방 정보 가져오기
+  // 선택한 방 정보
   const roomData = chatRooms.find(r => r.chatRoomId === Number(roomId));
+  if (!roomData) return;
 
-  // 채팅 제목 업데이트
+  currentRoomType = roomData.chatRoomType;
+  // 방 타입에 맞춰 탭 자동 전환 + 필터 재적용
+  const tab = calcTabByType(currentRoomType);
+  setActiveTab(tab);
+  filterRooms(tab);
+
+  // 리스트에서 현재 방 표시
+  updateActiveListItem(roomId);
+
+  // 채팅 제목
   document.getElementById("chatTitle").textContent = roomData.chatRoomName;
 
-  // 채팅방 선택 시 "나가기" 버튼 보이기
+  // 입력/버튼 노출
   document.getElementById("exitBtn").style.display = "inline-block";
   document.getElementById("chat-input").style.display = "flex";
 
   const editBtn = document.getElementById("editBtn");
   if (roomData.ownerId === currentUserId) {
     editBtn.style.display = "inline-block";
-    editBtn.onclick = () => {
-      window.location.href = `/chat-room/edit/${Number(roomId)}`;
-    };
+    editBtn.onclick = () => window.location.href = `/chat-room/edit/${Number(roomId)}`;
   } else {
     editBtn.style.display = "none";
     editBtn.onclick = null;
+  }
+
+  const exitBtn = document.getElementById("exitBtn");
+  exitBtn.classList.remove("random-exit");
+  if (currentRoomType === "RANDOM") {
+    exitBtn.textContent = "운동 완료";
+    exitBtn.classList.add("random-exit"); // 색상 변경
+  } else {
+    exitBtn.textContent = "나가기";
   }
 
   try {
     const res = await fetch(`/api/chat-rooms/${roomId}/messages?page=0&size=30`);
     if (res.ok) {
       const page = await res.json();
-      const list = page.content.reverse(); // 역순으로 정렬
+      const list = page.content.reverse();
       list.forEach(m => {
         const mine = (m.senderId === userId);
         addMessage(m.senderNickname, m.message, mine);
@@ -63,8 +105,7 @@ async function openChat(roomId) {
 function addMessage(sender, text, isMine) {
   const container = document.getElementById("chatMessages");
   const messageDiv = document.createElement("div");
-  messageDiv.classList.add("message");
-  messageDiv.classList.add(isMine ? "mine" : "other");
+  messageDiv.classList.add("message", isMine ? "mine" : "other");
 
   const bubble = document.createElement("div");
   bubble.classList.add("bubble");
@@ -79,7 +120,6 @@ function addMessage(sender, text, isMine) {
 
   messageDiv.appendChild(bubble);
   container.appendChild(messageDiv);
-
   container.scrollTop = container.scrollHeight;
 }
 
@@ -112,37 +152,32 @@ document.getElementById("sendBtn").addEventListener("click", () => {
 });
 
 document.getElementById("exitBtn").addEventListener("click", async () => {
-  // csrf 토큰
   const token  = document.querySelector('meta[name="_csrf"]').content;
   const header = document.querySelector('meta[name="_csrf_header"]').content;
 
-  // 알림창 띄우기
-  const confirmExit = confirm("채팅방에서 나가시겠습니까?");
-  if (!confirmExit) return;
+  const isRandom = (currentRoomType === "RANDOM");
+  const confirmMsg = isRandom ? "운동을 완료하시겠습니까?" : "채팅방에서 나가시겠습니까?";
+  if (!confirm(confirmMsg)) return;
 
-  if (stompClient) {
-    stompClient.disconnect();
-    stompClient = null;
-  }
-  let url = `/api/chats/${currentRoomId}/leave`;
+  if (stompClient) { stompClient.disconnect(); stompClient = null; }
 
-  let method = "DELETE";
-  const res = await fetch(url, {
-    method,
-    headers: {[header]: token}
+  const res = await fetch(`/api/chats/${currentRoomId}/leave`, {
+    method: "DELETE",
+    headers: { [header]: token }
   });
 
-  if(res.ok) {
+  if (res.ok) {
+    if (isRandom) {
+      alert("운동이 완료되었습니다 👟");
+    }
     window.location.href = "/chat-room/my-chat-list";
+    return;
   }
 
+  // 실패 시 UI 초기화만
   currentRoomId = null;
-
-  // 채팅방 나가면 메시지 영역 초기화
-  const chatMessages = document.getElementById("chatMessages");
-  chatMessages.innerHTML = '<p class="placeholder">왼쪽에서 채팅방을 선택하세요.</p>';
-
-  // 채팅 제목 초기화
+  document.getElementById("chatMessages").innerHTML =
+      '<p class="placeholder">왼쪽에서 채팅방을 선택하세요.</p>';
   document.getElementById("chatTitle").textContent = "채팅방 선택";
 });
 
@@ -153,11 +188,14 @@ function initTabs() {
   groupTabBtn?.addEventListener("click", () => {
     setActiveTab("GROUP");
     filterRooms("GROUP");
+    // 탭 클릭 시 현재 선택 표시도 적절히 조정
+    updateActiveListItem(currentRoomId);
   });
 
   duoTabBtn?.addEventListener("click", () => {
     setActiveTab("DUO");
     filterRooms("DUO");
+    updateActiveListItem(currentRoomId);
   });
 }
 
@@ -170,12 +208,8 @@ function filterRooms(mode) {
   items.forEach(li => {
     const type = (li.getAttribute("data-type") || "").toUpperCase();
     const isGroup = type === "GROUP";
-    const isDuo = type === "DIRECT" || type === "RANDOM";
-    let visible = false;
-
-    if (mode === "GROUP") visible = isGroup;
-    else if (mode === "DUO") visible = isDuo;
-
+    const isDuo = (type === "DIRECT" || type === "RANDOM");
+    let visible = (mode === "GROUP") ? isGroup : isDuo;
     li.style.display = visible ? "" : "none";
   });
 }
