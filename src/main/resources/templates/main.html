@@ -86,10 +86,16 @@
             font-weight: 700;
         }
         .weather-content {
+            font-size: 1.1rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 10px;
         }
+        .hourly-list {
+            padding-left: 25px;
+        }
+
 
         .location-section {
             flex: 0 0 400px;
@@ -103,18 +109,24 @@
             border-radius: 10px;
             text-align: left;
             padding: 20px 30px;
+            overflow-y: auto;      /* 세로 스크롤 활성화 */
+            max-height: 620px;     /* 영역 높이 제한 */
         }
         .location-section h3{
             font-size: 1.5rem;
             font-weight: 700;
         }
         .location-content {
+            font-size: 1rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            white-space: pre-wrap;   /* 줄바꿈과 공백 유지 */
+            /*white-space: pre-wrap;   !* 줄바꿈과 공백 유지 *!*/
             word-wrap: break-word;   /* 단어 단위로 줄바꿈 */
             overflow-wrap: break-word; /* 최신 브라우저용 */
             gap: 30px;
+
+            white-space: normal; /* 들여쓰기, 여러 공백 무시 */
         }
 
     </style>
@@ -138,7 +150,10 @@
 
     <div class="weather-section">
         <h3>날씨 정보</h3><br>
-        <div class="weather-content" id="weather-content">날씨 정보를 불러오는 중입니다...</div>
+        <div class="weather-content" id="weather-content">날씨 정보를 불러오는 중입니다...</div><br>
+        <div id="comment"></div>
+        <div class="hourly-list" id="hourly-list"></div><br>
+        <div class="weather-summary" id="weather-summary"></div>
     </div>
 
     <div class="location-section">
@@ -148,26 +163,8 @@
 
 </section>
 
-<script>
-    fetch('/api/alan/chat/weather')
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('weather-content').innerText = data.weather || "응답 없음";
-        })
-        .catch(err => {
-            document.getElementById('weather-content').innerText = "AI 응답 불가";
-            console.error(err);
-        });
-    fetch('/api/alan/chat/location')
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('location-content').innerText = data.place || "응답 없음";
-        })
-        .catch(err => {
-            document.getElementById('location-content').innerText = "AI 응답 불가";
-            console.error(err);
-        });
-</script>
+<script src="/js/weather.js"></script>
+<script src="/js/location.js"></script>
 
 <!-- Footer -->
 <div th:replace="partials/footer :: footer"></div>

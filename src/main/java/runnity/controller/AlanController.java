@@ -1,14 +1,19 @@
 package runnity.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import runnity.dto.ChatRequest;
 import runnity.dto.ChatResponse;
 import runnity.service.AlanService;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/alan")
@@ -18,22 +23,25 @@ public class AlanController {
     private final AlanService alanService;
 
     @GetMapping("/chat/weather")
-    public Map<String, String> getWeatherInfo(Model model) {
-        ChatRequest weatherRequest = alanService.createRequest("현재 대전의 날씨는 어떠한가요?");
+    public Map<String, Object> getWeatherInfo(Model model) {
+
+        String prompt = alanService.getWeatherPrompt();
+        ChatRequest weatherRequest = alanService.createRequest(prompt);
         ChatResponse weatherResponse = alanService.getResonse(weatherRequest);
 
-        Map<String, String> weatherInfo = new HashMap<>();
-        weatherInfo.put("weather", weatherResponse.getContent());
-        return weatherInfo;
+        Map<String, Object> weatherData = alanService.weatherNomaliztion(weatherResponse);
+        return weatherData; // Spring이 자동으로 JSON 변환
     }
 
     @GetMapping("/chat/location")
-    public Map<String, String> getLocationInfo(Model model) {
-        ChatRequest locationRequest = alanService.createRequest("현재 대전에서 러닝하기 좋은 장소는 어디인가요? 장소 명칭과 간단한 1줄 설명으로 요약해주세요. 출처 정보는 제외해주세요");
+    public List<Map<String, Object>> getLocationInfo(Model model) {
+        String prompt = alanService.getLocationPrompt();
+        ChatRequest locationRequest = alanService.createRequest(prompt);
         ChatResponse locationResponse = alanService.getResonse(locationRequest);
 
-        Map<String, String> locationInfo = new HashMap<>();
-        locationInfo.put("place", locationResponse.getContent());
-        return locationInfo;
+        List<Map<String, Object>> locationData = alanService.locationNomaliztion(locationResponse);
+//        Map<String, String> locationInfo = new HashMap<>();
+//        locationInfo.put("place", locationResponse.getContent());
+        return locationData;
     }
 }
