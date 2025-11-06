@@ -17,7 +17,7 @@ fetch('/api/alan/chat/weather')
 
         data.hourlyList.forEach(item => {
             const li = document.createElement("li");
-            li.innerText = `${item.hourly} - ${item.temperature}, 강수확률 ${item.percentage}`;
+            li.innerText = `${item.hourly} : 기온 ${item.temperature}, 강수확률 ${item.percentage}`;
             list.appendChild(li);
         });
 

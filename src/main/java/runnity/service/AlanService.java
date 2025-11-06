@@ -1,5 +1,7 @@
 package runnity.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,8 +10,12 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import runnity.domain.Region;
+import runnity.domain.User;
 import runnity.dto.ChatRequest;
 import runnity.dto.ChatResponse;
+import runnity.repository.RegionRepository;
+import runnity.repository.UserRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +32,8 @@ public class AlanService {
     // 외부 HTTP API 호출용 스프링 기본 클래스.
     private final RestTemplate restTemplate;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final UserAuthService userAuthService;
+    private final RegionRepository regionRepository;
 
     // yaml 값 주입
     @Value("${ai.api.base-url}")
@@ -35,9 +43,11 @@ public class AlanService {
     private String apiKey;
 
     @Autowired
-    public AlanService(RestTemplate restTemplate, CustomOAuth2UserService customOAuth2UserService) {
+    public AlanService(RestTemplate restTemplate, CustomOAuth2UserService customOAuth2UserService, UserRepository userRepository, UserAuthService userAuthService, RegionRepository regionRepository) {
         this.restTemplate = restTemplate;
         this.customOAuth2UserService = customOAuth2UserService;
+        this.userAuthService = userAuthService;
+        this.regionRepository = regionRepository;
     }
 
     public ChatRequest createRequest(String request){
@@ -78,11 +88,13 @@ public class AlanService {
     }
 
     public String getWeatherPrompt() {
+//        String userLocation = findLatLng();
         String userLocation = "대전광역시 서구"; // 로그인 유저 위치
         return loadPrompt("prompts/weather.txt", userLocation);
     }
 
     public String getLocationPrompt() {
+//        String userLocation = findLatLng();
         String userLocation = "서울특별시 종로구";
         return loadPrompt("prompts/location.txt", userLocation);
     }
@@ -169,5 +181,13 @@ public class AlanService {
         Pattern pattern = Pattern.compile("(?m)^\\s*-\\s*\\*\\*\\s*" + Pattern.quote(field.trim()) + "\\s*\\*\\*\\s*:\\s*(.+)$");
         Matcher matcher = pattern.matcher(input);
         return matcher.find() ? matcher.group(1).trim() : null;
+    }
+
+    public String findLatLng() {
+        User user = userAuthService.authenticatedUser();
+        Region region = regionRepository.findById(user.getRegion().getRegionId()).orElseThrow(() -> new RuntimeException("Region not found"));
+        String latlng = "위도: " + region.getLat() + ", 경도: " + region.getLng();
+
+        return latlng;
     }
 }
