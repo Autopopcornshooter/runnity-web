@@ -32,7 +32,7 @@ public class AlanService {
     // 외부 HTTP API 호출용 스프링 기본 클래스.
     private final RestTemplate restTemplate;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final UserAuthService userAuthService;
+    private final UserService userService;
     private final RegionRepository regionRepository;
 
     // yaml 값 주입
@@ -43,10 +43,10 @@ public class AlanService {
     private String apiKey;
 
     @Autowired
-    public AlanService(RestTemplate restTemplate, CustomOAuth2UserService customOAuth2UserService, UserRepository userRepository, UserAuthService userAuthService, RegionRepository regionRepository) {
+    public AlanService(RestTemplate restTemplate, CustomOAuth2UserService customOAuth2UserService, UserRepository userRepository, UserService userService, RegionRepository regionRepository) {
         this.restTemplate = restTemplate;
         this.customOAuth2UserService = customOAuth2UserService;
-        this.userAuthService = userAuthService;
+        this.userService = userService;
         this.regionRepository = regionRepository;
     }
 
@@ -88,14 +88,12 @@ public class AlanService {
     }
 
     public String getWeatherPrompt() {
-//        String userLocation = findLatLng();
-        String userLocation = "대전광역시 서구"; // 로그인 유저 위치
+        String userLocation = findLatLng();
         return loadPrompt("prompts/weather.txt", userLocation);
     }
 
     public String getLocationPrompt() {
-//        String userLocation = findLatLng();
-        String userLocation = "서울특별시 종로구";
+        String userLocation = findLatLng();
         return loadPrompt("prompts/location.txt", userLocation);
     }
 
@@ -184,7 +182,7 @@ public class AlanService {
     }
 
     public String findLatLng() {
-        User user = userAuthService.authenticatedUser();
+        User user = userService.authenticatedUser();
         Region region = regionRepository.findById(user.getRegion().getRegionId()).orElseThrow(() -> new RuntimeException("Region not found"));
         String latlng = "위도: " + region.getLat() + ", 경도: " + region.getLng();
 
