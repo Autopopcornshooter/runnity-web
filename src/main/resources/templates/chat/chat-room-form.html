@@ -3,48 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <title>채팅방 Runnity C/U</title>
-  <link rel="stylesheet" href="/chat/css/chat-room-form.css">
+  <link href="/chat/css/chat-room-form.css" rel="stylesheet">
 </head>
 <body>
 <header>
   <h1>
-    <img src="/images/unit-logo.png" alt="Runnity Logo" width="32">
+    <img alt="Runnity Logo" src="/images/unit-logo.png" width="32">
     Runnity
   </h1>
   <div class="buttons">
     <button class="my-chat-btn" onclick="location.href='/chat-room/list'">채팅방 목록</button>
-    <button class="logout-btn" onclick="location.href='/logout'">로그아웃</button>
+    <form method="post" th:action="@{api/auth/signOut}">
+      <button class="logout-btn" type="submit">로그아웃</button>
+    </form>
+
   </div>
 </header>
 <div class="container">
   <h2 th:text="${isEdit} ? '채팅방 수정' : '채팅방 생성'"></h2>
 
-  <form id="chatRoomForm" th:action="@{/chat-room/{mode}(mode=${isEdit} ? 'edit/' + ${chatRoom.chatRoomId} : 'create')}" method="post" enctype="multipart/form-data">
+  <form enctype="multipart/form-data"
+        id="chatRoomForm"
+        method="post"
+        th:action="@{/chat-room/{mode}(mode=${isEdit} ? 'edit/' + ${chatRoom.chatRoomId} : 'create')}">
 
     <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
-    <input type="hidden" id="chatRoomId" th:value="${chatRoom != null ? chatRoom.chatRoomId : ''}">
+    <input id="chatRoomId" th:value="${chatRoom != null ? chatRoom.chatRoomId : ''}" type="hidden">
 
     <div class="image-upload" onclick="document.getElementById('imageInput').click()">
-      <img id="preview" th:src="${chatRoom.imageUrl != null and chatRoom.imageUrl != '' ? chatRoom.imageUrl : '/images/image-upload.png'}" alt="upload icon">
-      <input type="file" id="imageInput" name="chatRoomImage" accept="image/*" style="display:none">
+      <img alt="upload icon"
+           id="preview"
+           th:src="${chatRoom.imageUrl != null and chatRoom.imageUrl != '' ? chatRoom.imageUrl : '/images/image-upload.png'}">
+      <input accept="image/*" id="imageInput" name="chatRoomImage" style="display:none" type="file">
     </div>
 
     <label>채팅방 이름</label>
-    <input type="text" id="chatRoomName" name="chatRoomName" placeholder="채팅방 이름을 입력해주세요"
-           th:value="${chatRoom != null ? chatRoom.chatRoomName : ''}">
+    <input id="chatRoomName" name="chatRoomName" placeholder="채팅방 이름을 입력해주세요"
+           th:value="${chatRoom != null ? chatRoom.chatRoomName : ''}"
+           type="text">
 
     <label>설명</label>
     <textarea id="chatRoomDesc" name="description" placeholder="채팅방에 대한 설명을 입력해주세요"
               th:text="${chatRoom != null ? chatRoom.description : ''}"></textarea>
 
     <label>지역</label>
-    <input type="text" id="chatRoomRegion" name="region" placeholder="예: 서울 마포구"
-           th:value="${chatRoom != null ? chatRoom.region : ''}">
+    <input id="chatRoomRegion" name="region" placeholder="예: 서울 마포구"
+           th:value="${chatRoom != null ? chatRoom.region : ''}"
+           type="text">
 
-    <button type="submit" class="submit-btn" th:disabled="${isEdit} ? !${isOwner} : false">
+    <button class="submit-btn" th:disabled="${isEdit} ? !${isOwner} : false" type="submit">
       <span th:text="${isEdit} ? '수정 완료' : '등록 완료'"></span>
     </button>
-    <p th:if="${isEdit} and !${isOwner}" style="color:red; margin-top:8px;">수정 권한이 없습니다.</p>
+    <p style="color:red; margin-top:8px;" th:if="${isEdit} and !${isOwner}">수정 권한이 없습니다.</p>
   </form>
 </div>
 
