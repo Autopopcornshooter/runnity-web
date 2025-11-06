@@ -1,7 +1,9 @@
 server:
   port: 8080
 
-
+naver:
+  map:
+    client-id: ${NAVER_CLIENT_ID}
 spring:
   # Redis 서버 (듀오 매칭 시스템에 필요)
   data:
@@ -11,12 +13,6 @@ spring:
       timeout: 2s
 
   security:
-    #  jwt:
-    #    issuer: "runnity-auth"
-    #    access-token-ttl-seconds: 900      # 15분
-    #    refresh-token-ttl-seconds: 1209600 # 14일
-    #    secret: "${JWT_SECRET:change-this-in-prod}"  # 운영은 256bit 이상 키/환경변수로
-    #    #    secret: "${JWT_SECRET:thisIsAReallyLongAndSecureJwtSecretKey123456}"
     oauth2:
       client:
         registration:
@@ -34,10 +30,7 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
-  google:
-    maps:
-      api:
-        key: ${GOOGLE_MAPS_API_KEY}
+
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false

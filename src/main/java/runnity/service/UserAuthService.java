@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import runnity.UserRole;
+import runnity.domain.Region;
 import runnity.domain.User;
 import runnity.domain.UserMatchState;
 import runnity.dto.SignUpRequest;
 import runnity.exceptions.UserNotFoundException;
+import runnity.repository.RegionRepository;
 import runnity.repository.UserRepository;
 import runnity.util.CustomSecurityUtil;
 
@@ -19,9 +21,21 @@ import runnity.util.CustomSecurityUtil;
 public class UserAuthService {
 
   private final UserRepository userRepository;
+  private final RegionRepository regionRepository;
   private final PasswordEncoder encoder;
 
   public User saveUserInfo(SignUpRequest request) {
+
+    Region region = regionRepository.findByLatAndLng(request.getLat(), request.getLng())
+        .orElseGet(() -> {
+          Region newRegion = Region.builder()
+              .address(request.getAddress())
+              .lat(request.getLat())
+              .lng(request.getLng())
+              .build();
+          return regionRepository.save(newRegion);
+        });
+
     return userRepository.save(
         User.builder()
             .nickname(request.getNickname())
@@ -30,6 +44,7 @@ public class UserAuthService {
             .createdAt(request.getCreatedAt())
             .updatedAt(request.getUpdatedAt())
             .runnerLevel(request.getRunnerLevel())
+            .region(region)
             .userRole(UserRole.ROLE_USER)
             .matchState(UserMatchState.IDLE)
             .build()
