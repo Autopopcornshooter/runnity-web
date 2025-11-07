@@ -24,6 +24,7 @@ public class ChatRoomResponse {
     private String imageUrl;
     private boolean active;
     private Long ownerId;
+    private String ownerNickname;
     private List<Long> members;
 
     public static ChatRoomResponse from(ChatRoom chatRoom) {
@@ -33,6 +34,7 @@ public class ChatRoomResponse {
             .toList();
 
         Long ownerId = (chatRoom.getOwner() != null) ? chatRoom.getOwner().getUserId() : null;
+        String ownerNickname = (chatRoom.getOwner() != null) ? chatRoom.getOwner().getNickname() : null;
 
         return ChatRoomResponse.builder()
             .chatRoomId(chatRoom.getChatRoomId())
@@ -43,6 +45,7 @@ public class ChatRoomResponse {
             .imageUrl(chatRoom.getImageUrl())
             .active(chatRoom.isActive())
             .ownerId(ownerId)
+            .ownerNickname(ownerNickname)
             .members(members)
             .build();
     }

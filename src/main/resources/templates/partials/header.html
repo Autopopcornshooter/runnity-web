@@ -7,14 +7,20 @@
       <span class="fw-bold fs-5 text-primary">Runnity</span>
     </a>
 
-    <!-- 오른쪽 로그인 버튼 -->
-    <a class="fw-semibold text-dark text-decoration-none" sec:authorize="isAnonymous()"
-       th:href="@{/api/auth/signIn}">로그인</a>
-    <a class="fw-semibold text-dark text-decoration-none" href="#"
-       onclick="document.getElementById('signOutForm').submit(); return false"
-       sec:authorize="isAuthenticated()">로그아웃</a>
-    <form Id="signOutForm" method="post" style="display:none" th:action="@{api/auth/signOut}">
+    <div class="d-flex align-items-center gap-4">
+      <a class="fw-semibold text-blue text-decoration-none"
+         th:href="@{/chat-room/list}">그룹 채팅방 목록</a>
+      <a class="fw-semibold text-blue text-decoration-none"
+         th:href="@{/chat-room/my-chat-list}">나의 채팅방</a>
+      <!-- 오른쪽 로그인 버튼 -->
+      <a class="fw-semibold text-dark text-decoration-none" sec:authorize="isAnonymous()"
+         th:href="@{/api/auth/signIn}">로그인</a>
+      <a class="fw-semibold text-dark text-decoration-none" href="#"
+         onclick="document.getElementById('signOutForm').submit(); return false"
+         sec:authorize="isAuthenticated()">로그아웃</a>
+      <form Id="signOutForm" method="post" style="display:none" th:action="@{/api/auth/signOut}">
 
-    </form>
+      </form>
+    </div>
   </div>
 </header>
