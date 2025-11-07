@@ -12,11 +12,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import runnity.domain.Region;
 import runnity.domain.User;
 import runnity.dto.ChatRoomResponse;
-import runnity.exceptions.UserNotFoundException;
-import runnity.repository.UserRepository;
 import runnity.service.ChatRoomService;
-import runnity.service.UserAuthService;
-import runnity.util.CustomSecurityUtil;
+import runnity.service.UserService;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,7 +21,7 @@ import runnity.util.CustomSecurityUtil;
 public class ChatRoomViewController {
 
     private final ChatRoomService chatRoomService;
-    private final UserAuthService userAuthService;
+    private final UserService userService;
 
     @GetMapping("/list")
     public String chatList(Model model) {
@@ -68,7 +65,7 @@ public class ChatRoomViewController {
     public String createChatRoomForm(Model model, Principal principal, RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/api/auth/signIn";
 
-        User user = userAuthService.authenticatedUser();
+        User user = userService.authenticatedUser();
         Region region = user.getRegion();
         String chatRegion = (region != null) ? region.getAddress() : null;
 
