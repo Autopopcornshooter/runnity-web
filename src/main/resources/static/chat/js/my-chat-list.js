@@ -60,8 +60,23 @@ async function openChat(roomId) {
   // 리스트에서 현재 방 표시
   updateActiveListItem(roomId);
 
-  // 채팅 제목
+  // 채팅방 제목
   document.getElementById("chatTitle").textContent = roomData.chatRoomName;
+  // 채팅방 설명
+  const chatDesc = document.getElementById("chatDesc");
+  const desc = roomData.description;
+
+  if (desc && desc.trim().length > 0) {
+    chatDesc.textContent = desc.trim();
+    chatDesc.title = desc.trim();
+    chatDesc.style.display = "inline-block";
+    chatDesc.style.color = "gray";
+    chatDesc.style.fontSize = "12px";
+  } else {
+    chatDesc.textContent = "";
+    chatDesc.removeAttribute("title");
+    chatDesc.style.display = "none";
+  }
 
   // 입력/버튼 노출
   document.getElementById("exitBtn").style.display = "inline-block";

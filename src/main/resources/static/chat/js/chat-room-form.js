@@ -3,6 +3,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const pathParts = window.location.pathname.split("/");
   const chatRoomId = pathParts[pathParts.length - 1]; // 마지막 부분이 roomId
   const mode = pathParts.includes("edit") ? "edit" : "create";
+  const img = document.getElementById("preview");
+  const input = document.getElementById("imageInput");
+
+  const defaultSrc = "/images/image-upload.png";
+  if (img.src && !img.src.endsWith(defaultSrc)) {
+    img.classList.remove("image-placeholder");
+    img.classList.add("uploaded");
+  }
 
   // 이미지 미리보기
   const imageInput = document.getElementById('imageInput');
@@ -54,5 +62,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       const text = await res.text().catch(() => "");
       alert(`오류가 발생했습니다. 다시 시도해주세요.\n${text}`);
     }
+  });
+
+  input.addEventListener('change', e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    img.src = URL.createObjectURL(file);
+
+    // 클래스 변경: placeholder → uploaded
+    img.classList.remove('image-placeholder');
+    img.classList.add('uploaded');
   });
 });

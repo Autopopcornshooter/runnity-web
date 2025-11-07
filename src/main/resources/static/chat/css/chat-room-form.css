@@ -1,191 +1,162 @@
-/* ===== 기본 레이아웃 ===== */
+/* ===== Layout: 헤더/푸터 사이에서 중앙 정렬, 푸터는 바닥 고정(스티키) ===== */
+:root {
+  --header-h: 64px;    /* 헤더 높이(필요시 56~72px로 조정) */
+}
+
+html, body {
+  height: 100%;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
   margin: 0;
-}
-
-/* ===== 헤더 ===== */
-header {
+  font-family: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: #f7f9ff;
+  color: #111827;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 32px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex-direction: column;      /* sticky footer 레이아웃 */
 }
 
-header h1 {
-  font-size: 24px;
-  color: #2c3e50;
+/* 메인 영역: 헤더 높이만큼 위 패딩을 주고, 가운데 정렬 */
+.page-content {
+  flex: 1 1 auto;              /* 푸터를 바닥에 붙이기 위한 남은 공간 채움 */
+  padding: calc(var(--header-h) + 24px) 16px 32px; /* header 아래 간격 + 좌우/하단 여백 */
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
 }
 
-header .buttons {
-  display: flex;
-  gap: 12px;
-}
-
-header button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  width: auto; /* 전역 button 폭 제한 방지 */
-}
-
-.my-chat-btn {
-  background-color: #4f8ef7;
-  color: #fff;
-}
-
-.logout-btn {
-  background-color: #fff;
-  border: 2px solid #4f8ef7;
-  color: #4f8ef7;
-}
-
-/* ===== 컨테이너 ===== */
-.container {
-  background-color: #fff;
-  width: 420px;
-  max-width: calc(100% - 32px);
-  margin: 40px auto;
-  padding: 40px 32px;
+/* ===== Form Card ===== */
+.chat-room-form-container {
+  width: clamp(560px, 52vw, 740px);        /* 화면에 따라 640~820px로 유동 */
+  background: #ffffff;
+  border: 1px solid #e6eafe;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow:
+      0 10px 20px rgba(17, 24, 39, 0.06),
+      0 4px 8px rgba(17, 24, 39, 0.04);
+  padding: clamp(24px, 4.2vh, 36px) clamp(20px, 3.4vw, 32px);
 }
 
-.container h2 {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  margin: 0 0 28px;
+.chat-room-form-container h2 {
+  margin: 0 0 18px 0;
+  font-weight: 800;
+  font-size: clamp(18px, 2.2vw, 22px);
+  letter-spacing: -0.01em;
+  color: #111827;
 }
 
-/* ===== 공통 폼 요소 폭 맞춤 ===== */
-.container .image-upload,
-.container input[type="text"],
-.container textarea,
-.container select,
-.container button.submit-btn {
-  width: 100%;
-  display: block;
-  box-sizing: border-box; /* 패딩/보더 포함하여 동일 폭 */
-}
-
-/* ===== 이미지 업로드 박스 ===== */
+/* ===== Upload Box ===== */
 .image-upload {
-  position: relative;
   width: 100%;
+  height: clamp(220px, 34vh, 300px);
   border: 2px dashed #4f8ef7;
   border-radius: 12px;
-  overflow: hidden;
   background: #f3f8ff;
-}
-
-.image-upload:hover {
-  background-color: #f3f8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  overflow: hidden;
+  position: relative;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
-
-#preview {
+.image-upload:hover {
+  background: #eef5ff;
+  border-color: #357cf5;
+}
+#preview.image-placeholder {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.9;
+}
+#preview.uploaded {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  display: block;
+  object-fit: cover;
   object-position: center;
-  border-radius: 12px;
-  display: block;
-  image-rendering: auto;
-  opacity: 0.6;
+  border-radius: 6px;
 }
 
-/* ===== 라벨 ===== */
-.container label {
+/* ===== Labels ===== */
+.chat-room-form-container label {
   display: block;
-  margin-top: 18px;
-  margin-bottom: 6px;
-  font-weight: bold;
-  font-size: 15px;
-  color: #333;
+  margin: 14px 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
 }
 
-/* ===== 입력창 / 텍스트영역 ===== */
-.container input[type="text"],
-.container textarea,
-.container select {
-  padding: 10px 12px;
-  border: 1.5px solid #dcdcdc;
-  border-radius: 8px;
+/* ===== Inputs / Textarea ===== */
+.chat-room-form-container input[type="text"],
+.chat-room-form-container textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1.5px solid #dce3ff;
+  border-radius: 10px;
+  background: #fff;
   font-size: 14px;
   outline: none;
-  transition: box-shadow 0.2s, border-color 0.2s;
-  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
 }
-
-/* 포커스 시 색상만 변경 (모양 고정) */
-.container input[type="text"]:focus,
-.container textarea:focus,
-.container select:focus {
-  border-color: #4f8ef7;
-  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
-}
-
-/* textarea 크기 조절 핸들 제거 */
-.container textarea {
+.chat-room-form-container textarea {
   resize: none;
-  overflow: auto;
-  height: 80px;
+  min-height: 88px;
+  max-height: 260px;
 }
 
-/* ===== 등록/수정 버튼 ===== */
-.container button.submit-btn {
-  display: block;
+.chat-room-form-container input[type="text"]:focus,
+.chat-room-form-container textarea:focus {
+  border-color: #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79,142,247,0.16);
+  background: #ffffff;
+}
+
+/* ===== Submit Button ===== */
+.submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  margin-top: 28px;
+  margin-top: 18px;
   padding: 12px 0;
-  border: none;
-  border-radius: 8px;
-  background-color: #4f8ef7;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #4f8ef7 0%, #3b82f6 100%);
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 15px;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 2px 6px rgba(79, 142, 247, 0.2);
+  box-shadow: 0 8px 16px rgba(59,130,246,0.25);
+  transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
 }
-
-.container button.submit-btn:hover:not(:disabled) {
-  background-color: #357cf5;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(79, 142, 247, 0.3);
-}
-
-.container button.submit-btn:focus-visible {
-  outline: 3px solid rgba(79, 142, 247, 0.35);
-  outline-offset: 2px;
-}
-
-.container button.submit-btn:disabled {
-  background-color: #cfd7ff;
-  color: #ffffff;
+.submit-btn:hover { filter: brightness(0.98); box-shadow: 0 10px 18px rgba(59,130,246,0.28); }
+.submit-btn:active { transform: translateY(1px); }
+.submit-btn:disabled {
+  background: #cfd7ff;
+  color: #fff;
   cursor: not-allowed;
-  opacity: 0.8;
   box-shadow: none;
-  transform: none;
 }
 
-/* ===== 반응형 ===== */
-@media (max-width: 480px) {
-  header {
-    padding: 12px 16px;
-  }
-  .container {
-    margin: 24px auto;
-    padding: 28px 20px;
-    width: calc(100% - 24px);
-  }
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .chat-room-form-container { width: min(92vw, 760px); }
+}
+@media (max-width: 540px) {
+  :root { --header-h: 72px; } /* 모바일 헤더가 더 높다면 */
+  .page-content { padding: calc(var(--header-h) + 16px) 12px 24px; }
+  .chat-room-form-container { width: 94vw; padding: 20px 16px; }
+  .image-upload { height: 200px; }
+}
+
+/* =====(선택) 헤더 하단 경계 살짝 강조 - header.html이 fixed-top일 때 예쁨 ===== */
+.simple-header {
+  background: #fff;
+  border-bottom: 1px solid #e6eafe;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
