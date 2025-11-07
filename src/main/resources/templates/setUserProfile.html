@@ -18,29 +18,34 @@
   <div class="signup-section">
 
 
-    <form id="signUpForm" method="post" th:action="@{/userInfo}">
+    <form id="signUpForm" method="post" th:action="@{/userInfo/update}">
       <!-- CSRF -->
       <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
 
-      <label for="loginId">아이디</label>
-      <input id="loginId" name="username" placeholder="변경할 아이디를 입력하세요" required
-             th:value="${formData.username}"
-             type="text">
-      <span id="idMessage"></span>
+      <th:block th:unless="${isSNSLogin}">
+        <label for="loginId">아이디</label>
+        <input id="loginId" name="username" placeholder="변경할 아이디를 입력하세요"
+               th:value="${formData.username}"
+               type="text">
+        <span id="idMessage"></span>
+      </th:block>
 
-      <label for="password">비밀번호</label>
-      <input id="password" name="password" placeholder="변경할 비밀번호를 입력하세요" required
-             th:value="${formData.password}"
-             type="password">
-      <span id="pwMessage"></span>
 
-      <label for="passwordConfirm">비밀번호 확인</label>
-      <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"
-             required th:value="${formData.passwordConfirm}" type="password">
-      <span id="pwConfirmMessage"></span>
-
+      <th:block th:unless="${isSNSLogin}">
+        <label for="password">비밀번호</label>
+        <input id="password" name="password" placeholder="변경할 비밀번호를 입력하세요"
+               th:value="${formData.password}"
+               type="password">
+        <span id="pwMessage"></span>
+      </th:block>
+      <th:block th:unless="${isSNSLogin}">
+        <label for="passwordConfirm">비밀번호 확인</label>
+        <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"
+               th:value="${formData.passwordConfirm}" type="password">
+        <span id="pwConfirmMessage"></span>
+      </th:block>
       <label for="nickname">닉네임</label>
-      <input id="nickname" name="nickname" placeholder=" 변경할 닉네임을 입력하세요" required
+      <input id="nickname" name="nickname" placeholder=" 변경할 닉네임을 입력하세요"
              th:value="${formData.nickname}"
              type="text">
       <span id="nicknameMessage"></span>
@@ -52,6 +57,7 @@
 
     </form>
   </div>
+</div>
 
 <script th:inline="javascript">
   const loginIdErrorMessage = /*[[${loginIdErrorMessage}]]*/ null;
@@ -102,14 +108,14 @@
     const idRegex = /^[A-Za-z0-9]{8,12}$/;
     const pwRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{7,15}$/;
     let valid = true;
-    if (!idRegex.test(loginId.value)) {
+    if (loginId.length !== 0 && !idRegex.test(loginId.value)) {
       valid = false;
       loginIdMessage.textContent = "아이디는 영문과 숫자가 포함된 8~12자로 제한됩니다."
       loginIdMessage.style.color = "red";
     } else {
       loginIdMessage.textContent = "";
     }
-    if (!pwRegex.test(password.value)) {
+    if (password.length !== 0 && !pwRegex.test(password.value)) {
       valid = false;
       pwMessage.textContent = "비밀번호는 최소 1개의 대문자, 숫자 및 특수기호가 포함된 7~15자로 제한됩니다.";
       pwMessage.style.color = "red";

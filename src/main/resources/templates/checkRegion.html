@@ -6,7 +6,7 @@
   <script
       th:src="@{|https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder|}"
       type="text/javascript"></script>
-  <script defer th:src="@{/js/mapAPI.js}"></script>
+
   <link rel="stylesheet" th:href="@{/css/checkRegion.css}">
 </head>
 <body>
@@ -20,7 +20,7 @@
 <div class="container">
   <div class="location-section">
     <h2>내 위치 설정</h2>
-    <form id="setRegion" method="post" style="display: none" th:action="@{/userInfo/region}">
+    <form id="setRegion" method="post" style="display: none" th:action="@{/userInfo/region/update}">
       <input id="lat" name="lat" type="hidden">
       <input id="lng" name="lng" type="hidden">
       <input id="address" name="address" type="hidden">
@@ -37,10 +37,17 @@
 
     </div>
 
-    <button class="join-btn" form="setRegion" type="submit">같이 달리러 가기</button>
+    <button class="join-btn" form="setRegion" type="submit">저장</button>
 
 
   </div>
 </div>
+<script th:inline="javascript">
+  window.currentAddress =/*[[${currentAddress}]]*/ null;
+  window.currentLat = /*[[${currentLat}]]*/ 0;
+  window.currentLng = /*[[${currentLng}]]*/ 0;
+
+</script>
+<script defer th:src="@{/js/mapAPI.js}"></script>
 </body>
 </html>

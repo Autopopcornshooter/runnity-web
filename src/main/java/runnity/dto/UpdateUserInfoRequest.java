@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class UpdateUserInfoRequest {
 
-  private String loginId;
+  private String username;
   private String password;
   private String passwordConfirm;
-  private String nickName;
+  private String nickname;
 
 }

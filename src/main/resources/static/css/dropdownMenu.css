@@ -1,0 +1,120 @@
+.menu-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+/* 버튼 */
+.menu-btn {
+  padding: 8px 14px;
+  border: 1px solid #d6d6d6;
+  border-radius: 999px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  transition: 0.15s ease;
+}
+
+.menu-btn:hover {
+  background: #f1f1f1;
+}
+
+/* 메뉴 리스트 */
+.menu,
+.submenu {
+  list-style: none;
+  padding-right: 0;
+  margin: 0;
+  padding: .4rem 0;
+}
+
+/* 1차 메뉴 박스 */
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 170px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: .6rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+  display: none;
+  z-index: 20;
+}
+
+.menu.show {
+  display: block;
+}
+
+.menu a,
+.logout-btn {
+  display: block;
+  width: 100%;
+  padding: .6rem 1rem;
+  text-decoration: none;
+  color: #111;
+  background: none;
+  border: 0;
+  text-align: right;
+}
+
+.menu a:hover,
+.logout-btn:hover {
+  background: #f5f5f5;
+}
+
+/* 러너레벨 서브 */
+.has-submenu {
+  position: relative;
+}
+
+.submenu-toggle {
+  width: 100%;
+  padding: .6rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.submenu {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  min-width: 250px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: .6rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+  display: none;
+}
+
+.submenu.show {
+  display: block;
+}
+
+/* 레벨 선택 항목 */
+.level-opt {
+  width: 100%;
+  padding: .6rem 1rem;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+}
+
+.level-opt:hover {
+  background: #f5f5f5;
+}
+
+.opt-title {
+  font-weight: 700;
+}
+
+.opt-desc {
+  font-size: .85rem;
+  color: #555;
+  margin-top: 2px;
+}

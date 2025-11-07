@@ -9,6 +9,7 @@ import runnity.UserRole;
 import runnity.domain.Region;
 import runnity.domain.User;
 import runnity.domain.UserMatchState;
+import runnity.dto.RunnerLevelRequest;
 import runnity.dto.SignUpRequest;
 import runnity.dto.UpdateUserInfoRequest;
 import runnity.exceptions.UserNotFoundException;
@@ -54,12 +55,27 @@ public class UserService {
 
   public void updateUserInfo(UpdateUserInfoRequest request) {
     User user = authenticatedUser();
-    user.setLoginId(request.getLoginId());
-    user.setPassword(request.getPassword());
-    user.setNickname(request.getNickName());
+    if (request.getUsername() != null) {  //입력값이 없거나 구글로그인 상태이거나
+      user.setLoginId(request.getUsername());
+    }
+    if (request.getPassword() != null) { //입력값이 없거나 구글로그인 상태이거나
+      user.setPassword(request.getPassword());
+    }
+    user.setNickname(request.getNickname());
     user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
 
+  }
+
+  public void updateRunnerLevel(RunnerLevelRequest request) {
+    User user = authenticatedUser();
+    user.setRunnerLevel(request.getRunnerLevel());
+    userRepository.save(user);
+    if (request.getRunnerLevel().equals(user.getRunnerLevel())) {
+      log.info("러너 레벨 변경 완료: {}", user.getRunnerLevel().name());
+    } else {
+      log.error("러너 레벨 변경 실패");
+    }
   }
 
   public boolean isLoginIdExist(String loginId) {
