@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Runnity 로그인</title>
   <link rel="stylesheet" th:href="@{/css/signIn.css}">
+
 </head>
 <body>
 <header>
@@ -42,6 +43,8 @@
     <a th:href="@{/api/auth/signUp}">회원가입</a>
   </div>
 </div>
+
+
 <script>
   const loginForm = document.getElementById("loginForm");
   loginForm.addEventListener("submit", () => {

@@ -15,7 +15,8 @@
       <!-- 오른쪽 로그인 버튼 -->
       <a class="fw-semibold text-dark text-decoration-none" sec:authorize="isAnonymous()"
          th:href="@{/api/auth/signIn}">로그인</a>
-      <div th:replace="partials/dropdownMenu :: dropdownMenu"></div>
+      <div sec:authorize="isAuthenticated()"
+           th:replace="partials/dropdownMenu :: dropdownMenu"></div>
       <!-- <a class="fw-semibold text-dark text-decoration-none" href="#" -->
       <!--   onclick="document.getElementById('signOutForm').submit(); return false" -->
       <!--   sec:authorize="isAuthenticated()">로그아웃</a> -->
