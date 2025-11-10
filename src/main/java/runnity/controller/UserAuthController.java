@@ -1,13 +1,18 @@
 package runnity.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import runnity.domain.User;
 import runnity.dto.SignUpRequest;
 import runnity.service.UserService;
@@ -20,9 +25,9 @@ import runnity.util.CustomSecurityUtil;
 public class UserAuthController {
 
   private final UserService userService;
+  private final PasswordEncoder encoder;
   @Value("${naver.map.client-id}")
   private String naverClientId;
-
 
   @GetMapping("/signIn")
   public String signInPage() {
@@ -42,9 +47,25 @@ public class UserAuthController {
     return "signUp";
   }
 
+  @GetMapping("/re-auth")
+  public String reAuthPage() {
+    return "reAuth";
+  }
+
+  @PostMapping("/re-auth")
+  public String reAuthSubmit(@RequestParam("password") String password, HttpSession session
+  ) {
+    User user = userService.authenticatedUser();
+
+    if (!encoder.matches(password, user.getPassword())) {
+      return "redirect:/api/auth/re-auth?error";
+    }
+    session.setAttribute("reAuth", true);
+    return "redirect:/userInfo/update";
+  }
 
   @PostMapping("/signIn")
-  public void signIn() {
+  public void signInSubmit() {
     log.info("WebSecurityConfig.java: signIn(POST)");
   }
 
@@ -57,7 +78,7 @@ public class UserAuthController {
   }
 
   @PostMapping("/signUp")
-  public String signUp(SignUpRequest request, Model model) {
+  public String signUpSubmit(SignUpRequest request, Model model) {
 
     log.info(request.getNickname());
 
