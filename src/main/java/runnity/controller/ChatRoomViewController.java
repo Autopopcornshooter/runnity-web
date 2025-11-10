@@ -8,8 +8,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import runnity.domain.Region;
+import runnity.domain.User;
 import runnity.dto.ChatRoomResponse;
 import runnity.service.ChatRoomService;
+import runnity.service.UserService;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ import runnity.service.ChatRoomService;
 public class ChatRoomViewController {
 
     private final ChatRoomService chatRoomService;
+    private final UserService userService;
 
     @GetMapping("/list")
     public String chatList(Model model) {
@@ -57,8 +62,20 @@ public class ChatRoomViewController {
 
     // 채팅방 생성 페이지
     @GetMapping("/create")
-    public String createChatRoomForm(Model model, Principal principal) {
+    public String createChatRoomForm(Model model, Principal principal, RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/api/auth/signIn";
+
+        User user = userService.authenticatedUser();
+        Region region = user.getRegion();
+        String chatRegion = (region != null) ? region.getAddress() : null;
+
+        if (chatRegion == null || chatRegion.isBlank()) {
+            redirectAttributes.addFlashAttribute("alert", "채팅방을 만들기 전에 먼저 지역을 설정해주세요.");
+            // 여기는 나중에 지역설정하는 페이지로 변경 예정
+            return "redirect:/chat-room/list";
+        }
+
+        model.addAttribute("chatRegion", chatRegion);
         model.addAttribute("isEdit", false);
         model.addAttribute("chatRoom", new ChatRoomResponse()); // 빈 객체 전달
         return "chat/chat-room-form";

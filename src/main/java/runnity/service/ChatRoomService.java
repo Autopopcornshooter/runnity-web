@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import runnity.domain.ChatRoom;
 import runnity.domain.ChatRoomMember;
@@ -24,8 +25,9 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserRepository userRepository;
+    private final StringRedisTemplate redisTemplate;
 
-    // 채팅방 owner 체크 (nickname 가져오기)
+    // 채팅방 owner 체크 (loginId 가져오기)
     public String getLoginId(Long ownerId) {
         return userRepository.findById(ownerId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."))
@@ -176,6 +178,10 @@ public class ChatRoomService {
 
     }
 
+    public boolean checkUserJoinedChatRoom(Long chatRoomId, Long userId) {
+        return chatRoomRepository.existsByIdAndMembers_Id(chatRoomId, userId);
+    }
+
     // 1:1 채팅방 생성 메서드 (미완성)
     public ChatRoom createDirectRoom(List<Long> userIds) {
         if (userIds == null || userIds.size() != 2)
@@ -237,11 +243,15 @@ public class ChatRoomService {
         if ((room.getChatRoomType() != ChatRoomType.RANDOM && remaining == 0) || (room.getChatRoomType() == ChatRoomType.GROUP && room.getOwner().getUserId().equals(userId))) {
             chatRoomRepository.delete(room);
         } else if (room.getChatRoomType() == ChatRoomType.RANDOM && remaining == 1) {
+            // RANDOM 매칭이면 매칭 신호 삭제
+            redisTemplate.delete("match:result:" + userId);
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
             user.setMatchState(UserMatchState.IDLE);
             userRepository.save(user);
         } else if (room.getChatRoomType() == ChatRoomType.RANDOM && remaining == 0) {
+            // RANDOM 매칭이면 매칭 신호 삭제
+            redisTemplate.delete("match:result:" + userId);
             // 채팅방 유저의 Active 가 보두 left 일 때 삭제
             chatRoomRepository.delete(room);
             // 랜덤 채팅방 운동 완료 후 매칭 상태 복원

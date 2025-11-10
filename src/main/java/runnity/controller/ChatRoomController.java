@@ -2,6 +2,7 @@ package runnity.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -76,6 +77,16 @@ public class ChatRoomController {
         Long userId = chatRoomService.getCheckUserId(loginId);
         chatRoomService.joinGroupChatRoom(chatRoomId, userId);
         return ResponseEntity.ok("그룹 채팅방 JOIN 성공");
+    }
+
+    @GetMapping("/{chatRoomId}/joined")
+    public ResponseEntity<Map<String, Boolean>> checkJoinedChatRoom(@PathVariable Long chatRoomId, Principal principal) {
+        String loginId = principal.getName();
+        Long userId = chatRoomService.getCheckUserId(loginId);
+
+        boolean joined = chatRoomService.checkUserJoinedChatRoom(chatRoomId, userId);
+
+        return ResponseEntity.ok(Map.of("joined", joined));
     }
 
     // 그룹 채팅방 나가기
