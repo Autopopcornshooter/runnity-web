@@ -1,15 +1,25 @@
-var latlng = null;
 // 1. 기본 지도 생성
 var map = new naver.maps.Map('map', {
   center: new naver.maps.LatLng(37.5665, 126.9780), // 서울시청
   zoom: 14
 });
 
+var latlng = null;
+
 var marker = new naver.maps.Marker({
   map: map
 });
 
 var infoDiv = document.getElementById("info");
+
+window.onload = function () {
+  latlng = new naver.maps.LatLng(window.currentLat, window.currentLng)
+  marker.setPosition(latlng);
+  checkAddress(window.currentAddress);
+  map.setCenter(latlng);
+  console.log(latlng._lat);
+  console.log(latlng._lng);
+}
 
 // 2. 클릭 시 좌표 및 주소 표시
 naver.maps.Event.addListener(map, 'click', function (e) {
