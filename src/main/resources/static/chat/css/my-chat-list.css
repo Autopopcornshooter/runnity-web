@@ -90,6 +90,7 @@ body {
 }
 /* Card item */
 .chat-room-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -172,6 +173,30 @@ body {
   font-weight: 700;
   text-align: center;
   border: 1px solid #dbeafe;
+}
+
+/* 미읽음 배지 */
+.unread-badge {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: inline-flex;           /* JS에서 숨길 땐 none */
+  align-items: center;
+  justify-content: center;
+
+  min-width: 22px;
+  height: 18px;
+  padding: 0 6px;
+
+  background-color: #ef4444;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  border-radius: 9999px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
 }
 
 /* Scrollbar (optional) */

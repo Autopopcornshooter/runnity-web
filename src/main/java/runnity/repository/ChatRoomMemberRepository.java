@@ -26,6 +26,9 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
     @Query("SELECT COUNT(m) FROM ChatRoomMember m WHERE m.chatRoom.chatRoomId = :roomId AND m.active = true")
     int countActiveMembersByChatRoomId(@Param("roomId") Long roomId);
 
+    @Query("SELECT m FROM ChatRoomMember m JOIN FETCH m.user JOIN FETCH m.chatRoom r WHERE r.chatRoomId = :chatRoomId AND m.active = true")
+    Optional<List<ChatRoomMember>> findByChatRoomId(@Param("chatRoomId") Long chatRoomId);
+
     // 채팅방 나가기
     // 상태 변경으로 변경
 //    @Transactional
@@ -39,7 +42,15 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
     void deleteAllByChatRoomId(@Param("roomId") Long roomId);
 
     // 듀오 매칭 관련 코드
-    @Query(" select count(m) from ChatRoomMember m where m.user.userId = :userId and m.active = true and m.chatRoom.active = true and m.chatRoom.chatRoomType = :randomType")
+    @Query(" SELECT count(m) FROM ChatRoomMember m WHERE m.user.userId = :userId AND m.active = true AND m.chatRoom.active = true AND m.chatRoom.chatRoomType = :randomType")
     long countActiveByUserAndType(@Param("userId") Long userId, @Param("randomType") ChatRoomType randomType);
+
+    // 모든 방의 새로운 메세지
+    @Query("SELECT crm FROM ChatRoomMember crm WHERE crm.user.userId = :userId AND crm.active = true")
+    List<ChatRoomMember> findActiveMemberships(@Param("userId") Long userId);
+
+    // 유저 각각의 채팅방 새로운 메세지
+    @Query("SELECT crm FROM ChatRoomMember crm WHERE crm.chatRoom.chatRoomId = :roomId AND crm.user.userId = :userId AND crm.active = true")
+    Optional<ChatRoomMember> findActiveMembership(@Param("roomId") Long roomId, @Param("userId") Long userId);
 
 }

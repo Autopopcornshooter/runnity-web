@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import runnity.domain.Region;
 import runnity.domain.User;
 import runnity.dto.ChatRoomResponse;
+import runnity.service.ChatMessageService;
 import runnity.service.ChatRoomService;
 import runnity.service.UserService;
 
@@ -22,6 +23,7 @@ public class ChatRoomViewController {
 
     private final ChatRoomService chatRoomService;
     private final UserService userService;
+    private final ChatMessageService chatMessageService;
 
     @GetMapping("/list")
     public String chatList(Model model) {
@@ -41,6 +43,11 @@ public class ChatRoomViewController {
 
         List<ChatRoomResponse> list = chatRoomService.getMyChatRoom(userId);
 
+        for (ChatRoomResponse room : list) {
+            long unreadCount = chatMessageService.unreadCountForRoom(room.getChatRoomId(), userId);
+            room.setUnreadCount(unreadCount);
+        }
+
         model.addAttribute("currentUserId", userId);
         model.addAttribute("chatRooms", list);
 
@@ -54,6 +61,11 @@ public class ChatRoomViewController {
         Long userId = chatRoomService.getCheckUserId(loginId);
 
         List<ChatRoomResponse> myRooms = chatRoomService.getMyChatRoom(userId);
+
+        for (ChatRoomResponse room : myRooms) {
+            long unreadCount = chatMessageService.unreadCountForRoom(room.getChatRoomId(), userId);
+            room.setUnreadCount(unreadCount);
+        }
 
         model.addAttribute("chatRooms", myRooms);
         model.addAttribute("currentUserId", userId);
