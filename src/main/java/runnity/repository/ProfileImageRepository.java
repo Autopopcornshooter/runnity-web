@@ -8,4 +8,6 @@ import runnity.domain.User;
 public interface ProfileImageRepository extends JpaRepository<ProfileImage, Long> {
 
   Optional<ProfileImage> findByUser(User user);
+
+  void removeByUser(User user);
 }

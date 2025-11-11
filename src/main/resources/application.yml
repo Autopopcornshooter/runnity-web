@@ -5,6 +5,10 @@ naver:
   map:
     client-id: ${NAVER_CLIENT_ID}
 spring:
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
   # Redis 서버 (듀오 매칭 시스템에 필요)
   data:
     redis:

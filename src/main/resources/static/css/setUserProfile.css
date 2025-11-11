@@ -37,17 +37,46 @@ body {
 
 .container {
   display: flex;
-  height: 100vh;
+  padding-top: 50px;
   justify-content: center;
 }
 
-
-.signup-section {
-  width: 50%;
-  background-color: white;
-  padding: 60px;
-  box-sizing: border-box;
+.profile-wrapper {
+  display: flex;
+  gap: 40px;
 }
+
+
+.profile-left {
+  flex: 1;
+  display: flex;
+  min-width: 300px;
+  max-width: 500px;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: center;
+}
+
+.profile-right {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-input {
+  margin-top: 10px;
+  width: 100%;
+}
+
+
+.btn-section {
+  margin-top: 30px;
+}
+
 
 header {
   width: 100%;
@@ -92,6 +121,7 @@ input, select {
   border: 1px solid #ccc;
   padding: 0 10px;
   font-size: 15px;
+  align-content: center;
 }
 
 select {
@@ -100,5 +130,15 @@ select {
   background-color: white;
   background-size: 20px;
   cursor: pointer;
+}
+
+.profile-img {
+  width: 70%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  object-fit: cover;
+  overflow: hidden;
+  display: block;
 }
 

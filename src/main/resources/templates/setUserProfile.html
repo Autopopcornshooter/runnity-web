@@ -13,51 +13,112 @@
     <h1>Runnity</h1>
   </div>
 </header>
+<!--<div class="container">-->
+<!--  &lt;!&ndash; 회원가입 폼 &ndash;&gt;-->
+<!--  <div class="signup-section">-->
+
+
+<!--    <form id="signUpForm" method="post" th:action="@{/userInfo/update}">-->
+<!--      &lt;!&ndash; CSRF &ndash;&gt;-->
+<!--      <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>-->
+
+<!--      <th:block th:unless="${isSNSLogin}">-->
+<!--        <label for="loginId">아이디</label>-->
+<!--        <input id="loginId" name="username" placeholder="변경할 아이디를 입력하세요"-->
+<!--               th:value="${formData.username}"-->
+<!--               type="text">-->
+<!--        <span id="idMessage"></span>-->
+<!--      </th:block>-->
+
+
+<!--      <th:block th:unless="${isSNSLogin}">-->
+<!--        <label for="password">비밀번호</label>-->
+<!--        <input id="password" name="password" placeholder="변경할 비밀번호를 입력하세요"-->
+<!--               th:value="${formData.password}"-->
+<!--               type="password">-->
+<!--        <span id="pwMessage"></span>-->
+<!--      </th:block>-->
+<!--      <th:block th:unless="${isSNSLogin}">-->
+<!--        <label for="passwordConfirm">비밀번호 확인</label>-->
+<!--        <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"-->
+<!--               th:value="${formData.passwordConfirm}" type="password">-->
+<!--        <span id="pwConfirmMessage"></span>-->
+<!--      </th:block>-->
+<!--      <label for="nickname">닉네임</label>-->
+<!--      <input id="nickname" name="nickname" placeholder=" 변경할 닉네임을 입력하세요"-->
+<!--             th:value="${formData.nickname}"-->
+<!--             type="text">-->
+<!--      <span id="nicknameMessage"></span>-->
+
+<!--      <div class="btn-section">-->
+<!--        <button class="save-btn" type="submit">저장</button>-->
+<!--        <button class="cancel-btn" onclick="location.href='/main'">취소</button>-->
+<!--      </div>-->
+
+<!--    </form>-->
+<!--  </div>-->
+<!--</div>-->
+
 <div class="container">
-  <!-- 회원가입 폼 -->
-  <div class="signup-section">
+  <form enctype="multipart/form-data" id="profileForm" method="post"
+        th:action="@{/userInfo/update}">
+    <!-- CSRF -->
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+    <div class="profile-wrapper">
 
 
-    <form id="signUpForm" method="post" th:action="@{/userInfo/update}">
-      <!-- CSRF -->
-      <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+      <div class="profile-left">
 
-      <th:block th:unless="${isSNSLogin}">
-        <label for="loginId">아이디</label>
-        <input id="loginId" name="username" placeholder="변경할 아이디를 입력하세요"
-               th:value="${formData.username}"
-               type="text">
-        <span id="idMessage"></span>
-      </th:block>
+        <th:block th:unless="${isSNSLogin}">
+          <label for="loginId">아이디</label>
+          <input id="loginId" name="username" placeholder="변경할 아이디를 입력하세요"
+                 th:value="${formData.username}" type="text">
+          <span id="idMessage"></span>
+        </th:block>
 
+        <th:block th:unless="${isSNSLogin}">
+          <label for="password">비밀번호</label>
+          <input id="password" name="password" placeholder="변경할 비밀번호를 입력하세요"
+                 th:value="${formData.password}" type="password">
+          <span id="pwMessage"></span>
+        </th:block>
 
-      <th:block th:unless="${isSNSLogin}">
-        <label for="password">비밀번호</label>
-        <input id="password" name="password" placeholder="변경할 비밀번호를 입력하세요"
-               th:value="${formData.password}"
-               type="password">
-        <span id="pwMessage"></span>
-      </th:block>
-      <th:block th:unless="${isSNSLogin}">
-        <label for="passwordConfirm">비밀번호 확인</label>
-        <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"
-               th:value="${formData.passwordConfirm}" type="password">
-        <span id="pwConfirmMessage"></span>
-      </th:block>
-      <label for="nickname">닉네임</label>
-      <input id="nickname" name="nickname" placeholder=" 변경할 닉네임을 입력하세요"
-             th:value="${formData.nickname}"
-             type="text">
-      <span id="nicknameMessage"></span>
+        <th:block th:unless="${isSNSLogin}">
+          <label for="passwordConfirm">비밀번호 확인</label>
+          <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"
+                 th:value="${formData.passwordConfirm}" type="password">
+          <span id="pwConfirmMessage"></span>
+        </th:block>
 
-      <div class="btn-section">
-        <button class="save-btn" type="submit">저장</button>
-        <button class="cancel-btn" onclick="location.href='/main'">취소</button>
+        <label for="nickname">닉네임</label>
+        <input id="nickname" name="nickname" placeholder=" 변경할 닉네임을 입력하세요"
+               th:value="${formData.nickname}" type="text">
+        <span id="nicknameMessage"></span>
+
       </div>
 
-    </form>
-  </div>
+
+      <div class="profile-right">
+        <img alt="프로필 이미지" class="profile-img" id="previewImg" th:src="${formData.profileImageUrl}">
+        <input accept="image/*" class="file-input" id="profileImgInput" name="profile-image"
+               type="file">
+
+        <input id="removeImageFlag" name="removeFlag" type="hidden" value="false">
+        <button class="save-btn" id="resetImgBtn">기본 이미지로 변경</button>
+      </div>
+
+    </div>
+
+
+    <div class="btn-section">
+      <button class="save-btn" type="submit">저장</button>
+      <button class="cancel-btn" onclick="location.href='/main'" type="button">취소</button>
+    </div>
+
+  </form>
 </div>
+
 
 <script th:inline="javascript">
   const loginIdErrorMessage = /*[[${loginIdErrorMessage}]]*/ null;
@@ -72,6 +133,35 @@
 
   const confirmPassword = document.getElementById("passwordConfirm");
   const password = document.getElementById("password");
+
+  const fileInput = document.getElementById("profileImgInput");
+  const previewImg = document.getElementById("previewImg");
+
+  const resetImgBtn = document.getElementById("resetImgBtn");
+
+  resetImgBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    fileInput.value = "";
+    previewImg.src = "/images/runnity-person.png";
+
+    document.getElementById("removeImageFlag").value = true;
+  })
+
+  fileInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert("업로드 가능한 파일 크기는 최대 10MB 입니다.");
+      fileInput.value = ""; // 선택 초기화
+      return;
+    }
+    const previewUrl = URL.createObjectURL(file);
+    previewImg.src = previewUrl;
+    console.log("프로필 이미지: " + previewImg.src);
+  });
 
   confirmPassword.addEventListener("input", () => {
     passwordConfirm();
