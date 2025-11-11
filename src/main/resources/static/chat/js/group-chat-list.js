@@ -11,9 +11,10 @@ async function openPreview(el) {
 
   document.getElementById('pvImg').src = img;
   document.getElementById('pvImg').alt = title;
-  document.getElementById('pvTitle').textContent = title;
+  document.getElementById('pvTitleText').textContent = title;
   document.getElementById('pvDesc').textContent = desc;
   document.getElementById('pvOwner').textContent = owner;
+  const checkJoin = document.getElementById("pvLabel");
 
   const joinBtn = document.getElementById('pvJoinBtn');
   joinBtn.textContent = '참여하기';
@@ -31,11 +32,12 @@ async function openPreview(el) {
     if (res.ok) {
       const { joined } = await res.json();
       if (joined) {
-        joinBtn.textContent = '이미 참여한 방입니다.';
-        joinBtn.disabled = true;
+        checkJoin.style.display = "inline-block";
+        checkJoin.textContent = '이미 참여한 채팅방';
+        checkJoin.style.background = '#cbd5e1';
         joinBtn.style.background = '#cbd5e1';
-        joinBtn.style.border = '1px solid #94a3b8';
-        joinBtn.style.cursor = 'not-allowed';
+        joinBtn.style.border = '1px solid #cbd5e1';
+        joinBtn.textContent = '채팅방으로 가기';
       }
     }
 

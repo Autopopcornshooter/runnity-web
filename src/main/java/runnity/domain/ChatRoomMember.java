@@ -48,6 +48,9 @@ public class ChatRoomMember {
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @Column(name = "last_read_message_id")
+    private Long lastReadMessageId;
+
     @Builder
     public ChatRoomMember(ChatRoom chatRoom, User user, LocalDateTime joinedAt) {
         this.chatRoom = chatRoom;
@@ -60,11 +63,18 @@ public class ChatRoomMember {
         this.active = true;
         this.joinedAt = LocalDateTime.now();
         this.leftAt = null;
+        if (this.lastReadMessageId == null) {
+            this.lastReadMessageId = 0L;
+        }
     }
 
     public void leaveGroupChatRoom() {
         this.leftAt = LocalDateTime.now();
         this.active = false;
+    }
+
+    public void markReadTo(Long messageId) {
+        this.lastReadMessageId = messageId;
     }
 
 }

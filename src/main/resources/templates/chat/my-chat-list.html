@@ -37,6 +37,10 @@
             <span th:text="${#lists.size(room.members)}">0</span>
           </span>
         </div>
+        <span class="unread-badge"
+              th:if="${room.unreadCount > 0}"
+              th:text="${room.unreadCount > 99 ? '99+' : room.unreadCount}">
+        </span>
       </li>
     </ul>
   </aside>
