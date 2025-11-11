@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -47,6 +48,9 @@ public class User implements UserDetails {
   @Column(name = "login_id", nullable = false, unique = true)
   private String loginId;
 
+  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+  private ProfileImage profileImage;
+
   @Column(name = "nickname", nullable = false, unique = true)
   private String nickname;
 
@@ -72,7 +76,7 @@ public class User implements UserDetails {
   @Enumerated(EnumType.STRING)
   @Column(name = "user_match_state", nullable = false)
   private UserMatchState matchState;
-  
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "region_id")
   private Region region;

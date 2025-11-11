@@ -9,11 +9,9 @@
 
     <div class="d-flex align-items-center gap-4">
       <a class="fw-semibold text-blue text-decoration-none"
-         th:href="@{/chat-room/list}"
-         sec:authorize="isAuthenticated()">그룹 채팅방 목록</a>
-      <a class="fw-semibold text-blue text-decoration-none"
-         th:href="@{/chat-room/my-chat-list}"
-         sec:authorize="isAuthenticated()">나의 채팅방</a>
+         th:href="@{/chat-room/list}">그룹 채팅방 목록</a>
+      <!--      <a class="fw-semibold text-blue text-decoration-none"-->
+      <!--         th:href="@{/chat-room/my-chat-list}">나의 채팅방</a>-->
       <!-- 오른쪽 로그인 버튼 -->
       <a class="fw-semibold text-dark text-decoration-none" sec:authorize="isAnonymous()"
          th:href="@{/api/auth/signIn}">로그인</a>

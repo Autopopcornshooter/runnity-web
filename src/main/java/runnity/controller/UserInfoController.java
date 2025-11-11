@@ -1,6 +1,7 @@
 package runnity.controller;
 
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +14,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import runnity.domain.Region;
 import runnity.domain.User;
 import runnity.dto.ChangeRegionRequest;
 import runnity.dto.RunnerLevelRequest;
 import runnity.dto.SignUpRequest;
 import runnity.dto.UpdateUserInfoRequest;
+import runnity.service.ProfileImageService;
 import runnity.service.RegionService;
 import runnity.service.UserService;
 import runnity.util.CustomSecurityUtil;
@@ -32,6 +36,7 @@ public class UserInfoController {
 
   private final RegionService regionService;
   private final UserService userService;
+  private final ProfileImageService profileImageService;
 
   @Value("${naver.map.client-id}")
   private String naverClientId;
@@ -57,20 +62,22 @@ public class UserInfoController {
 
   @GetMapping("/update")
   public String updateUserInfoPage(Model model, HttpSession session) {
+
+    //재인증 절차 진행
     Boolean reAuth = (Boolean) session.getAttribute("reAuth");
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth instanceof UsernamePasswordAuthenticationToken && (reAuth == null || !reAuth)) {
       return "redirect:/api/auth/re-auth";
     }
-    //TODO 비밀번호 입력해야 view 이동 조건
+    //재인증 절차 완료
+
     User user = userService.authenticatedUser();
     log.info("회원정보 수정 페이지 이동- SNS 로그인 여부: {}",
         CustomSecurityUtil.isAuthenticated() && user.getPassword() == null);
     //SNS(구글 로그인) 여부 전달
-
     model.addAttribute("isSNSLogin",
         CustomSecurityUtil.isAuthenticated() && user.getPassword() == null);
-
+    //현재 유저 정보 inputField 에 출력 (비밀번호 제외)
     model.addAttribute("formData", SignUpRequest.builder()
         .username(user.getUsername())
         .password("")
@@ -97,8 +104,10 @@ public class UserInfoController {
   }
 
   @PostMapping("/update")
-  public String updateUserInfo(UpdateUserInfoRequest request, Model model, HttpSession session) {
+  public String updateUserInfo(UpdateUserInfoRequest request, Model model, HttpSession session,
+      @RequestParam("profile-image") MultipartFile image) throws IOException {
     User user = userService.authenticatedUser();
+    //inputField 공란 체크 + 로그인 아이디 수정
     if (request.getUsername() != null && !request.getUsername().equals(user.getLoginId())
         && userService.isLoginIdExist(
         request.getUsername())) {
@@ -106,22 +115,24 @@ public class UserInfoController {
       model.addAttribute("loginIdErrorMessage", "이미 존재하는 아이디입니다.");
       return "setUserProfile";
     }
-
+    //inputField 공란 체크 + 별명 수정
     if (!request.getNickname().equals(user.getNickname())
         && userService.isNicknameExist(request.getNickname())) {
       model.addAttribute("formData", request);
       model.addAttribute("nickNameErrorMessage", "이미 존재하는 닉네임입니다.");
       return "setUserProfile";
     }
+    //inputField 공란 체크 + 패스워드 수정
     if (request.getPassword() != null && !request.getPassword()
         .equals(request.getPasswordConfirm())) {
       model.addAttribute("formData", request);
       return "setUserProfile";
     }
+
+    profileImageService.updateProfileImage(user, image);
+
     userService.updateUserInfo(request);
     session.setAttribute("reAuth", false);
     return "redirect:/main";
   }
-
-
 }
