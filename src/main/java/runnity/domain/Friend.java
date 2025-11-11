@@ -20,6 +20,9 @@ public class Friend {
     private Long id;
 
     @Column
+    private Long userId;
+
+    @Column
     private String nickname;
 
     @Column
@@ -27,4 +30,10 @@ public class Friend {
 
     @Column
     private String address;
+
+//    @Column
+//    private String message;
+
+    @Column
+    private Integer likecount = 0;
 }
