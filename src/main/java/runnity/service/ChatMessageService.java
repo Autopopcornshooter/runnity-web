@@ -2,7 +2,9 @@ package runnity.service;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +33,6 @@ public class ChatMessageService {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     public void send(ChatMessageRequest request) {
-
         ChatRoom room = chatRoomRepository.findById(request.getChatRoomId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
         User sender = userRepository.findById(request.getSenderId())
@@ -52,6 +53,27 @@ public class ChatMessageService {
             chatMessageResponse
         );
 
+        List<ChatRoomMember> members = chatRoomMemberRepository.findByChatRoomId(room.getChatRoomId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
+
+        for (ChatRoomMember member : members) {
+            String targetUserId = member.getUser().getLoginId();
+            if (targetUserId.equals(sender.getLoginId())) { continue; }
+
+            Map<String, Object> payload = Map.of(
+              "type", "NEW_MESSAGE",
+              "chatRoomId", room.getChatRoomId(),
+                "senderId", sender.getUserId(),
+                "message", message.getContent()
+            );
+
+            simpMessagingTemplate.convertAndSendToUser(
+                targetUserId,
+                "/queue/notify",
+                payload
+            );
+        }
+
     }
 
     public Page<ChatMessageResponse> getMessages(Long chatRoomId, Long userId, Pageable pageable) {
@@ -70,19 +92,33 @@ public class ChatMessageService {
         return page.map(m -> ChatMessageResponse.from(m));
     }
 
-//    @Transactional
-//    public Page<ChatMessageResponse> history(Long chatRoomId, Pageable pageable) {
-//        return chatMessageRepository
-//            .findByChatRoom_ChatRoomIdOrderByMessageIdDesc(chatRoomId, pageable)
-//            .map(chat -> ChatMessageResponse.from(chat));
-//    }
+    @Transactional
+    public long unreadCountForRoom(Long chatRoomId, Long userId) {
+        ChatRoomMember m = chatRoomMemberRepository.findActiveMembership(chatRoomId, userId)
+            .orElseThrow(() -> new IllegalArgumentException("현재 채팅방에 참여 중이 아닙니다. 먼저 JOIN 해주세요."));
+        Long lastId = m.getLastReadMessageId();
+        return chatMessageRepository.countUnreadByLastId(chatRoomId, lastId, userId);
+    }
 
-//    @Transactional
-//    public List<ChatMessageResponse> recentMessages(Long chatRoomId, int limit) {
-//        return chatMessageRepository
-//            .findTop50ByChatRoom_ChatRoomIdOrderByMessageIdDesc(chatRoomId)
-//            .stream().limit(limit)
-//            .map(chat -> ChatMessageResponse.from(chat))
-//            .toList();
-//    }
+    @Transactional
+    public void markReadToLastMessage(Long chatRoomId, Long userId) {
+        ChatRoomMember member = chatRoomMemberRepository
+            .findActiveMembership(chatRoomId, userId)
+            .orElseThrow(() -> new IllegalArgumentException("현재 채팅방에 참여 중이 아닙니다. 먼저 JOIN 해주세요."));
+
+        Long lastMessageId = chatMessageRepository.findLastMessageIdByRoom(chatRoomId).orElse(null);
+        member.markReadTo(lastMessageId);
+    }
+
+    @Transactional
+    public Map<Long, Long> unreadCounts(Long userId) {
+        Map<Long, Long> result = new HashMap<>();
+        for (ChatRoomMember m : chatRoomMemberRepository.findActiveMemberships(userId)) {
+            Long lastMessageId = m.getLastReadMessageId();
+            long cnt = chatMessageRepository.countUnreadByLastId(m.getChatRoom().getChatRoomId(), lastMessageId, userId);
+            result.put(m.getChatRoom().getChatRoomId(), cnt);
+        }
+        return result;
+    }
+
 }

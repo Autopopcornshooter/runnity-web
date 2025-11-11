@@ -26,6 +26,7 @@ public class ChatRoomResponse {
     private Long ownerId;
     private String ownerNickname;
     private List<Long> members;
+    private long unreadCount;
 
     public static ChatRoomResponse from(ChatRoom chatRoom) {
         List<Long> members = chatRoom.getMembers().stream()
@@ -47,6 +48,7 @@ public class ChatRoomResponse {
             .ownerId(ownerId)
             .ownerNickname(ownerNickname)
             .members(members)
+            .unreadCount(0)
             .build();
     }
 
