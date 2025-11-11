@@ -41,3 +41,11 @@ ai:
   api:
     base-url: https://kdt-api-function.azurewebsites.net
     key: "${ALAN_KEY}"
+
+cloud:
+  aws:
+    access-key: "${AWS_ACCESS_KEY}"
+    secret-key: "${AWS_SECRET_KEY}"
+    region: ap-northeast-2
+    s3:
+      bucket-name: "${BUCKET_NAME}"
