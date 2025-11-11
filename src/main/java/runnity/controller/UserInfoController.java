@@ -64,18 +64,19 @@ public class UserInfoController {
   @GetMapping("/update")
   public String updateUserInfoPage(Model model, HttpSession session) {
 
+    User user = userService.authenticatedUser();
+
     //재인증 절차 진행
     Boolean reAuth = Boolean.TRUE.equals(session.getAttribute("reAuth"));
     session.removeAttribute("reAuth");
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     //SNS 로그인 여부 체크
     log.info("재인증 상태: {}", reAuth);
-    if (auth instanceof UsernamePasswordAuthenticationToken && !reAuth) {
+    if (user.getPassword() != null && !reAuth) {
       return "redirect:/api/auth/re-auth";
     }
     //재인증 절차 완료
 
-    User user = userService.authenticatedUser();
     log.info("회원정보 수정 페이지 이동- SNS 로그인 여부: {}",
         CustomSecurityUtil.isAuthenticated() && user.getPassword() == null);
     //SNS(구글 로그인) 여부 전달
