@@ -1,8 +1,12 @@
 package runnity.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,8 +54,14 @@ public class UserInfoController {
     return "checkRegion";
   }
 
+
   @GetMapping("/update")
-  public String updateUserInfoPage(Model model) {
+  public String updateUserInfoPage(Model model, HttpSession session) {
+    Boolean reAuth = (Boolean) session.getAttribute("reAuth");
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth instanceof UsernamePasswordAuthenticationToken && (reAuth == null || !reAuth)) {
+      return "redirect:/api/auth/re-auth";
+    }
     //TODO 비밀번호 입력해야 view 이동 조건
     User user = userService.authenticatedUser();
     log.info("회원정보 수정 페이지 이동- SNS 로그인 여부: {}",
@@ -87,7 +97,7 @@ public class UserInfoController {
   }
 
   @PostMapping("/update")
-  public String updateUserInfo(UpdateUserInfoRequest request, Model model) {
+  public String updateUserInfo(UpdateUserInfoRequest request, Model model, HttpSession session) {
     User user = userService.authenticatedUser();
     if (request.getUsername() != null && !request.getUsername().equals(user.getLoginId())
         && userService.isLoginIdExist(
@@ -109,6 +119,7 @@ public class UserInfoController {
       return "setUserProfile";
     }
     userService.updateUserInfo(request);
+    session.setAttribute("reAuth", false);
     return "redirect:/main";
   }
 
