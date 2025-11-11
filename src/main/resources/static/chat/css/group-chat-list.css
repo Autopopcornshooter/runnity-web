@@ -249,6 +249,18 @@ body {
   max-height: 7.2em; overflow: auto;
 }
 .pv-meta { display: flex; align-items: center; gap: 10px; color: #334155; }
+.pv-label {
+  display: none;
+  margin-left: 8px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: #eef2ff;
+  border: 1px solid #dbeafe;
+  border-radius: 9999px;
+  vertical-align: middle;
+}
 .pv-owner-label {
   font-size: 12px; padding: 3px 10px; border-radius: 9999px;
   background: #eef2ff; color: #1d4ed8; border: 1px solid #dbeafe; font-weight: 700;
