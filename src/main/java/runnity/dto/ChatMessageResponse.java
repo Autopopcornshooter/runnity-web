@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import runnity.domain.Message;
+import runnity.domain.MessageType;
 
 @Getter
 @Setter
@@ -20,6 +21,8 @@ public class ChatMessageResponse {
     private String senderNickname;
     private String message;
     private LocalDateTime createdAt;
+    private String type;
+    private boolean system;
 
     public static ChatMessageResponse from(Message message) {
         return ChatMessageResponse.builder()
@@ -28,6 +31,8 @@ public class ChatMessageResponse {
             .senderNickname(message.getSenderId().getNickname())
             .message(message.getContent())
             .createdAt(message.getCreatedAt())
+            .type(message.getType().name())
+            .system(message.getType() != MessageType.TEXT)
             .build();
     }
 

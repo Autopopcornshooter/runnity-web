@@ -125,13 +125,8 @@ body {
   background: rgba(79, 70, 229, 0.1);
   border-left: 4px solid transparent;
   box-shadow: inset 4px 0 0 0 #4f46e5;
-  animation: glow 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes glow {
-  from { box-shadow: inset 4px 0 0 0 #4f46e5; }
-  to { box-shadow: inset 4px 0 0 0 #818cf8; }
-}
 .chat-room-item img {
   width: 48px;
   height: 48px;
@@ -181,15 +176,12 @@ body {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-
-  display: inline-flex;           /* JS에서 숨길 땐 none */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
   min-width: 22px;
   height: 18px;
   padding: 0 6px;
-
   background-color: #ef4444;
   color: #fff;
   font-weight: 700;
@@ -317,6 +309,18 @@ body {
 .message.other {
   align-self: flex-start;
   text-align: left;
+}
+.message.system {
+  align-self: center;
+  text-align: center;
+  color: #64748b;
+  font-size: 12px;
+}
+.message.system .bubble {
+  background: #eef2ff;
+  color: #334155;
+  border-radius: 10px;
+  padding: 6px 10px;
 }
 .sender {
   font-size: 0.8rem;

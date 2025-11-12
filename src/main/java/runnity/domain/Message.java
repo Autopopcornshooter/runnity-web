@@ -3,6 +3,8 @@ package runnity.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,11 +38,15 @@ public class Message {
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "sender_id", nullable = true)
     private User senderId;
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private MessageType type = MessageType.TEXT;
 
     @Setter(AccessLevel.NONE)
     @CreatedDate
@@ -48,11 +54,12 @@ public class Message {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder
-    public Message(Long messageId, ChatRoom chatRoom, User senderId, String content) {
+    public Message(Long messageId, ChatRoom chatRoom, User senderId, String content, MessageType type) {
         this.messageId = messageId;
         this.chatRoom = chatRoom;
         this.senderId = senderId;
         this.content = content;
+        this.type = type;
     }
 
 }

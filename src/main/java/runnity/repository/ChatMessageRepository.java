@@ -14,7 +14,7 @@ public interface ChatMessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT m FROM Message m WHERE m.chatRoom.chatRoomId = :chatRoomId AND m.createdAt >= :from ORDER BY m.messageId DESC")
     Page<Message> findRecentMessages(@Param("chatRoomId") Long chatRoomId, @Param("from") LocalDateTime from, Pageable pageable);
 
-    @Query("SELECT COUNT(m) FROM Message m WHERE m.chatRoom.chatRoomId = :chatRoomId AND (:lastId IS NULL OR m.messageId > :lastId) AND m.senderId.userId <> :userId")
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.chatRoom.chatRoomId = :chatRoomId AND (:lastId IS NULL OR m.messageId > :lastId) AND m.senderId.userId <> :userId AND m.type = runnity.domain.MessageType.TEXT")
     long countUnreadByLastId(@Param("chatRoomId") Long chatRoomId, @Param("lastId") Long lastId, @Param("userId") Long userId);
 
     @Query("SELECT MAX(m.messageId) FROM Message m WHERE m.chatRoom.chatRoomId = :chatRoomId")

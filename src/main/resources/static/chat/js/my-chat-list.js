@@ -17,6 +17,14 @@ function findRoomItem(roomId){
   return $(`#chatRooms .chat-room-item[data-id="${roomId}"]`);
 }
 
+function broadcastActiveRoom(roomId) {
+  window.currentOpenRoomId = Number(roomId) || null;
+  window.dispatchEvent(new CustomEvent('room:active',
+      {
+        detail: { roomId: window.currentOpenRoomId }
+      }));
+}
+
 function getOrCreateBadge(li){
   let badge = li.querySelector('.unread-badge');
   if (!badge){
@@ -55,6 +63,23 @@ async function fetchJSON(url, opts={}) {
   return res.json();
 }
 
+function isSystemPayload(p) {
+  const t = (p?.messageType || p?.type || '').toString().toUpperCase();
+  return p?.system === true || t === 'SYSTEM_JOIN' || t === 'SYSTEM_LEAVE';
+}
+
+function addSystemMessage(text) {
+  const c = $("#chatMessages");
+  const line = document.createElement("div");
+  line.className = "message system";
+  const b = document.createElement("div");
+  b.className = "bubble";
+  b.textContent = text;
+  line.appendChild(b);
+  c.appendChild(line);
+  c.scrollTop = c.scrollHeight;
+}
+
 // 읽음 처리
 async function markRoomAsRead(roomId){
   if (!roomId) return;
@@ -63,7 +88,13 @@ async function markRoomAsRead(roomId){
     const headerMeta = $('meta[name="_csrf_header"]');
     const headers = {};
     if (tokenMeta && headerMeta) headers[headerMeta.content] = tokenMeta.content;
-    await fetch(`/api/chat-rooms/${roomId}/read`, { method:'PUT', headers, keepalive:true });
+    await fetch(`/api/chat-rooms/${roomId}/read`, {
+      method:'PUT',
+      headers,
+      keepalive:true
+    });
+    // 읽음 처리 후 드롭다운 배지 새로고침
+    window.dispatchEvent(new CustomEvent('unread:refresh'));
   } catch(e){ console.warn('markRoomAsRead failed', e); }
 }
 
@@ -116,10 +147,14 @@ function connectOnce(){
         notifySub = stomp.subscribe("/user/queue/notify", (f) => {
           const p = JSON.parse(f.body || "{}");
           if (p.type !== "NEW_MESSAGE") return;
+          if (isSystemPayload(p)) return; // 입장/퇴장 메세지는 제외
+
           const rid = Number(p.roomId ?? p.chatRoomId);
           const sender = Number(p.senderId);
           if (!rid || rid === Number(currentRoomId) || sender === Number(userId)) return;
           incUnread(rid);
+          // 드롭다운 js와 연동 코드
+          window.updateGlobalUnreadBadge && window.updateGlobalUnreadBadge();
         });
       }
       resolve();
@@ -135,6 +170,13 @@ async function subscribeRoom(roomId){
   if(roomSub) { try{ roomSub.unsubscribe(); }catch{} }
   roomSub = stomp.subscribe(`/topic/rooms.${roomId}`, (msg)=>{
     const d = JSON.parse(msg.body);
+
+    if (isSystemPayload(d)) {
+      const txt = d.message || d.content || d.text || '알림';
+      addSystemMessage(txt);
+      return;
+    }
+
     addMessage(d.senderNickname, d.message, Number(d.senderId)===Number(userId));
   });
 }
@@ -168,6 +210,8 @@ async function openChat(roomId){
 
   const room = chatRooms.find(r=>r.chatRoomId===Number(roomId));
   if(!room) return;
+
+  broadcastActiveRoom(roomId);
   currentRoomType = room.chatRoomType;
 
   const tab = calcTabByType(currentRoomType);
@@ -195,11 +239,26 @@ async function openChat(roomId){
   try{
     const page=await fetchJSON(`/api/chat-rooms/${roomId}/messages?page=0&size=30`);
     (page.content||[]).reverse().forEach(m=>{
+      if (isSystemPayload(m)) {
+        const txt = m.message || m.content || m.text || '알림';
+        addSystemMessage(txt);
+        return;
+      }
+
       addMessage(m.senderNickname,m.message,Number(m.senderId)===Number(userId));
     });
   }catch(e){ console.error("메시지 로드 실패:", e); }
 
   setTimeout(()=>markRoomAsRead(currentRoomId),150);
+}
+
+async function onLeavePageOrRoom() {
+  try {
+    await markRoomAsRead(currentRoomId);
+  } catch(err) {
+    console.log("현재 방 나가기 my-chat-list.js onLeavePageOrRoom() 메서드 오류 : " + err);
+  }
+  broadcastActiveRoom(null);
 }
 
 // 메세지 전송
@@ -239,6 +298,7 @@ $("#exitBtn").addEventListener("click", async ()=>{
   if(!confirm(msg)) return;
 
   await markRoomAsRead(currentRoomId);
+  await onLeavePageOrRoom();
   const res=await fetch(`/api/chats/${currentRoomId}/leave`,{method:"DELETE",headers:{[header]:token}});
   if(res.ok){
     if(isRandom) alert("운동이 완료되었습니다 👟");
@@ -280,4 +340,9 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   const onHide=async()=>{try{await markRoomAsRead(currentRoomId);}catch{}};
   window.addEventListener('beforeunload',onHide);
   window.addEventListener('pagehide',onHide);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      onLeavePageOrRoom();
+    }
+  });
 });
