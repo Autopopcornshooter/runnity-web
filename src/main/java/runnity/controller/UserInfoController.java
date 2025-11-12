@@ -1,6 +1,7 @@
 package runnity.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,26 +64,37 @@ public class UserInfoController {
   @GetMapping("/update")
   public String updateUserInfoPage(Model model, HttpSession session) {
 
+    User user = userService.authenticatedUser();
+
     //재인증 절차 진행
-    Boolean reAuth = (Boolean) session.getAttribute("reAuth");
+    Boolean reAuth = Boolean.TRUE.equals(session.getAttribute("reAuth"));
+    session.removeAttribute("reAuth");
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth instanceof UsernamePasswordAuthenticationToken && (reAuth == null || !reAuth)) {
+    //SNS 로그인 여부 체크
+    log.info("재인증 상태: {}", reAuth);
+    if (user.getPassword() != null && !reAuth) {
       return "redirect:/api/auth/re-auth";
     }
     //재인증 절차 완료
 
-    User user = userService.authenticatedUser();
     log.info("회원정보 수정 페이지 이동- SNS 로그인 여부: {}",
         CustomSecurityUtil.isAuthenticated() && user.getPassword() == null);
     //SNS(구글 로그인) 여부 전달
     model.addAttribute("isSNSLogin",
         CustomSecurityUtil.isAuthenticated() && user.getPassword() == null);
+    //프로필 이미지 null체크
+    String profileImageUrl =
+        (user.getProfileImage() == null || user.getProfileImage().getUrl().isBlank())
+            ? "/images/runnity-person.png"
+            : user.getProfileImage().getUrl();
+    log.info("프로필 이미지 URL: {}", profileImageUrl);
     //현재 유저 정보 inputField 에 출력 (비밀번호 제외)
     model.addAttribute("formData", SignUpRequest.builder()
         .username(user.getUsername())
         .password("")
         .passwordConfirm("")
         .nickname(user.getNickname())
+        .profileImageUrl(profileImageUrl)
         .build());
     return "setUserProfile";
   }
@@ -103,9 +115,11 @@ public class UserInfoController {
     return "redirect:/main";
   }
 
+
   @PostMapping("/update")
   public String updateUserInfo(UpdateUserInfoRequest request, Model model, HttpSession session,
-      @RequestParam("profile-image") MultipartFile image) throws IOException {
+      @RequestParam("profile-image") MultipartFile image
+      , @RequestParam("removeFlag") boolean removeFlag) throws IOException {
     User user = userService.authenticatedUser();
     //inputField 공란 체크 + 로그인 아이디 수정
     if (request.getUsername() != null && !request.getUsername().equals(user.getLoginId())
@@ -129,10 +143,17 @@ public class UserInfoController {
       return "setUserProfile";
     }
 
-    profileImageService.updateProfileImage(user, image);
+    //프로필 이미지 업데이트/삭제
+    if (removeFlag) {
+      profileImageService.removeProfileImage(user);
+    } else {
+      if (!image.isEmpty()) {
+        profileImageService.updateProfileImage(user, image);
+      }
+    }
 
     userService.updateUserInfo(request);
-    session.setAttribute("reAuth", false);
+    log.info("저장 => 재인증 여부: {}", session.getAttribute("reAuth"));
     return "redirect:/main";
   }
 }

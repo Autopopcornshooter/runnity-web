@@ -1,5 +1,6 @@
 package runnity.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -48,7 +49,7 @@ public class User implements UserDetails {
   @Column(name = "login_id", nullable = false, unique = true)
   private String loginId;
 
-  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private ProfileImage profileImage;
 
   @Column(name = "nickname", nullable = false, unique = true)

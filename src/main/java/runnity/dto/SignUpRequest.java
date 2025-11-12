@@ -17,6 +17,7 @@ import runnity.RunnerLevel;
 public class SignUpRequest {
 
   private String nickname;
+  private String profileImageUrl;
   private String username;
   private String password;
   private String passwordConfirm;

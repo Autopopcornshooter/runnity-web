@@ -37,10 +37,11 @@ public class ProfileImage {
   private String s3Key;
 
   @Column(name = "url", nullable = false)
+  
   private String url;
 
-  @Column(name = "original_filename", nullable = false)
-  private String originalFilename;
+//  @Column(name = "original_filename", nullable = false)
+//  private String originalFilename;
 
   @CreatedDate
   @Column(name = "upload_at", nullable = false, updatable = false)
