@@ -34,9 +34,8 @@ body {
 
 /* ========== Left: Chat List Column ========== */
 .chat-list {
-  width: 260px;
+  width: 300px;
   background: #f0f3ff;
-  /*border-right: 2px solid #d5dbf7;*/
   border-right: none;
   display: flex;
   flex-direction: column;
@@ -50,7 +49,6 @@ body {
   gap: 8px;
   padding: 8px;
   background: #fff;
-  /*border-bottom: 1px solid #e5e7eb;*/
   border-bottom: var(--divider-width) solid var(--divider-color);
 }
 .tab-buttons button {
@@ -60,7 +58,7 @@ body {
   border: 1px solid #d1d5db;
   background: #fff;
   color: #374151;
-  border-radius: 9999px; /* pill */
+  border-radius: 9999px;
   cursor: pointer;
   transition: background .2s ease, color .2s ease, border-color .2s ease, transform .1s ease;
 }
@@ -93,8 +91,8 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px;
+  gap: 10px;
+  padding: 6px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -128,8 +126,8 @@ body {
 }
 
 .chat-room-item img {
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   border-radius: 12px;
   object-fit: cover;
   flex-shrink: 0;
@@ -138,7 +136,7 @@ body {
 .room-info {
   display: flex;
   flex-direction: column;
-  min-width: 0; /* 긴 이름 줄바꿈 처리 */
+  min-width: 0;
 }
 .room-name {
   font-weight: 700;
@@ -150,24 +148,12 @@ body {
   text-overflow: ellipsis;
 }
 .room-members {
-  margin-top: 4px;
+  margin-top: 6px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
   color: #6b7280;
-}
-/* optional badge */
-.room-members .count-badge {
-  display: inline-block;
-  min-width: 20px;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-weight: 700;
-  text-align: center;
-  border: 1px solid #dbeafe;
 }
 
 /* 미읽음 배지 */
