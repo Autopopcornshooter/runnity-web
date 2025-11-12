@@ -98,4 +98,7 @@ public class User implements UserDetails {
     return loginId;
   }
 
+    @Column(name = "likecount")
+    private Integer likecount = 0;
+
 }

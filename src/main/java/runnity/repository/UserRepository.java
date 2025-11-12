@@ -29,6 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
   User findByIdForUpdate(@Param("userId") Long userId);
 
   // 친구 찾기/추가 기능 = > 박주영
-  List<User> findByNickname(String nickname);
+  List<User> findByNicknameContainingIgnoreCase(String nickname);
 
 }

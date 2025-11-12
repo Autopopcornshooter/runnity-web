@@ -1,5 +1,6 @@
 package runnity.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import runnity.domain.Friend;
@@ -9,7 +10,9 @@ import runnity.repository.FriendRepository;
 import runnity.repository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +25,15 @@ public class FriendService {
     }
 
     public List<FriendInfo> searchByNickname(String nickname) {
-        List<User> users = userRepository.findByNickname(nickname);
+        List<User> users = userRepository.findByNicknameContainingIgnoreCase(nickname);
         List<FriendInfo> friends = users.stream()
-                .map(user -> new FriendInfo(user.getUserId(), user.getNickname(), user.getRunnerLevel().name(), user.getRegion().getAddress()))
+                .map(user -> new FriendInfo(
+                        user.getUserId(),
+                        user.getNickname(),
+                        user.getRunnerLevel().name(),
+                        user.getRegion() != null ? user.getRegion().getAddress() : "",
+                        user.getLikecount()
+                ))
                         .toList();
         return friends;
     }
@@ -43,7 +52,8 @@ public class FriendService {
                 friendInfo.getUserId(),
                 friendInfo.getNickname(),
                 friendInfo.getRunner_level(),
-                friendInfo.getAddress());
+                friendInfo.getAddress(),
+                friendInfo.getLikecount());
 
         friendRepository.save(friend);
         return true;
@@ -51,5 +61,24 @@ public class FriendService {
 
     public List<Friend> searchByNicknameOnList(String nickname) {
         return friendRepository.findByNicknameContainingIgnoreCase(nickname);
+    }
+
+    @Transactional
+    public int increaseLikeCount(Long friendId) {
+        Friend friend = friendRepository.findById(friendId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 친구가 존재하지 않습니다. id=" + friendId));
+
+        friend.setLikecount(friend.getLikecount() + 1);
+        friendRepository.save(friend);
+        return friend.getLikecount();
+    }
+
+    public boolean deleteFriend(Long friendId) {
+        Optional<Friend> friendOpt = friendRepository.findById(friendId);
+        if (friendOpt.isEmpty()) {
+            return false; // 친구가 존재하지 않음
+        }
+        friendRepository.deleteById(friendId);
+        return true;
     }
 }

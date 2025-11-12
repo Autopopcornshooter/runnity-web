@@ -15,12 +15,6 @@ import java.util.List;
 public class FriendApiController {
     private final FriendService friendService;
 
-    @GetMapping("/ping")
-    public String ping() {
-        System.out.println("test");
-        return "컨트롤러 스캔됨!";
-    }
-
     @PostMapping("/add")
     public ResponseEntity<String> addFriend(@RequestBody FriendInfo friendInfo) {
         try {
@@ -34,5 +28,21 @@ public class FriendApiController {
     @GetMapping("/searchOnList")
     public List<Friend> searchFriends(@RequestParam String nickname) {
         return friendService.searchByNicknameOnList(nickname);
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Integer> increaseLikecount(@PathVariable Long id) {
+        int updatedCount = friendService.increaseLikeCount(id);
+        return ResponseEntity.ok(updatedCount);
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<String> deleteFriend(@PathVariable("id") Long friendId) {
+        boolean success = friendService.deleteFriend(friendId);
+        if (success) {
+            return ResponseEntity.ok("친구를 삭제했습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("삭제할 친구가 존재하지 않습니다.");
+        }
     }
 }
