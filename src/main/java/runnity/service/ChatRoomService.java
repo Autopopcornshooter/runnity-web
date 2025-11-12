@@ -6,14 +6,19 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import runnity.domain.ChatRoom;
 import runnity.domain.ChatRoomMember;
 import runnity.domain.ChatRoomType;
+import runnity.domain.Message;
+import runnity.domain.MessageType;
 import runnity.domain.User;
 import runnity.domain.UserMatchState;
+import runnity.dto.ChatMessageResponse;
 import runnity.dto.ChatRoomRequest;
 import runnity.dto.ChatRoomResponse;
+import runnity.repository.ChatMessageRepository;
 import runnity.repository.ChatRoomMemberRepository;
 import runnity.repository.ChatRoomRepository;
 import runnity.repository.UserRepository;
@@ -26,6 +31,8 @@ public class ChatRoomService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
+    private final ChatMessageRepository chatMessageRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     // 채팅방 owner 체크 (loginId 가져오기)
     public String getLoginId(Long ownerId) {
@@ -161,6 +168,14 @@ public class ChatRoomService {
 
         Optional<ChatRoomMember> anyMembership = chatRoomMemberRepository.findByRoomAndUser(chatRoomId, userId);
 
+        Message joinMessage = Message.builder()
+            .chatRoom(room)
+            .senderId(user)
+            .content(user.getLoginId() + "님이 들어왔습니다.")
+            .type(MessageType.SYSTEM_JOIN)
+            .build();
+        Message saved = chatMessageRepository.save(joinMessage);
+
         if (anyMembership.isPresent()) {
             ChatRoomMember member = anyMembership.get();
             member.joinGroupChatRoom();
@@ -175,6 +190,9 @@ public class ChatRoomService {
             room.addMember(member);
             chatRoomRepository.save(room);
         }
+
+        simpMessagingTemplate.convertAndSend("/topic/rooms." + chatRoomId,
+            ChatMessageResponse.from(saved));
 
     }
 
@@ -227,9 +245,13 @@ public class ChatRoomService {
     }
 
     // 채팅방 나가기 메서드 & 운동완료 메서드
+    @Transactional
     public void leaveRoom(Long chatRoomId, Long userId) {
         ChatRoom room = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
 
         ChatRoomMember membership = chatRoomMemberRepository
             .findActiveByRoomAndUser(chatRoomId, userId)
@@ -240,13 +262,22 @@ public class ChatRoomService {
 
         int remaining = chatRoomMemberRepository.countActiveMembersByChatRoomId(chatRoomId);
 
+        Message joinMessage = Message.builder()
+            .chatRoom(room)
+            .senderId(user)
+            .content(user.getLoginId() + "님이 나갔습니다.")
+            .type(MessageType.SYSTEM_LEAVE)
+            .build();
+        Message saved = chatMessageRepository.save(joinMessage);
+
+        simpMessagingTemplate.convertAndSend("/topic/rooms." + chatRoomId,
+            ChatMessageResponse.from(saved));
+
         if ((room.getChatRoomType() != ChatRoomType.RANDOM && remaining == 0) || (room.getChatRoomType() == ChatRoomType.GROUP && room.getOwner().getUserId().equals(userId))) {
             chatRoomRepository.delete(room);
         } else if (room.getChatRoomType() == ChatRoomType.RANDOM && remaining == 1) {
             // RANDOM 매칭이면 매칭 신호 삭제
             redisTemplate.delete("match:result:" + userId);
-            User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
             user.setMatchState(UserMatchState.IDLE);
             userRepository.save(user);
         } else if (room.getChatRoomType() == ChatRoomType.RANDOM && remaining == 0) {
@@ -255,26 +286,9 @@ public class ChatRoomService {
             // 채팅방 유저의 Active 가 보두 left 일 때 삭제
             chatRoomRepository.delete(room);
             // 랜덤 채팅방 운동 완료 후 매칭 상태 복원
-            User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
             user.setMatchState(UserMatchState.IDLE);
             userRepository.save(user);
         }
     }
-
-    // RANDOM 채팅에서 운동 종료 버튼 누르면 채팅방 사라지는 메서드
-    public void finishRandomRoom(Long chatRoomId) {
-        ChatRoom room = chatRoomRepository.findById(chatRoomId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
-
-        if (room.getChatRoomType() != ChatRoomType.RANDOM) {
-            throw new IllegalArgumentException("운동 종료는 RANDOM 채팅방에서만 가능합니다.");
-        }
-
-        chatRoomMemberRepository.deleteAllByChatRoomId(chatRoomId);
-        chatRoomRepository.delete(room);
-    }
-
-
 
 }

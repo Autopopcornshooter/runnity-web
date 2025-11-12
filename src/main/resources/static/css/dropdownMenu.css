@@ -118,3 +118,48 @@
   color: #555;
   margin-top: 2px;
 }
+
+/* 나의 채팅방 메세지 알림 */
+.menu a.my-chat-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 빨간 배지 스타일 */
+.menu-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 9999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0,0,0,.25);
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+/* 미읽음이 0개일 때 숨김 */
+.menu-badge[hidden] {
+  display: none;
+}
+
+/*새 알림 시 살짝 튀는 효과 */
+@keyframes badgeBounce {
+  0%   { transform: translateY(0); }
+  25%  { transform: translateY(-6px); } /* 위로 튀기 */
+  50%  { transform: translateY(0); }    /* 돌아옴 */
+  75%  { transform: translateY(-3px); } /* 작게 다시 튐 */
+  100% { transform: translateY(0); }    /* 원위치 */
+}
+
+/* flash 클래스가 붙을 때 애니메이션 실행 */
+.menu-badge.flash {
+  animation: badgeBounce 0.5s cubic-bezier(0.28, 0.84, 0.42, 1);
+}

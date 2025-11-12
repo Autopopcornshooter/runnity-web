@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import runnity.domain.ChatRoom;
 import runnity.domain.ChatRoomMember;
 import runnity.domain.Message;
+import runnity.domain.MessageType;
 import runnity.domain.User;
 import runnity.dto.ChatMessageRequest;
 import runnity.dto.ChatMessageResponse;
@@ -42,6 +43,7 @@ public class ChatMessageService {
             .chatRoom(room)
             .senderId(sender)
             .content(request.getMessage())
+            .type(MessageType.TEXT)
             .build();
 
         Message savedMessage = chatMessageRepository.save(message);
@@ -64,7 +66,8 @@ public class ChatMessageService {
               "type", "NEW_MESSAGE",
               "chatRoomId", room.getChatRoomId(),
                 "senderId", sender.getUserId(),
-                "message", message.getContent()
+                "message", message.getContent(),
+                "messageType", savedMessage.getType().name()
             );
 
             simpMessagingTemplate.convertAndSendToUser(
