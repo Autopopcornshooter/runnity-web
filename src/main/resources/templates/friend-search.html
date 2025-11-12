@@ -63,6 +63,12 @@
             font-size: 0.9em;
             color: #555;
         }
+
+        .friend-info-box {
+            display: flex;
+            flex-direction: column;  /* 이름 + 정보 세로 정렬 */
+            flex: 1;                 /* 버튼 제외 영역은 남은 공간 차지 */
+        }
     </style>
 </head>
 <body>
@@ -103,8 +109,10 @@
                         div.className = "friend-item";
 
                         div.innerHTML = `
-                        <div class="friend-name">${friend.nickname}</div>
-                        <div class="friend-info">레벨: ${friend.runner_level}<br>지역: ${friend.address ?? "정보 없음"}</div>
+                        <div class="friend-info-box">
+                            <div class="friend-name">${friend.nickname}</div>
+                            <div class="friend-info">레벨: ${friend.runner_level}<br>지역: ${friend.address ?? "정보 없음"}<br>추천수: ${friend.likecount}</div>
+                        </div>
                         <button class="add-friend-btn">친구 추가</button>
                     `;
 
@@ -121,7 +129,8 @@
                                     userId: friend.userId,
                                     nickname: friend.nickname,
                                     runner_level: friend.runner_level,
-                                    address: friend.address
+                                    address: friend.address,
+                                    likecount: friend.likecount
                                 })
                             })
                                 .then(res => res.text())

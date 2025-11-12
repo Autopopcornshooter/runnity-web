@@ -15,12 +15,13 @@ public class FriendInfo {
     private String runner_level;
     private String address;
     private String message;
-    private int likecount;
+    private Integer likecount;
 
-    public FriendInfo(Long userId, String nickname, String runner_level, String address) {
+    public FriendInfo(Long userId, String nickname, String runner_level, String address, Integer likecount) {
         this.userId = userId;
         this.nickname = nickname;
         this.runner_level = runner_level;
         this.address = address;
+        this.likecount = likecount;
     }
 }
