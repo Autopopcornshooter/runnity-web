@@ -1,9 +1,6 @@
 package runnity.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Friend {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -36,4 +33,12 @@ public class Friend {
 
     @Column
     private Integer likecount = 0;
+
+    // id, likecount를 제외한 생성자
+    public Friend(Long userId, String nickname, String runner_level, String address) {
+        this.userId = userId;
+        this.nickname = nickname;
+        this.runner_level = runner_level;
+        this.address = address;
+    }
 }

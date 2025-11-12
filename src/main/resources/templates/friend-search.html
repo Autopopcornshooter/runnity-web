@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
     <meta charset="UTF-8">
     <title>친구 검색</title>
     <style>
@@ -71,6 +74,9 @@
     <div id="resultList"></div>
 
     <script>
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+
         const searchBtn = document.getElementById("popupSearchBtn");
         const resultList = document.getElementById("resultList");
 
@@ -107,7 +113,10 @@
                             // console.log(window.location.origin)    콘솔 출력 확인
                             fetch(`${window.location.origin}/api/friends/add`, {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    [header]: token
+                                },
                                 body: JSON.stringify({
                                     userId: friend.userId,
                                     nickname: friend.nickname,
@@ -116,7 +125,13 @@
                                 })
                             })
                                 .then(res => res.text())
-                                .then(msg => alert(msg))
+                                .then(msg => {
+                                    alert(msg);
+                                    if (window.opener && !window.opener.closed) {
+                                        window.opener.location.reload();
+                                    }
+                                    window.close();
+                                })
                                 .catch(() => alert("추가 중 오류가 발생했습니다."));
                         });
 

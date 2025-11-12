@@ -31,23 +31,25 @@ public class FriendService {
 
     public boolean addFriend(FriendInfo friendInfo) {
         // ✅ 이미 추가된 친구인지 확인
-        boolean exists = friendRepository.findAll().stream()
-                .anyMatch(f -> f.getUserId().equals(friendInfo.getUserId()));
+        List<Friend> existingFriendList = friendRepository.findByUserId(friendInfo.getUserId());
+        boolean alreadyFriend = existingFriendList.stream()
+                .anyMatch(f -> friendInfo.getUserId().equals(f.getUserId())); // targetUserId를 기준으로 equals 호출
 
-        if (exists) return false; // 중복된 친구
+        if (alreadyFriend) {
+            throw new IllegalStateException("이미 추가된 친구입니다.");
+        }
 
         Friend friend = new Friend(
-                null,
                 friendInfo.getUserId(),
                 friendInfo.getNickname(),
                 friendInfo.getRunner_level(),
-                friendInfo.getAddress(),
-                0);
-//        friend.setUserId(friendInfo.getUserId());
-//        friend.setNickname(friendInfo.getNickname());
-//        friend.setRunner_level(friendInfo.getRunner_level());
-//        friend.setAddress(friendInfo.getAddress());
+                friendInfo.getAddress());
+
         friendRepository.save(friend);
         return true;
+    }
+
+    public List<Friend> searchByNicknameOnList(String nickname) {
+        return friendRepository.findByNicknameContainingIgnoreCase(nickname);
     }
 }

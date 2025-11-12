@@ -3,8 +3,11 @@ package runnity.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import runnity.domain.Friend;
 import runnity.dto.FriendInfo;
 import runnity.service.FriendService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,12 +23,16 @@ public class FriendApiController {
 
     @PostMapping("/add")
     public ResponseEntity<String> addFriend(@RequestBody FriendInfo friendInfo) {
-        System.out.println("test");
-        boolean added = friendService.addFriend(friendInfo);
-        if (added) {
-            return ResponseEntity.ok("친구가 추가되었습니다.");
-        } else {
-            return ResponseEntity.status(409).body("이미 추가된 친구입니다."); // 409 Conflict
+        try {
+            friendService.addFriend(friendInfo);
+            return ResponseEntity.ok("친구를 추가했습니다.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/searchOnList")
+    public List<Friend> searchFriends(@RequestParam String nickname) {
+        return friendService.searchByNicknameOnList(nickname);
     }
 }

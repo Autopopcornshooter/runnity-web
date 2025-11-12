@@ -25,32 +25,7 @@
             max-width: 1500px;
             height: 700px;
         }
-        .left-section {
-            display:flex;
-            flex-direction: column;
-            gap: 20px;
-            flex: 0 0 400px;
-            min-width: 250px;
-            align-items: flex-end;
-        }
 
-        .movingPageButton {
-            border: 1px solid transparent;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            transition: all 0.25s ease;
-            background: rgba(147, 112, 219, 0.5);
-            width: 100%;      /* 부모 영역에 맞춤 */
-            max-width: 300px;
-            height: 150px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            text-decoration: none; /* 밑줄 제거 */
-        }
         .matchingcrew-card img {
             width: 70%;
             height: 60%;
@@ -62,28 +37,16 @@
             font-size: 20px;
             color: black;
         }
-        .movingPageButton:hover {
-            transform: translateY(-3px);
-            border: 1px solid #00bfa5;
-            box-shadow: 0 0 12px rgba(0, 150, 250, 0.25);
-        }
 
-        /*구분선*/
-        .divider {
-            width: 3px;
-            background: linear-gradient(#3b2b9a, #2b2b2b);
-            height: 90%;
-            align-self: center;
-            border-radius: 2px;
-            flex-shrink: 0;
-        }
-
-        .right-section {
+        .list-section {
             flex: 1 1 0;
             min-width: 300px;                 /* 너무 작아지지 않도록 최소값 설정 */
             height: 100%;
             box-sizing: border-box;
             padding-left: 20px;
+            display: flex;            /* Flexbox 활성화 */
+            flex-direction: column;   /* 세로 방향 배치 */
+            align-items: center;      /* 가로 중앙 정렬 */
         }
         .search-box {
             border: 2px solid #3b2b9a;
@@ -95,14 +58,12 @@
             box-sizing: border-box;
         }
 
-        /* 샘플 리스트 */
         .friend-list {
             list-style: none;
             padding: 0;
             margin: 0;
             margin-bottom: 80px;
         }
-
         .friend-item {
             display: flex;
             justify-content: space-between;
@@ -110,7 +71,28 @@
             padding: 18px 12px;
             border-bottom: 1px solid #eee;
         }
-
+        .friend-button {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-outline-secondary {
+            color: #4b3ca1;              /* 글자색 */
+            border-color: #4b3ca1;       /* 테두리색 */
+        }
+        .btn-outline-secondary:hover {
+            background-color: #4b3ca1;   /* hover 시 배경색 */
+            color: white;                /* hover 시 글자색 */
+        }
+        /*검색버튼만*/
+        #searchBtn {
+            padding: 6px 10px;
+            font-size: 1.2rem;
+            border-width: 2px;
+            border-radius: 10px;
+        }
+        #searchBtn i {
+            font-size: 1.4rem;
+        }
     </style>
 
 </head>
@@ -119,13 +101,7 @@
 <div th:replace="partials/header :: header"></div>
 
 <section class="main-section">
-<!--    <div class = "left-section">-->
-<!--        <a href="#" class="movingPageButton"><p>메인 화면</p></a>-->
-<!--        <a href="#" class="movingPageButton"><p>채팅 목록</p></a>-->
-<!--        <a href="#" class="movingPageButton"><p>나의 채팅방</p></a>-->
-<!--    </div>-->
-<!--    <div class="divider" aria-hidden="true"></div>-->
-    <div class="right-section">
+    <div class="list-section">
         <div class="search-container">
             <input type="text" class="search-box" placeholder="유저명을 입력해주세요">
             <button class="btn btn-outline-secondary btn-sm" id="searchBtn" title="친구 검색/추가">
@@ -134,12 +110,14 @@
         </div>
 
 
-        <div class="friend-list">
+        <div class="friend-list" id="friendList">
             <div th:each="friend : ${friends}" class="friend-item">
                 <span class="nickname" th:text="${friend.nickname}"></span>
 <!--                <span class="message" th:text="${friend.message}"></span>-->
-                <button class="btn btn-outline-secondary btn-sm">좋아요</button>
-                <button class="btn btn-outline-secondary btn-sm">채팅 시작</button>
+                <div class="friend-button">
+                    <button class="btn btn-outline-secondary btn-sm">좋아요</button>
+                    <button class="btn btn-outline-secondary btn-sm">채팅 시작</button>
+                </div>
             </div>
         </div>
     </div>
@@ -152,9 +130,48 @@
 <link th:href="@{/chat/css/random-match.css}" rel="stylesheet"/>
 
 <script>
-    // 친구 찾기/추가
+    // 친구 탐색/추가
     document.getElementById("searchBtn").addEventListener("click", function () {
         window.open('/friend-search', 'friendSearchPopup', 'width=600,height=400,left=400,top=200');
+    });
+
+    // 리스트 내 친구 탐색
+    const searchBox = document.querySelector('.search-box');
+    const friendList = document.getElementById('friendList');
+
+    // ✅ 엔터 입력 시 검색 실행
+    searchBox.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const keyword = searchBox.value.trim();
+            if (!keyword) return;
+
+            fetch(`/api/friends/searchOnList?nickname=${encodeURIComponent(keyword)}`)
+                .then(res => res.json())
+                .then(data => {
+                    friendList.innerHTML = ''; // 기존 목록 초기화
+
+                    if (data.length === 0) {
+                        friendList.innerHTML = `<p style="text-align:center;">검색 결과가 없습니다.</p>`;
+                        return;
+                    }
+
+                    data.forEach(friend => {
+                        const div = document.createElement('div');
+                        div.className = 'friend-item';
+                        div.innerHTML = `
+                            <span class="nickname">${friend.nickname}</span>
+                            <div class="friend-button">
+                                <button class="btn btn-outline-secondary btn-sm">좋아요</button>
+                                <button class="btn btn-outline-secondary btn-sm">채팅 시작</button>
+                            </div>
+                        `;
+                        friendList.appendChild(div);
+                    });
+                })
+                .catch(() => {
+                    friendList.innerHTML = `<p style="text-align:center; color:red;">검색 중 오류가 발생했습니다.</p>`;
+                });
+        }
     });
 </script>
 <script src="/chat/js/random-match.js"></script>
