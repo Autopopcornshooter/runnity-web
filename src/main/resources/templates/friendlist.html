@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>Runnity</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link th:href="@{/css/basic-header.css}" rel="stylesheet"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+
+    <style>
+        .main-section {
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px 5%;
+            margin: 60px auto;
+            max-width: 1500px;
+            height: 700px;
+        }
+
+        .matchingcrew-card img {
+            width: 70%;
+            height: 60%;
+            margin-bottom: 25px;
+        }
+        .movingPageButton p {
+            font-weight: bold;
+            margin:0;
+            font-size: 20px;
+            color: black;
+        }
+
+        .list-section {
+            flex: 1 1 0;
+            min-width: 300px;                 /* 너무 작아지지 않도록 최소값 설정 */
+            height: 100%;
+            box-sizing: border-box;
+            padding-left: 20px;
+            display: flex;            /* Flexbox 활성화 */
+            flex-direction: column;   /* 세로 방향 배치 */
+            align-items: center;      /* 가로 중앙 정렬 */
+        }
+        .search-box {
+            border: 2px solid #3b2b9a;
+            border-radius: 24px;
+            padding: 12px 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 24px;
+            box-sizing: border-box;
+        }
+
+        .friend-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-bottom: 80px;
+        }
+        .friend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .friend-button {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-outline-secondary {
+            color: #4b3ca1;              /* 글자색 */
+            border-color: #4b3ca1;       /* 테두리색 */
+        }
+        .btn-outline-secondary:hover {
+            background-color: #4b3ca1;   /* hover 시 배경색 */
+            color: white;                /* hover 시 글자색 */
+        }
+        /*검색버튼만*/
+        #searchBtn {
+            padding: 6px 10px;
+            font-size: 1.2rem;
+            border-width: 2px;
+            border-radius: 10px;
+        }
+        #searchBtn i {
+            font-size: 1.4rem;
+        }
+    </style>
+
+</head>
+<body>
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
+
+<section class="main-section">
+    <div class="list-section">
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="유저명을 입력해주세요">
+            <button class="btn btn-outline-secondary btn-sm" id="searchBtn" title="친구 검색/추가">
+                <i class="bi bi-person-plus"></i>
+            </button>
+        </div>
+
+
+        <div class="friend-list" id="friendList">
+            <div th:each="friend : ${friends}" class="friend-item">
+                <span class="nickname" th:text="${friend.nickname}"></span>
+<!--                <span class="message" th:text="${friend.message}"></span>-->
+                <div class="friend-button">
+                    <button class="btn btn-outline-secondary btn-sm">좋아요</button>
+                    <button class="btn btn-outline-secondary btn-sm">채팅 시작</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
+
+<link th:href="@{/chat/css/random-match.css}" rel="stylesheet"/>
+
+<script>
+    // 친구 탐색/추가
+    document.getElementById("searchBtn").addEventListener("click", function () {
+        window.open('/friend-search', 'friendSearchPopup', 'width=600,height=400,left=400,top=200');
+    });
+
+    // 리스트 내 친구 탐색
+    const searchBox = document.querySelector('.search-box');
+    const friendList = document.getElementById('friendList');
+
+    // ✅ 엔터 입력 시 검색 실행
+    searchBox.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const keyword = searchBox.value.trim();
+            if (!keyword) return;
+
+            fetch(`/api/friends/searchOnList?nickname=${encodeURIComponent(keyword)}`)
+                .then(res => res.json())
+                .then(data => {
+                    friendList.innerHTML = ''; // 기존 목록 초기화
+
+                    if (data.length === 0) {
+                        friendList.innerHTML = `<p style="text-align:center;">검색 결과가 없습니다.</p>`;
+                        return;
+                    }
+
+                    data.forEach(friend => {
+                        const div = document.createElement('div');
+                        div.className = 'friend-item';
+                        div.innerHTML = `
+                            <span class="nickname">${friend.nickname}</span>
+                            <div class="friend-button">
+                                <button class="btn btn-outline-secondary btn-sm">좋아요</button>
+                                <button class="btn btn-outline-secondary btn-sm">채팅 시작</button>
+                            </div>
+                        `;
+                        friendList.appendChild(div);
+                    });
+                })
+                .catch(() => {
+                    friendList.innerHTML = `<p style="text-align:center; color:red;">검색 중 오류가 발생했습니다.</p>`;
+                });
+        }
+    });
+</script>
+<script src="/chat/js/random-match.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

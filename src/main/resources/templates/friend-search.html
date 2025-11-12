@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <meta charset="UTF-8">
+    <title>친구 검색</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            padding: 30px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        input {
+            width: 80%;
+            padding: 8px;
+            /*border: 2px solid #3b2b9a;*/
+            border-radius: 6px;
+            display: block;
+            margin: 0 auto 20px;
+        }
+        button {
+            display: block;
+            margin: 0 auto;
+            background-color: #3b2b9a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+
+        /* 검색 결과 스타일 */
+        #resultList {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 10px;
+        }
+
+        .friend-item {
+            padding: 8px;
+            border: 2px solid indigo;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .friend-name {
+            font-weight: bold;
+        }
+
+        .friend-info {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h2>친구 검색</h2>
+
+    <input type="text" id="popupSearch" placeholder="닉네임을 입력하세요" />
+    <button id="popupSearchBtn">검색</button>
+
+    <div id="resultList"></div>
+
+    <script>
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+        const searchBtn = document.getElementById("popupSearchBtn");
+        const resultList = document.getElementById("resultList");
+
+        searchBtn.addEventListener("click", function () {
+            const name = document.getElementById("popupSearch").value.trim();
+            resultList.innerHTML = ""; // 이전 검색 결과 초기화
+
+            if (name === "") {
+                resultList.innerHTML = "<p style='text-align:center;color:black;'>닉네임을 입력하세요.</p>";
+                return;
+            }
+
+            fetch(`/api/friends/search?nickname=${name}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.length) {
+                        resultList.innerHTML = "<p style='text-align:center;'>검색 결과가 없습니다.</p>";
+                        return;
+                    }
+
+                    resultList.innerHTML = ""; // 초기화
+                    data.forEach(friend => {
+                        const div = document.createElement("div");
+                        div.className = "friend-item";
+
+                        div.innerHTML = `
+                        <div class="friend-name">${friend.nickname}</div>
+                        <div class="friend-info">레벨: ${friend.runner_level}<br>지역: ${friend.address ?? "정보 없음"}</div>
+                        <button class="add-friend-btn">친구 추가</button>
+                    `;
+
+                        // 버튼 클릭 이벤트
+                        div.querySelector(".add-friend-btn").addEventListener("click", () => {
+                            // console.log(window.location.origin)    콘솔 출력 확인
+                            fetch(`${window.location.origin}/api/friends/add`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    [header]: token
+                                },
+                                body: JSON.stringify({
+                                    userId: friend.userId,
+                                    nickname: friend.nickname,
+                                    runner_level: friend.runner_level,
+                                    address: friend.address
+                                })
+                            })
+                                .then(res => res.text())
+                                .then(msg => {
+                                    alert(msg);
+                                    if (window.opener && !window.opener.closed) {
+                                        window.opener.location.reload();
+                                    }
+                                    window.close();
+                                })
+                                .catch(() => alert("추가 중 오류가 발생했습니다."));
+                        });
+
+                        resultList.appendChild(div);
+                    });
+                })
+                .catch(() => {
+                    resultList.innerHTML = "<p style='text-align:center;color:red;'>검색 중 오류가 발생했습니다.</p>";
+                });
+        });
+    </script>
+</body>
+</html>
