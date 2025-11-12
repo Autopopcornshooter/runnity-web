@@ -299,15 +299,18 @@ body {
 /* ========== Bubbles ========== */
 .message {
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   max-width: 60%;
+  margin-bottom: 10px;
 }
 .message.mine {
   align-self: flex-end;
+  flex-direction: row-reverse;
   text-align: right;
 }
 .message.other {
   align-self: flex-start;
+  flex-direction: row;
   text-align: left;
 }
 .message.system {
@@ -321,6 +324,21 @@ body {
   color: #334155;
   border-radius: 10px;
   padding: 6px 10px;
+}
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 6px;
+  object-fit: cover;
+}
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.message.mine .text-container {
+  align-items: flex-end;
 }
 .sender {
   font-size: 0.8rem;

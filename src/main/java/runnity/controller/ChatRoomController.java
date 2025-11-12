@@ -1,5 +1,6 @@
 package runnity.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,43 +30,20 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ChatRoomResponse> createGroupChatRoom(@ModelAttribute ChatRoomRequest request, @RequestParam(name = "chatRoomImage", required = false) MultipartFile chatRoomImage, Principal principal) {
+    public ResponseEntity<ChatRoomResponse> createGroupChatRoom(@ModelAttribute ChatRoomRequest request, @RequestParam(name = "chatRoomImage", required = false) MultipartFile chatRoomImage, Principal principal) throws IOException  {
         String loginId = principal.getName();
         Long userId = chatRoomService.getCheckUserId(loginId);
         request.setOwnerId(userId);
-        if (chatRoomImage == null || chatRoomImage.isEmpty()) {
-            request.setImageUrl("/images/image-upload.png");
-        } else {
-            // 나중에 S3 추가되면 적용
-            // String fileUrl = s3Service.uploadFile(imageUrl);
-            // System.out.println("저장된 이미지 URL : " + fileUrl);
-            // request.setImageUrl(fileUrl);
-            // return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomResponse);
-            String testFileName = chatRoomImage.getOriginalFilename();
-            request.setImageUrl(testFileName);
-        }
-
-        ChatRoomResponse chatRoomResponse = chatRoomService.createChatRoom(request);
+        ChatRoomResponse chatRoomResponse = chatRoomService.createChatRoom(request, chatRoomImage);
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomResponse);
     }
 
     @PutMapping(value = "/{chatRoomId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> editGroupChatRoom(@ModelAttribute ChatRoomRequest request, @PathVariable Long chatRoomId, @RequestParam(name = "chatRoomImage", required = false) MultipartFile chatRoomImage, Principal principal) {
+    public ResponseEntity<String> editGroupChatRoom(@ModelAttribute ChatRoomRequest request, @PathVariable Long chatRoomId, @RequestParam(name = "chatRoomImage", required = false) MultipartFile chatRoomImage, Principal principal) throws IOException {
         String loginId = principal.getName();
         Long userId = chatRoomService.getCheckUserId(loginId);
         request.setOwnerId(userId);
-        if (chatRoomImage == null || chatRoomImage.isEmpty()) {
-            request.setImageUrl("/images/image-upload.png");
-        } else {
-            // 나중에 S3 추가되면 적용
-            // String fileUrl = s3Service.uploadFile(imageUrl);
-            // System.out.println("저장된 이미지 URL : " + fileUrl);
-            // request.setImageUrl(fileUrl);
-            // return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomResponse);
-            String testFileName = chatRoomImage.getOriginalFilename();
-            request.setImageUrl(testFileName);
-        }
-        chatRoomService.editGroupChatRoom(chatRoomId, request);
+        chatRoomService.editGroupChatRoom(chatRoomId, request, chatRoomImage);
         return ResponseEntity.status(HttpStatus.OK).body("채팅방이 수정되었습니다.");
     }
 

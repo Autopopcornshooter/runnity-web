@@ -62,4 +62,16 @@ public class S3Service {
     }
   }
 
+  @Transactional
+  public void removeChatRoomProfileImage(String oldKey) {
+
+    try {
+      s3Client.deleteObject(DeleteObjectRequest.builder()
+          .bucket(bucket)
+          .key(oldKey)
+          .build());
+    } catch (Exception e) {
+      log.error("S3 채팅방 이미지 삭제 실패- Key: {}", oldKey, e);
+    }
+  }
 }
