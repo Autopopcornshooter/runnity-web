@@ -296,22 +296,25 @@ body {
   cursor: pointer;
 }
 
-/* ========== Bubbles ========== */
+/* message */
 .message {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   max-width: 60%;
   margin-bottom: 10px;
+  gap: 6px;
 }
 .message.mine {
   align-self: flex-end;
   flex-direction: row-reverse;
   text-align: right;
+  align-items: flex-start;
 }
 .message.other {
   align-self: flex-start;
   flex-direction: row;
   text-align: left;
+  align-items: flex-start;
 }
 .message.system {
   align-self: center;
@@ -326,8 +329,8 @@ body {
   padding: 6px 10px;
 }
 .profile-img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   margin: 0 6px;
   object-fit: cover;
@@ -336,6 +339,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  max-width: 50vw;
+  min-width: 0;
 }
 .message.mine .text-container {
   align-items: flex-end;
@@ -349,7 +354,10 @@ body {
 .bubble {
   padding: 10px 14px;
   border-radius: 16px;
+  max-width: 100%;
   word-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   white-space: pre-wrap;
   display: inline-block;
 }

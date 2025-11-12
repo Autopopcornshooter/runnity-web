@@ -196,7 +196,7 @@ public class ChatRoomService {
         Message joinMessage = Message.builder()
             .chatRoom(room)
             .senderId(user)
-            .content(user.getLoginId() + "님이 들어왔습니다.")
+            .content(user.getNickname() + "님이 들어왔습니다.")
             .type(MessageType.SYSTEM_JOIN)
             .build();
         Message saved = chatMessageRepository.save(joinMessage);
@@ -290,7 +290,7 @@ public class ChatRoomService {
         Message joinMessage = Message.builder()
             .chatRoom(room)
             .senderId(user)
-            .content(user.getLoginId() + "님이 나갔습니다.")
+            .content(user.getNickname() + "님이 나갔습니다.")
             .type(MessageType.SYSTEM_LEAVE)
             .build();
         Message saved = chatMessageRepository.save(joinMessage);
