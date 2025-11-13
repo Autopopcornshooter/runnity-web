@@ -111,9 +111,6 @@ public class ChatRoomService {
             throw new IllegalArgumentException("채팅방 수정 권한 없음.");
         }
 
-        String oldUrl = room.getImageUrl();
-        String oldKey = oldUrl.substring(oldUrl.indexOf("profiles/"));
-
         if (newImage == null || newImage.isEmpty()) {
             request.setImageUrl("/images/image-upload.png");
         } else {
@@ -125,7 +122,11 @@ public class ChatRoomService {
         }
 
         room.editChatRoom(request, owner);
-        s3Service.removeChatRoomProfileImage(oldKey);
+        if ((room.getImageUrl() != null) && (room.getImageUrl().equals("/images/image-upload.png"))) {
+            String oldUrl = room.getImageUrl();
+            String oldKey = oldUrl.substring(oldUrl.indexOf("profiles/"));
+            s3Service.removeChatRoomProfileImage(oldKey);
+        }
     }
 
     // 채팅방 생성 공통 메서드
