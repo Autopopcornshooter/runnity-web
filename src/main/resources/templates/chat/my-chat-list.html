@@ -6,10 +6,13 @@
   <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <title>내 채팅방 | Runnity</title>
   <link href="/chat/css/my-chat-list.css" rel="stylesheet">
-  <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <link rel="stylesheet" th:href="@{/css/schedule-modal.css}"/>
   <link href="/chat/css/group-chat-list.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        rel="stylesheet"/>
 </head>
 <body>
 
@@ -50,9 +53,12 @@
     <div id="chatHeader">
       <div id="chatTitleWrap">
         <h2 id="chatTitle">채팅방 선택</h2>
-        <p id="chatDesc" class="chat-desc" style="display:none;"></p>
+        <p class="chat-desc" id="chatDesc" style="display:none;"></p>
       </div>
       <div class="chat-header-btn">
+        <button class="schedule-btn" id="openScheduleModalBtn" style="display:none;" type="button">
+          일정 만들기
+        </button>
         <button class="edit-btn" id="editBtn">채팅방 수정</button>
         <button class="exit-btn" id="exitBtn">나가기</button>
       </div>
@@ -69,17 +75,61 @@
   </section>
 </div>
 
+
+<!-- 일정 생성 모달 -->
+<div class="modal-overlay" id="scheduleModal" style="display:none;">
+  <div class="schedule-modal">
+    <div class="modal-header">
+      <h2>러닝 모임 일정 생성</h2>
+      <button class="modal-close" id="scheduleModalCloseBtn" type="button">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form id="scheduleForm">
+        <!-- 현재 채팅방 id (JS에서 세팅) -->
+        <input id="scheduleRoomId" type="hidden">
+
+        <div class="form-group">
+          <label for="scheduleTitle">모임 제목</label>
+          <input id="scheduleTitle" name="title" placeholder="예: 여의도 한강 러닝" required type="text">
+        </div>
+
+        <div class="form-group">
+          <label for="scheduleDateTime">모임 시간</label>
+          <input id="scheduleDateTime" name="dateTime" required type="datetime-local">
+        </div>
+
+        <div class="form-group">
+          <label for="scheduleDetail">상세 설명</label>
+          <textarea id="scheduleDetail" name="detail" placeholder="페이스, 거리, 준비물 등 자유롭게 적어주세요."
+                    rows="3"></textarea>
+        </div>
+
+        <!-- region이 이미 선택된 구조면 hidden으로, 아니라면 셀렉트 박스로 -->
+        <input id="scheduleRegionId" type="hidden" value="">
+
+        <div class="modal-actions">
+          <button class="primary-btn" id="scheduleSubmitBtn" type="button">생성하기</button>
+          <button class="secondary-btn" id="scheduleCancelBtn" type="button">취소</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<input id="currentRoomId" type="hidden" value="">
 <div th:replace="~{partials/footer :: footer}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script th:inline="javascript">
-/*<![CDATA[*/
-const chatRoomsData = /*[[${chatRooms}]]*/ [];
-const currentUserId = /*[[${currentUserId}]]*/ 0;
-/*]]>*/
+  /*<![CDATA[*/
+  const chatRoomsData = /*[[${chatRooms}]]*/ [];
+  const currentUserId = /*[[${currentUserId}]]*/ 0;
+  /*]]>*/
 </script>
 <script src="/chat/js/my-chat-list.js"></script>
+<script src="/js/schedule-modal.js"></script>
 </body>
 </html>

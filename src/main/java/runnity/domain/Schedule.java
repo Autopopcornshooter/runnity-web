@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Getter
@@ -34,6 +35,7 @@ public class Schedule {
   @Column(name = "detail")
   private String detail;
 
+
   @Column(name = "created_at")
   private LocalDateTime createdAt;
 
@@ -42,7 +44,7 @@ public class Schedule {
   private ChatRoomMember scheduleCreator;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "chat_room_id")
+  @JoinColumn(name = "chat_room_id", nullable = false)
   private ChatRoom chatRoom;
 
   @ManyToOne(fetch = FetchType.LAZY)

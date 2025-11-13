@@ -19,6 +19,9 @@ public class ScheduleParticipant {
   @Column(name = "schedule_participant_id", unique = true, updatable = false)
   private Long scheduleParticipantId;
 
+  @Column(name = "participant_status")
+  private ParticipantStatus participantStatus;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "chat_room_member_id")
   private ChatRoomMember chatRoomMember;
@@ -26,4 +29,5 @@ public class ScheduleParticipant {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "schedule_id")
   private Schedule schedule;
+
 }
