@@ -31,14 +31,15 @@ public class Friend {
 //    @Column
 //    private String message;
 
-    @Column
+    @Column(name = "likecount")
     private Integer likecount = 0;
 
     // id, likecount를 제외한 생성자
-    public Friend(Long userId, String nickname, String runner_level, String address) {
+    public Friend(Long userId, String nickname, String runner_level, String address, Integer likecount) {
         this.userId = userId;
         this.nickname = nickname;
         this.runner_level = runner_level;
         this.address = address;
+        this.likecount = likecount;
     }
 }

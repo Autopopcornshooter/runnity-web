@@ -1,13 +1,16 @@
 package runnity.service;
 
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import runnity.domain.ChatRoom;
 import runnity.domain.ChatRoomMember;
 import runnity.domain.ChatRoomType;
@@ -22,6 +25,8 @@ import runnity.repository.ChatMessageRepository;
 import runnity.repository.ChatRoomMemberRepository;
 import runnity.repository.ChatRoomRepository;
 import runnity.repository.UserRepository;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +38,7 @@ public class ChatRoomService {
     private final StringRedisTemplate redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final S3Service s3Service;
 
     // 채팅방 owner 체크 (loginId 가져오기)
     public String getLoginId(Long ownerId) {
@@ -95,28 +101,39 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void editGroupChatRoom(Long chatRoomId, ChatRoomRequest request) {
+    public void editGroupChatRoom(Long chatRoomId, ChatRoomRequest request, MultipartFile newImage) throws IOException {
         User owner = userRepository.findById(request.getOwnerId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         ChatRoom room = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방 입니다."));
 
-        System.out.println(room.getOwner().getUserId());
-        System.out.println(request.getOwnerId());
-
         if (!room.getOwner().getUserId().equals(request.getOwnerId())) {
             throw new IllegalArgumentException("채팅방 수정 권한 없음.");
         }
 
+        String oldUrl = room.getImageUrl();
+        String oldKey = oldUrl.substring(oldUrl.indexOf("profiles/"));
+
+        if (newImage == null || newImage.isEmpty()) {
+            request.setImageUrl("/images/image-upload.png");
+        } else {
+            // profiles 는 나중에 S3 작업 다 하면 room_profiles 로 바꿀 예정
+            String key = "profiles/" + chatRoomId + "/" + UUID.randomUUID();
+            String newUrl = s3Service.upload(newImage, key);
+
+            request.setImageUrl(newUrl);
+        }
+
         room.editChatRoom(request, owner);
+        s3Service.removeChatRoomProfileImage(oldKey);
     }
 
     // 채팅방 생성 공통 메서드
-    public ChatRoomResponse createChatRoom(ChatRoomRequest request) {
+    public ChatRoomResponse createChatRoom(ChatRoomRequest request, MultipartFile chatRoomImage) throws IOException {
         ChatRoom room;
 
         switch (request.getChatRoomType()) {
-            case GROUP -> room = createGroupChatRoom(request);
+            case GROUP -> room = createGroupChatRoom(request, chatRoomImage);
             case DIRECT -> room = createDirectRoom(request.getMembers());
             case RANDOM -> room = createRandomChatRoom();
             default -> throw new IllegalArgumentException("알 수 없는 채팅방 TYPE 입니다.");
@@ -126,9 +143,17 @@ public class ChatRoomService {
     }
 
     // 그룹 채팅방 생성 메서드
-    public ChatRoom createGroupChatRoom(ChatRoomRequest request) {
+    public ChatRoom createGroupChatRoom(ChatRoomRequest request, MultipartFile chatRoomImage) throws IOException {
         User owner = userRepository.findById(request.getOwnerId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        if (chatRoomImage == null || chatRoomImage.isEmpty()) {
+            request.setImageUrl("/images/image-upload.png");
+        } else {
+            String key = "profiles/" + owner.getUserId() + "/" + UUID.randomUUID();
+            String fileUrl = s3Service.upload(chatRoomImage, key);
+            request.setImageUrl(fileUrl);
+        }
 
         ChatRoom room = ChatRoom.builder()
             .chatRoomType(ChatRoomType.GROUP)
@@ -171,7 +196,7 @@ public class ChatRoomService {
         Message joinMessage = Message.builder()
             .chatRoom(room)
             .senderId(user)
-            .content(user.getLoginId() + "님이 들어왔습니다.")
+            .content(user.getNickname() + "님이 들어왔습니다.")
             .type(MessageType.SYSTEM_JOIN)
             .build();
         Message saved = chatMessageRepository.save(joinMessage);
@@ -265,7 +290,7 @@ public class ChatRoomService {
         Message joinMessage = Message.builder()
             .chatRoom(room)
             .senderId(user)
-            .content(user.getLoginId() + "님이 나갔습니다.")
+            .content(user.getNickname() + "님이 나갔습니다.")
             .type(MessageType.SYSTEM_LEAVE)
             .build();
         Message saved = chatMessageRepository.save(joinMessage);

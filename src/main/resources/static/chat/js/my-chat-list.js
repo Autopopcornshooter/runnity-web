@@ -177,23 +177,42 @@ async function subscribeRoom(roomId){
       return;
     }
 
-    addMessage(d.senderNickname, d.message, Number(d.senderId)===Number(userId));
+    addMessage(d.senderNickname, d.message, Number(d.senderId)===Number(userId), d.senderProfileUrl);
   });
 }
 
 // 메시지 UI
-function addMessage(sender, text, isMine){
+function addMessage(sender, text, isMine, senderProfileUrl){
   const c = $("#chatMessages");
   const el = document.createElement("div");
   el.className = `message ${isMine?'mine':'other'}`;
+
+  const profile = document.createElement("img");
+  profile.className = "profile-img";
+  profile.src = senderProfileUrl || "/images/runnity-person.png";
+
+  const textContainer = document.createElement("div");
+  textContainer.className = "text-container";
+
   if(!isMine){
     const s = document.createElement("span");
-    s.className = "sender"; s.textContent = sender;
-    el.appendChild(s);
+    s.className = "sender";
+    s.textContent = sender;
+    textContainer.appendChild(s);
   }
   const b = document.createElement("div");
-  b.className = "bubble"; b.textContent = text;
-  el.appendChild(b);
+  b.className = "bubble";
+  b.textContent = text;
+
+  textContainer.appendChild(b);
+
+  if (isMine) {
+    el.appendChild(textContainer);
+  } else {
+    el.appendChild(profile);
+    el.appendChild(textContainer);
+  }
+
   c.appendChild(el);
   c.scrollTop = c.scrollHeight;
 }
@@ -245,7 +264,7 @@ async function openChat(roomId){
         return;
       }
 
-      addMessage(m.senderNickname,m.message,Number(m.senderId)===Number(userId));
+      addMessage(m.senderNickname,m.message,Number(m.senderId)===Number(userId), m.senderProfileUrl);
     });
   }catch(e){ console.error("메시지 로드 실패:", e); }
 
