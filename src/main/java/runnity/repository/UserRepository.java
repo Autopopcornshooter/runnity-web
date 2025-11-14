@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   Optional<User> findByLoginId(String loginId);
 
-//  Optional<User> findByNickname(String nickname);
+  Optional<User> findByNickname(String nickname);
 
   boolean existsByLoginId(String loginId);
 
@@ -30,5 +30,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   // 친구 찾기/추가 기능 = > 박주영
   List<User> findByNicknameContainingIgnoreCase(String nickname);
+  Optional<User> findById(Long id);
 
 }

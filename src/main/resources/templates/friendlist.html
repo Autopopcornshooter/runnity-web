@@ -108,12 +108,12 @@
 
 
         <div class="friend-list" id="friendList">
-            <div th:each="friend : ${friends}" class="friend-item" th:attr="data-id=${friend.id}">
+            <div th:each="friend : ${friends}" class="friend-item" th:attr="data-id=${friend.id}, data-userid=${friend.userId}">
                 <span class="nickname" th:text="${friend.nickname}"></span>
                 <div class="friend-button">
                     <button class="btn btn-outline-secondary btn-sm like-btn">좋아요</button>
                     <span class="likecount" th:text="${friend.likecount}" style="display:none;"></span>
-                    <button class="btn btn-outline-secondary btn-sm">채팅 시작</button>
+                    <button class="btn btn-outline-secondary btn-sm chat-btn">채팅 시작</button>
                     <button class="btn btn-outline-secondary btn-sm delete-btn">친구 삭제</button>
                 </div>
             </div>

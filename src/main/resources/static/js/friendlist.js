@@ -33,7 +33,7 @@ searchBox.addEventListener('keypress', (e) => {
                             <span class="nickname">${friend.nickname}</span>
                             <div class="friend-button">
                                 <button class="btn btn-outline-secondary btn-sm like-btn">좋아요</button>
-                                <button class="btn btn-outline-secondary btn-sm">채팅 시작</button>
+                                <button class="btn btn-outline-secondary btn-sm chat-btn">채팅 시작</button>
                                 <button class="btn btn-outline-secondary btn-sm delete-btn">친구 삭제</button>
                             </div>
                         `;
@@ -81,6 +81,42 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+//채팅 버튼
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".chat-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const friendUserId = this.closest(".friend-item").getAttribute("data-userid");
+
+            if (!friendUserId) {
+                console.error("❌ friendId가 없습니다. HTML data-userid 속성을 확인하세요.");
+                alert("유효하지 않은 사용자입니다.");
+                return;
+            }
+
+            fetch("/api/friends/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    [header]: token
+                },
+                body: JSON.stringify({ friendUserId: friendUserId })
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error("채팅방 생성 실패");
+                    return response.text();
+                })
+                .then(roomId => {
+                    // 채팅방 페이지로 이동
+                    window.location.href = `/chat-room/my-chat-list`;
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("채팅방 생성 중 오류가 발생했습니다.");
+                });
+        });
+    });
+});
+
 // 삭제 버튼
 document.querySelectorAll(".delete-btn").forEach(button => {
     button.addEventListener("click", function() {
