@@ -4,7 +4,11 @@ server:
 naver:
   map:
     client-id: ${NAVER_CLIENT_ID}
+
 spring:
+  profiles:
+    active: local
+
   servlet:
     multipart:
       max-request-size: 10MB
@@ -16,25 +20,6 @@ spring:
       port: 14469
       password: ${REDIS_PASSWORD}
       timeout: 2s
-
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_OAUTH_CLIENT_ID}
-            client-secret: ${GOOGLE_OAUTH_SECRET_PW}
-            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
-            scope:
-              - email
-              - profile
-        provider:
-          google:
-            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            user-name-attribute: sub
-
 
   jackson:
     serialization:
