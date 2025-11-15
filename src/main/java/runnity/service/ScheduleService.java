@@ -1,6 +1,7 @@
 package runnity.service;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class ScheduleService {
         .title(request.getTitle())
         .detail(request.getDetail())
         .chatRoom(getChatRoom(request))
+        .createdAt(LocalDateTime.now())
         .scheduleCreator(getCreator(request))
         .build();
 

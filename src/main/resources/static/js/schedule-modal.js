@@ -4,7 +4,7 @@ const closeBtn = $("#scheduleModalCloseBtn");
 const cancelBtn = $("#scheduleCancelBtn");
 const submitBtn = $("#scheduleSubmitBtn");
 
-const roomIdInput = $("#scheduleRoomId");
+let roomIdInput = null;
 const titleInput = $("#scheduleTitle");
 const dtInput = $("#scheduleDateTime");
 const detailInput = $("#scheduleDetail");
@@ -17,7 +17,8 @@ function openModal() {
     return;
   }
 
-  roomIdInput.value = window.currentRoomId;
+  roomIdInput = document.getElementById("currentRoomId");
+  console.log("currentRoomId: " + roomIdInput.value);
 
   titleInput.value = "";
   dtInput.value = "";
@@ -31,7 +32,8 @@ function closeModal() {
 }
 
 async function submitSchedule() {
-  const roomId = Number(roomIdInput.value || window.currentRoomId);
+  const roomId = Number(roomIdInput.value);
+
   if (!roomId) {
     alert("채팅방 정보가 없습니다. 다시 시도해주세요.");
     return;
@@ -72,7 +74,7 @@ async function submitSchedule() {
   };
 
   try {
-    const res = await fetch(`/api/chat-rooms/${roomId}/schedules`, {
+    const res = await fetch(`/chat-rooms/${roomId}/create-schedule`, {
       method: "POST",
       headers,
       body: JSON.stringify(payload)
