@@ -1,178 +1,178 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="_csrf" th:content="${_csrf.token}">
-  <meta name="_csrf_header" th:content="${_csrf.headerName}">
-  <title>내 채팅방 | Runnity</title>
-  <link href="/chat/css/my-chat-list.css" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
-  <link rel="stylesheet" th:href="@{/css/schedule-modal.css}"/>
-  <link href="/chat/css/group-chat-list.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>내 채팅방 | Runnity</title>
+    <link href="/chat/css/my-chat-list.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <link rel="stylesheet" th:href="@{/css/schedule-modal.css}"/>
+    <link href="/chat/css/group-chat-list.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet"/>
 </head>
 <body>
 
 <div th:replace="~{partials/header :: header}"></div>
 
 <div class="chat-container">
-  <!-- 채팅방 목록 -->
-  <aside class="chat-list">
-    <div class="tab-buttons">
-      <button class="active" id="groupTab">그룹</button>
-      <button id="duoTab">듀오</button>
-    </div>
-    <ul id="chatRooms">
-      <li class="chat-room-item" onclick="openChat(this.getAttribute('data-id'))"
-          th:data-id="${room.chatRoomId}" th:data-type="${room.chatRoomType}"
-          th:each="room : ${chatRooms}">
-        <img alt="chat image" th:if="${room.imageUrl != null}" th:src="${room.imageUrl}">
-        <img alt="default image" th:src="@{/images/image-upload.png}"
-             th:unless="${room.imageUrl != null}">
-        <div class="room-info">
-          <span class="room-name" th:text="${room.chatRoomName}">채팅방 이름</span>
-          <span class="room-members">
+    <!-- 채팅방 목록 -->
+    <aside class="chat-list">
+        <div class="tab-buttons">
+            <button class="active" id="groupTab">그룹</button>
+            <button id="duoTab">듀오</button>
+        </div>
+        <ul id="chatRooms">
+            <li class="chat-room-item" onclick="openChat(this.getAttribute('data-id'))"
+                th:data-id="${room.chatRoomId}" th:data-type="${room.chatRoomType}"
+                th:each="room : ${chatRooms}">
+                <img alt="chat image" th:if="${room.imageUrl != null}" th:src="${room.imageUrl}">
+                <img alt="default image" th:src="@{/images/image-upload.png}"
+                     th:unless="${room.imageUrl != null}">
+                <div class="room-info">
+                    <span class="room-name" th:text="${room.chatRoomName}">채팅방 이름</span>
+                    <span class="room-members">
             <img src="/images/runnity-person.png"
                  style="width: 20px; height: 20px;">
             <span th:text="${#lists.size(room.members)}">0</span>
           </span>
-        </div>
-        <span class="unread-badge"
-              th:if="${room.unreadCount > 0}"
-              th:text="${room.unreadCount > 99 ? '99+' : room.unreadCount}">
+                </div>
+                <span class="unread-badge"
+                      th:if="${room.unreadCount > 0}"
+                      th:text="${room.unreadCount > 99 ? '99+' : room.unreadCount}">
         </span>
-      </li>
-    </ul>
-  </aside>
+            </li>
+        </ul>
+    </aside>
 
-  <!-- 채팅창 -->
-  <section class="chat-area">
-    <div id="chatHeader">
-      <div id="chatTitleWrap">
-        <h2 id="chatTitle">채팅방 선택</h2>
-        <p class="chat-desc" id="chatDesc" style="display:none;"></p>
-      </div>
-      <div class="chat-header-btn">
-        <button class="schedule-btn" id="openScheduleModalBtn" style="display:none;" type="button">
-          일정 만들기
-        </button>
-        <button class="schedule-check-btn" id="openScheduleCheckBtn" type="button"> 일정 참여하기</button>
-        <button class="edit-btn" id="editBtn">채팅방 수정</button>
-        <button class="exit-btn" id="exitBtn">나가기</button>
-      </div>
-    </div>
+    <!-- 채팅창 -->
+    <section class="chat-area">
+        <div id="chatHeader">
+            <div id="chatTitleWrap">
+                <h2 id="chatTitle">채팅방 선택</h2>
+                <p class="chat-desc" id="chatDesc" style="display:none;"></p>
+            </div>
+            <div class="chat-header-btn">
+                <button class="schedule-btn" id="openScheduleModalBtn" style="display:none;" type="button">
+                    일정 만들기
+                </button>
+                <button class="schedule-check-btn" id="openScheduleCheckBtn" type="button"> 일정 참여하기</button>
+                <button class="edit-btn" id="editBtn">채팅방 수정</button>
+                <button class="exit-btn" id="exitBtn">나가기</button>
+            </div>
+        </div>
 
-    <div class="chat-messages" id="chatMessages">
-      <p class="select-chat-room">왼쪽에서 채팅방을 선택하세요.</p>
-    </div>
+        <div class="chat-messages" id="chatMessages">
+            <p class="select-chat-room">왼쪽에서 채팅방을 선택하세요.</p>
+        </div>
 
-    <div class="chat-input" id="chat-input">
-      <input id="messageInput" placeholder="메시지를 입력하세요." type="text">
-      <button id="sendBtn">전송</button>
-    </div>
-  </section>
+        <div class="chat-input" id="chat-input">
+            <input id="messageInput" placeholder="메시지를 입력하세요." type="text">
+            <button id="sendBtn">전송</button>
+        </div>
+    </section>
 </div>
 
 
 <!-- 일정 생성 모달 -->
 <div class="modal-overlay" id="scheduleModal" style="display:none;">
-  <div class="schedule-modal">
-    <div class="modal-header">
-      <h2>러닝 모임 일정 생성</h2>
-      <button class="modal-close" id="scheduleModalCloseBtn" type="button">&times;</button>
+    <div class="schedule-modal">
+        <div class="modal-header">
+            <h2>러닝 모임 일정 생성</h2>
+            <button class="modal-close" id="scheduleModalCloseBtn" type="button">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="scheduleForm">
+                <!-- 현재 채팅방 id (JS에서 세팅) -->
+                <input id="scheduleRoomId" type="hidden">
+
+                <div class="form-group">
+                    <label for="scheduleTitle">모임 제목</label>
+                    <input id="scheduleTitle" name="title" placeholder="예: 여의도 한강 러닝" required type="text">
+                </div>
+
+                <div class="form-group">
+                    <label for="scheduleDateTime">모임 시간</label>
+                    <input id="scheduleDateTime" name="dateTime" required type="datetime-local">
+                </div>
+
+                <div class="form-group">
+                    <label for="scheduleDetail">상세 설명</label>
+                    <textarea id="scheduleDetail" name="detail" placeholder="페이스, 거리, 준비물 등 자유롭게 적어주세요."
+                              rows="3"></textarea>
+                </div>
+
+                <!--        TODO 지도 API 추가-->
+                <input id="scheduleRegionId" type="hidden" value="">
+
+                <div class="modal-actions">
+                    <button class="primary-btn" id="scheduleSubmitBtn" type="button">생성하기</button>
+                    <button class="secondary-btn" id="scheduleCancelBtn" type="button">취소</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="modal-body">
-      <form id="scheduleForm">
-        <!-- 현재 채팅방 id (JS에서 세팅) -->
-        <input id="scheduleRoomId" type="hidden">
-
-        <div class="form-group">
-          <label for="scheduleTitle">모임 제목</label>
-          <input id="scheduleTitle" name="title" placeholder="예: 여의도 한강 러닝" required type="text">
-        </div>
-
-        <div class="form-group">
-          <label for="scheduleDateTime">모임 시간</label>
-          <input id="scheduleDateTime" name="dateTime" required type="datetime-local">
-        </div>
-
-        <div class="form-group">
-          <label for="scheduleDetail">상세 설명</label>
-          <textarea id="scheduleDetail" name="detail" placeholder="페이스, 거리, 준비물 등 자유롭게 적어주세요."
-                    rows="3"></textarea>
-        </div>
-
-        <!--        TODO 지도 API 추가-->
-        <input id="scheduleRegionId" type="hidden" value="">
-
-        <div class="modal-actions">
-          <button class="primary-btn" id="scheduleSubmitBtn" type="button">생성하기</button>
-          <button class="secondary-btn" id="scheduleCancelBtn" type="button">취소</button>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
 
 <!-- 일정 참가/상세 모달 -->
 <div class="modal-overlay" id="scheduleJoinModal" style="display:none;">
-  <div class="schedule-join-modal">
+    <div class="schedule-join-modal">
 
-    <!-- 헤더 -->
-    <div class="modal-header">
-      <h2 id="joinTitle">모임 제목</h2>
-      <button class="modal-close" id="joinCloseBtn">&times;</button>
-    </div>
-
-    <div class="modal-body">
-
-      <!-- 날짜 & 설명 -->
-      <div class="join-info">
-        <p class="join-date" id="joinDate">일시: -</p>
-        <p class="join-desc" id="joinDesc"></p>
-      </div>
-
-      <!-- 지도 -->
-      <div class="join-map">
-        지도<br>(상호작용 불가능)
-      </div>
-
-      <!-- 위치 -->
-      <div class="join-location">
-        위치: <span id="joinLocation">-</span>
-      </div>
-
-      <!-- 참여 / 미참여 -->
-      <div class="join-attendance">
-
-        <div class="att-row">
-          <span class="att-label">참여 ✔</span>
-          <span class="att-count" id="joinYesCount">0</span>
-          <button class="att-btn yes" id="joinYesBtn">참여하기</button>
+        <!-- 헤더 -->
+        <div class="modal-header">
+            <h2 id="joinTitle">모임 제목</h2>
+            <button class="modal-close" id="joinCloseBtn">&times;</button>
         </div>
 
-        <div class="att-row">
-          <span class="att-label">미참여</span>
-          <span class="att-count" id="joinNoCount">0</span>
-          <button class="att-btn no" id="joinNoBtn">미참여하기</button>
+        <div class="modal-body">
+
+            <!-- 날짜 & 설명 -->
+            <div class="join-info">
+                <p class="join-date" id="joinDate">일시: -</p>
+                <p class="join-desc" id="joinDesc"></p>
+            </div>
+
+            <!-- 지도 -->
+            <div class="join-map">
+                지도<br>(상호작용 불가능)
+            </div>
+
+            <!-- 위치 -->
+            <div class="join-location">
+                위치: <span id="joinLocation">-</span>
+            </div>
+
+            <!-- 참여 / 미참여 -->
+            <div class="join-attendance">
+
+                <div class="att-row">
+                    <span class="att-label">참여 ✔</span>
+                    <span class="att-count" id="joinYesCount">0</span>
+                    <button class="att-btn yes" id="joinYesBtn">참여하기</button>
+                </div>
+
+                <div class="att-row">
+                    <span class="att-label">미참여</span>
+                    <span class="att-count" id="joinNoCount">0</span>
+                    <button class="att-btn no" id="joinNoBtn">미참여하기</button>
+                </div>
+
+            </div>
+
+            <!-- 생성자만 -->
+            <div class="join-actions">
+                <button class="delete-btn" id="joinDeleteBtn" style="display:none;">
+                    일정 삭제
+                </button>
+            </div>
+            <input id="creator" name="creator" type="hidden">
         </div>
 
-      </div>
-
-      <!-- 생성자만 -->
-      <div class="join-actions">
-        <button class="delete-btn" id="joinDeleteBtn" style="display:none;">
-          일정 삭제
-        </button>
-      </div>
-      <input id="creator" name="creator" th:value="" type="hidden">
     </div>
-
-  </div>
 </div>
 
 <input id="currentRoomId" type="hidden" value="">
@@ -182,10 +182,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script th:inline="javascript">
-  /*<![CDATA[*/
-  const chatRoomsData = /*[[${chatRooms}]]*/ [];
-  const currentUserId = /*[[${currentUserId}]]*/ 0;
-  /*]]>*/
+    /*<![CDATA[*/
+    const chatRoomsData = /*[[${chatRooms}]]*/ [];
+    const currentUserId = /*[[${currentUserId}]]*/ 0;
+    /*]]>*/
 </script>
 <script src="/chat/js/my-chat-list.js"></script>
 <script src="/js/schedule-modal.js"></script>
