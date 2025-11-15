@@ -10,6 +10,7 @@ import runnity.domain.ChatRoomMember;
 import runnity.domain.Schedule;
 import runnity.domain.User;
 import runnity.dto.CreateScheduleRequest;
+import runnity.dto.ScheduleResponse;
 import runnity.exceptions.UserNotFoundException;
 import runnity.repository.ChatRoomMemberRepository;
 import runnity.repository.ChatRoomRepository;
@@ -37,11 +38,28 @@ public class ScheduleService {
         .title(request.getTitle())
         .detail(request.getDetail())
         .chatRoom(getChatRoom(request))
+        .startAt(request.getStartAt())
         .createdAt(LocalDateTime.now())
         .scheduleCreator(getCreator(request))
         .build();
 
     return scheduleRepository.save(schedule);
+  }
+
+
+  public ScheduleResponse getRecentSchedule(Long roomId) {
+    Schedule recentSchedule = scheduleRepository.findTop1ByChatRoom_ChatRoomIdOrderByCreatedAtDesc(
+            roomId)
+        .orElseThrow(() -> new IllegalArgumentException("Room Id not found- ID: " + roomId));
+    return ScheduleResponse.builder()
+        .title(recentSchedule.getTitle())
+        .detail(recentSchedule.getDetail())
+        .region(recentSchedule.getRegion())
+        .startAt(recentSchedule.getStartAt())
+        .scheduleCreatorId(recentSchedule.getScheduleCreator().getChatRoomMemberId())
+        .build();
+
+
   }
 
   public ChatRoom getChatRoom(CreateScheduleRequest request) {

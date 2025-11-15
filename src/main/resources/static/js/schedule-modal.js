@@ -11,13 +11,13 @@ const detailInput = $("#scheduleDetail");
 const regionInput = $("#scheduleRegionId");
 
 function openModal() {
-  console.log("모달 생성");
-  if (!window.currentRoomId) {
+  roomIdInput = document.getElementById("currentRoomId");
+  console.log("일정 생성 모달");
+  if (!roomIdInput) {
     alert("일정을 생성할 채팅방을 먼저 선택하세요.");
     return;
   }
 
-  roomIdInput = document.getElementById("currentRoomId");
   console.log("currentRoomId: " + roomIdInput.value);
 
   titleInput.value = "";
@@ -41,7 +41,7 @@ async function submitSchedule() {
 
   const title = (titleInput.value || "").trim();
   const detail = (detailInput.value || "").trim();
-  const dateTime = dtInput.value;  // "2025-11-15T14:30" 같은 문자열
+  const startAt = dtInput.value;  // "2025-11-15T14:30" 같은 문자열
   const regionId = regionInput.value ? Number(regionInput.value) : null;
 
   if (!title) {
@@ -49,7 +49,7 @@ async function submitSchedule() {
     titleInput.focus();
     return;
   }
-  if (!dateTime) {
+  if (!startAt) {
     alert("모임 시간을 선택해주세요.");
     dtInput.focus();
     return;
@@ -68,7 +68,7 @@ async function submitSchedule() {
   const payload = {
     title,
     detail,
-    dateTime,
+    startAt,
     regionId,
     roomId // 서버 DTO에서 roomId 필드 받고 있으면 같이 전달
   };

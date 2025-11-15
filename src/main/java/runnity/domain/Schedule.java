@@ -14,7 +14,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Getter
@@ -35,6 +34,8 @@ public class Schedule {
   @Column(name = "detail")
   private String detail;
 
+  @Column(name = "start_at")
+  private LocalDateTime startAt;
 
   @Column(name = "created_at")
   private LocalDateTime createdAt;

@@ -59,6 +59,7 @@
         <button class="schedule-btn" id="openScheduleModalBtn" style="display:none;" type="button">
           일정 만들기
         </button>
+        <button class="schedule-check-btn" id="openScheduleCheckBtn" type="button"> 일정 참여하기</button>
         <button class="edit-btn" id="editBtn">채팅방 수정</button>
         <button class="exit-btn" id="exitBtn">나가기</button>
       </div>
@@ -105,7 +106,7 @@
                     rows="3"></textarea>
         </div>
 
-        <!-- region이 이미 선택된 구조면 hidden으로, 아니라면 셀렉트 박스로 -->
+        <!--        TODO 지도 API 추가-->
         <input id="scheduleRegionId" type="hidden" value="">
 
         <div class="modal-actions">
@@ -114,6 +115,63 @@
         </div>
       </form>
     </div>
+  </div>
+</div>
+
+<!-- 일정 참가/상세 모달 -->
+<div class="modal-overlay" id="scheduleJoinModal" style="display:none;">
+  <div class="schedule-join-modal">
+
+    <!-- 헤더 -->
+    <div class="modal-header">
+      <h2 id="joinTitle">모임 제목</h2>
+      <button class="modal-close" id="joinCloseBtn">&times;</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- 날짜 & 설명 -->
+      <div class="join-info">
+        <p class="join-date" id="joinDate">일시: -</p>
+        <p class="join-desc" id="joinDesc"></p>
+      </div>
+
+      <!-- 지도 -->
+      <div class="join-map">
+        지도<br>(상호작용 불가능)
+      </div>
+
+      <!-- 위치 -->
+      <div class="join-location">
+        위치: <span id="joinLocation">-</span>
+      </div>
+
+      <!-- 참여 / 미참여 -->
+      <div class="join-attendance">
+
+        <div class="att-row">
+          <span class="att-label">참여 ✔</span>
+          <span class="att-count" id="joinYesCount">0</span>
+          <button class="att-btn yes" id="joinYesBtn">참여하기</button>
+        </div>
+
+        <div class="att-row">
+          <span class="att-label">미참여</span>
+          <span class="att-count" id="joinNoCount">0</span>
+          <button class="att-btn no" id="joinNoBtn">미참여하기</button>
+        </div>
+
+      </div>
+
+      <!-- 생성자만 -->
+      <div class="join-actions">
+        <button class="delete-btn" id="joinDeleteBtn" style="display:none;">
+          일정 삭제
+        </button>
+      </div>
+      <input id="creator" name="creator" th:value="" type="hidden">
+    </div>
+
   </div>
 </div>
 
