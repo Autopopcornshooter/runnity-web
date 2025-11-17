@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>비밀번호 인증</title>
+  <link rel="stylesheet" th:href="@{/css/signIn.css}">
+
+</head>
+<body>
+<header>
+  <img alt="Runnity 로고" th:src="@{/images/running.png}">
+  <h1>Runnity</h1>
+</header>
+
+<div class="container">
+  <form autocomplete="on" id="loginForm" method="post" th:action="@{/api/auth/re-auth}">
+    <!-- CSRF -->
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+    <!-- 알림 메시지: ?error=, ?logout= -->
+    <div class="alert alert--error" role="alert" th:if="${param.error}">
+      비밀번호가 올바르지 않습니다.
+    </div>
+    <label for="password">비밀번호</label>
+    <input id="password" name="password" placeholder="비밀번호를 입력하세요" required type="password">
+
+    <button class="login-btn" type="submit">확인</button>
+    <button class="login-btn" onclick="location.href='/main'">취소</button>
+  </form>
+</div>
+
+
+<script>
+  const loginForm = document.getElementById("loginForm");
+  loginForm.addEventListener("submit", () => {
+    console.log("로그인 시도");
+  })
+  window.addEventListener("load", () => {
+    console.log("리소스 로드 완료");
+  });
+
+</script>
+</body>
+</html>

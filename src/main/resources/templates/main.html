@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>Runnity</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link th:href="@{/css/basic-header.css}" rel="stylesheet"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+    <style>
+        .main-section {
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px 5%;
+            margin: 60px auto;
+            max-width: 1500px;
+            height: 700px;
+            /*gap: 50px;*/
+        }
+        .left-section {
+            display:flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 0 0 400px;
+            min-width: 250px;
+            align-items: flex-end;
+            /*max-width: 400px;*/
+        }
+
+        .matchingcrew-card {
+            border: 1px solid transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+            background: #fff;
+            width: 100%;      /* 부모 영역에 맞춤 */
+            max-width: 300px;
+            height: 300px;
+            display: flex;           /* 카드 내부 정렬을 위한 flex */
+            flex-direction: column;  /* 세로 배치 */
+            align-items: center;     /* 가로 중앙 */
+            justify-content: center; /* 세로 중앙 */
+            text-align: center;
+            text-decoration: none; /* 밑줄 제거 */
+        }
+        .matchingcrew-card img {
+            width: 70%;
+            height: 60%;
+            margin-bottom: 25px;
+        }
+        .matchingcrew-card p {
+            font-weight: bold;
+            margin:0;
+            font-size: 20px;
+            color: black;
+        }
+        .matchingcrew-card:hover {
+            transform: translateY(-3px);
+            border: 1px solid #00bfa5;
+            box-shadow: 0 0 12px rgba(0, 150, 250, 0.25);
+        }
+
+        .weather-section {
+            flex: 0 0 400px;
+            min-width: 250px;
+            min-height: 620px;
+            display: flex;
+            flex-direction: column; /* 세로로 쌓이게 변경 */
+            align-items: flex-start;
+            justify-content: flex-start;
+            background-color: rgba(147, 112, 219, 0.5);
+            border-radius: 10px;
+            text-align: left;
+            padding: 20px 30px;
+        }
+        .weather-section h3{
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .weather-content {
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .hourly-list {
+            padding-left: 25px;
+        }
+
+
+        .location-section {
+            flex: 0 0 400px;
+            min-width: 250px;
+            min-height: 620px;
+            display: flex;
+            flex-direction: column; /* 세로로 쌓이게 변경 */
+            align-items: flex-start;
+            justify-content: flex-start;
+            border: 5px solid indigo;
+            border-radius: 10px;
+            text-align: left;
+            padding: 20px 30px;
+            overflow-y: auto;      /* 세로 스크롤 활성화 */
+            max-height: 620px;     /* 영역 높이 제한 */
+        }
+        .location-section h3{
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .location-content {
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            /*white-space: pre-wrap;   !* 줄바꿈과 공백 유지 *!*/
+            word-wrap: break-word;   /* 단어 단위로 줄바꿈 */
+            overflow-wrap: break-word; /* 최신 브라우저용 */
+            gap: 30px;
+
+            white-space: normal; /* 들여쓰기, 여러 공백 무시 */
+        }
+
+    </style>
+
+</head>
+<body>
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
+<section class="main-section">
+    <div class = "left-section">
+        <a href="#" class="matchingcrew-card" id="duoMatchingBtn">
+            <img src="/images/duo.png">
+            <p>러닝 듀오 매칭</p>
+        </a>
+        <a th:href="@{/chat-room/list}" class="matchingcrew-card">
+            <img src="/images/group.png">
+            <p>러닝 모임 찾기</p>
+        </a>
+    </div>
+
+
+    <div class="weather-section">
+        <h3>날씨 정보</h3><br>
+        <div class="weather-content" id="weather-content">날씨 정보를 불러오는 중입니다...</div><br>
+        <div id="comment"></div>
+        <div class="hourly-list" id="hourly-list"></div><br>
+        <div class="weather-summary" id="weather-summary"></div>
+    </div>
+
+    <div class="location-section">
+        <h3>추천 코스 정보</h3><br>
+        <div class="location-content" id="location-content">추천 코스 정보를 불러오는 중입니다...</div>
+    </div>
+
+</section>
+
+<script src="/js/weather.js"></script>
+<script src="/js/location.js"></script>
+
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
+
+<link rel="stylesheet" th:href="@{/chat/css/random-match.css}"/>
+<script src="/chat/js/random-match.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

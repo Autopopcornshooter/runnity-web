@@ -1,0 +1,108 @@
+body {
+  font-family: 'Pretendard', sans-serif;
+  background-color: #f5f4ff;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: white;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 40px;
+  display: flex;
+  align-items: center;
+}
+
+header img {
+  height: 26px;
+  margin-right: 8px;
+}
+
+header h1 {
+  color: #20277A;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 40px;
+  background-color: #f5f4ff;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+label {
+  text-align: left;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input {
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 0 10px;
+  font-size: 15px;
+}
+
+button {
+  height: 45px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-btn {
+  background-color: #6675ff;
+  color: white;
+}
+
+.google-btn {
+  background-color: #7083ff;
+  color: white;
+}
+
+.join-section {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.join-section a {
+  color: #20277A;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.join-section a:hover {
+  text-decoration: underline;
+}
+
+/* 알림 */
+.alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.alert--error {
+  background: #fff0f0;
+  color: #c62828;
+  border: 1px solid #ffd7d7;
+}
+
+.alert--info {
+  background: #f0f8ff;
+  color: #1565c0;
+  border: 1px solid #d6ecff;
+}

@@ -1,0 +1,60 @@
+<div th:fragment="dropdownMenu">
+  <div class="menu-wrap">
+    <button aria-expanded="false" class="menu-btn" type="button">
+      메뉴 <span class="chev">▾</span>
+    </button>
+
+    <ul class="menu">
+      <li><a th:href="@{/userInfo/update}">회원정보 수정</a></li>
+      <li><a th:href="@{/userInfo/region/update}">내 지역 수정</a></li>
+        <li><a th:href="@{/main}">메인 페이지</a></li>
+        <li><a th:href="@{/friendlist}">친구 목록</a></li>
+      <li>
+        <a th:href="@{/chat-room/my-chat-list}">
+          <span id="globalUnreadBadge" class="menu-badge" hidden>0</span>
+          나의 채팅방
+        </a>
+      </li>
+      <li class="has-submenu">
+        <button class="submenu-toggle" type="button"><span class="chev">◀</span>
+          러너 레벨 선택
+        </button>
+
+        <ul class="submenu">
+          <li>
+            <button class="level-opt" data-runner-level="BEGINNER">
+              <div class="opt-title">초급 👶️</div>
+              <div class="opt-desc">10분 이상, 2km 이상 러닝 가능</div>
+            </button>
+          </li>
+          <li>
+            <button class="level-opt" data-runner-level="INTERMEDIATE">
+              <div class="opt-title">중급 🚶🏻‍➡️️</div>
+              <div class="opt-desc">20분 이상, 5km 이상 러닝 가능</div>
+            </button>
+          </li>
+          <li>
+            <button class="level-opt" data-runner-level="EXPERT">
+              <div class="opt-title">고급 🏃🏻‍➡️</div>
+              <div class="opt-desc">30분 이상, 10km 이상 러닝 가능</div>
+            </button>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <form method="post" th:action="@{/api/auth/signOut}">
+          <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+          <button class="logout-btn" type="submit">로그아웃</button>
+        </form>
+      </li>
+    </ul>
+  </div>
+
+  <link rel="stylesheet" th:href="@{/css/dropdownMenu.css}">
+  <script th:src="@{/js/dropdownMenu.js}"></script>
+
+  <!-- 나의 채팅방 채팅 알림 시스템관련 -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</div>

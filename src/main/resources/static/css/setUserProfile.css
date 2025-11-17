@@ -1,0 +1,144 @@
+body {
+  font-family: 'Pretendard', sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+.join-section {
+  margin: 5px;
+}
+
+.save-btn {
+  width: 100%;
+  margin-top: 25px;
+  height: 50px;
+  background-color: #6675ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  width: 100%;
+  margin-top: 25px;
+  height: 50px;
+  background-color: white;
+  color: #6675ff;
+  border: 1px solid #6675ff;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.container {
+  display: flex;
+  padding-top: 50px;
+  justify-content: center;
+}
+
+.profile-wrapper {
+  display: flex;
+  gap: 40px;
+}
+
+
+.profile-left {
+  flex: 1;
+  display: flex;
+  min-width: 300px;
+  max-width: 500px;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: center;
+}
+
+.profile-right {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-input {
+  margin-top: 10px;
+  width: 100%;
+}
+
+
+.btn-section {
+  margin-top: 30px;
+}
+
+
+header {
+  width: 100%;
+  background-color: #f5f4ff;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  padding: 15px 40px;
+}
+
+header img {
+  height: 26px;
+  margin-right: 8px;
+}
+
+header h1 {
+  color: #20277A;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+form span {
+  font-size: 15px;
+}
+
+label {
+  font-weight: bold;
+  text-align: left;
+}
+
+input, select {
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 0 10px;
+  font-size: 15px;
+  align-content: center;
+}
+
+select {
+  appearance: none;
+  background: url('data:image/svg+xml;charset=UTF-8,<svg fill="%236675ff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+  background-color: white;
+  background-size: 20px;
+  cursor: pointer;
+}
+
+.profile-img {
+  width: 70%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  object-fit: cover;
+  overflow: hidden;
+  display: block;
+}
+

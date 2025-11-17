@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Runnity 회원가입</title>
+  <script
+      th:src="@{|https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder|}"
+      type="text/javascript"></script>
+  <script defer th:src="@{/js/mapAPI.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/signup.css}">
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <img alt="Runnity 로고" th:src="@{/images/running.png}">
+    <h1>Runnity</h1>
+  </div>
+</header>
+<div class="container">
+  <!-- 회원가입 폼 -->
+  <div class="signup-section">
+
+
+    <form id="signUpForm" method="post" th:action="@{/api/auth/signUp}">
+      <!-- CSRF -->
+      <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+      <label for="loginId">아이디</label>
+      <input id="loginId" name="username" placeholder="아이디를 입력하세요" required
+             th:value="${formData.username}"
+             type="text">
+      <span id="idMessage"></span>
+
+      <label for="password">비밀번호</label>
+      <input id="password" name="password" placeholder="비밀번호를 입력하세요" required
+             th:value="${formData.password}"
+             type="password">
+      <span id="pwMessage"></span>
+
+      <label for="passwordConfirm">비밀번호 확인</label>
+      <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"
+             required th:value="${formData.passwordConfirm}" type="password">
+      <span id="pwConfirmMessage"></span>
+
+      <label for="nickname">닉네임</label>
+      <input id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required
+             th:value="${formData.nickname}"
+             type="text">
+      <span id="nicknameMessage"></span>
+
+      <label for="runnerLevel">레벨</label>
+      <select id="runnerLevel" name="runnerLevel" required>
+        <option disabled selected value="">선택하세요</option>
+        <option value="BEGINNER">초급 👶️ 10분 이상, 2km 이상 러닝 가능</option>
+        <option value="INTERMEDIATE">중급 🚶🏻‍➡️️ 20분 이상, 5km 이상 러닝 가능</option>
+        <option value="ADVANCED">고급 🏃🏻‍➡️ 30분 이상, 10km 이상 러닝 가능</option>
+      </select>
+      <input id="lat" name="lat" type="hidden">
+      <input id="lng" name="lng" type="hidden">
+      <input id="address" name="address" type="hidden">
+    </form>
+  </div>
+
+
+  <div class="location-section">
+    <h2>내 위치 설정</h2>
+
+    <div class="location-search">
+      <input id="searchInput" placeholder="현재 주소를 입력해 주세요(ex. ~구/~동)" type="text">
+      <button class="set-location-btn" id="searchBtn">검색</button>
+      <button class="set-location-btn" id="currentBtn">내 위치 설정</button>
+    </div>
+
+    <div class="map-container">
+      <div class="map" id="map"></div>
+      <div class="map-info" id="info">지도에서 내 위치를 선택하세요</div>
+      <!--      <img alt="지도 미리보기" class="map-preview" th:src="@{/images/map_sample.png}">-->
+    </div>
+
+    <button class="join-btn" form="signUpForm" type="submit">같이 달리러 가기</button>
+    <div class="signIn-section">
+      <p>이미 계정이 있으신가요?</p>
+      <a th:href="@{/api/auth/signIn}">로그인</a>
+    </div>
+
+  </div>
+</div>
+<script th:inline="javascript">
+  const loginIdErrorMessage = /*[[${loginIdErrorMessage}]]*/ null;
+  const nickNameErrorMessage = /*[[${nickNameErrorMessage}]]*/ null;
+
+  const signupForm = document.getElementById("signUpForm");
+
+  const loginIdMessage = document.getElementById("idMessage");
+  const pwMessage = document.getElementById("pwMessage");
+  const pwConfirmMessage = document.getElementById("pwConfirmMessage");
+  const nicknameMessage = document.getElementById("nicknameMessage");
+
+  const confirmPassword = document.getElementById("passwordConfirm");
+  const password = document.getElementById("password");
+
+  confirmPassword.addEventListener("input", () => {
+    passwordConfirm();
+  });
+  password.addEventListener("input", () => {
+    passwordConfirm();
+  });
+
+  function passwordConfirm() {
+    if (password.value !== confirmPassword.value) {
+      pwConfirmMessage.textContent = "비밀번호가 일치하지 않습니다.";
+      pwConfirmMessage.style.color = "red";
+    } else {
+      pwConfirmMessage.textContent = "비밀번호가 일치합니다.";
+      pwConfirmMessage.style.color = "green";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (loginIdErrorMessage != null) {
+      loginIdMessage.textContent = loginIdErrorMessage;
+      loginIdMessage.style.color = "red";
+
+    }
+    if (nickNameErrorMessage != null) {
+      nicknameMessage.textContent = nickNameErrorMessage;
+      nicknameMessage.style.color = "red";
+    }
+
+  });
+
+  signupForm.addEventListener("submit", event => {
+    const loginId = document.getElementById("loginId");
+    const idRegex = /^[A-Za-z0-9]{8,12}$/;
+    const pwRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{7,15}$/;
+    let valid = true;
+    if (!idRegex.test(loginId.value)) {
+      valid = false;
+      loginIdMessage.textContent = "아이디는 영문과 숫자가 포함된 8~12자로 제한됩니다."
+      loginIdMessage.style.color = "red";
+    } else {
+      loginIdMessage.textContent = "";
+    }
+    if (!pwRegex.test(password.value)) {
+      valid = false;
+      pwMessage.textContent = "비밀번호는 최소 1개의 대문자, 숫자 및 특수기호가 포함된 7~15자로 제한됩니다.";
+      pwMessage.style.color = "red";
+    } else {
+      pwMessage.textContent = "";
+    }
+    if (!valid) {
+      event.preventDefault();
+    }
+  });
+
+
+</script>
+</body>
+</html>

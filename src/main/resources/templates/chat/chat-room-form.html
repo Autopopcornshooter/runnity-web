@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>채팅방 Runnity C/U</title>
+  <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+  <link href="/chat/css/chat-room-form.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+</head>
+<body>
+
+<div th:replace="~{partials/header :: header}"></div>
+
+<main class="page-content">
+  <div class="chat-room-form-container">
+    <h2 th:text="${isEdit} ? '채팅방 수정' : '채팅방 생성'"></h2>
+
+    <form enctype="multipart/form-data"
+          id="chatRoomForm"
+          method="post"
+          th:action="@{/chat-room/{mode}(mode=${isEdit} ? 'edit/' + ${chatRoom.chatRoomId} : 'create')}">
+
+      <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+      <input id="chatRoomId" th:value="${chatRoom != null ? chatRoom.chatRoomId : ''}" type="hidden">
+
+      <div class="image-upload" onclick="document.getElementById('imageInput').click()">
+        <img alt="upload icon"
+             id="preview"
+             class="image-placeholder"
+             th:src="${chatRoom.imageUrl != null and chatRoom.imageUrl != '' ? chatRoom.imageUrl : '/images/image-upload.png'}">
+        <input accept="image/*" id="imageInput" name="chatRoomImage" style="display:none" type="file">
+      </div>
+
+      <label>채팅방 이름</label>
+      <input id="chatRoomName" name="chatRoomName" placeholder="채팅방 이름을 입력해주세요"
+             th:value="${chatRoom != null ? chatRoom.chatRoomName : ''}"
+             type="text">
+
+      <label>설명</label>
+      <textarea id="chatRoomDesc" name="description" placeholder="채팅방에 대한 설명을 입력해주세요"
+                th:text="${chatRoom != null ? chatRoom.description : ''}"></textarea>
+
+      <input id="chatRoomRegion" name="region"
+             th:value="${chatRegion != null ? chatRegion : ''}"
+             type="hidden">
+
+      <button class="submit-btn" th:disabled="${isEdit} ? !${isOwner} : false" type="submit">
+        <span th:text="${isEdit} ? '수정 완료' : '등록 완료'"></span>
+      </button>
+      <p style="color:red; margin-top:8px;" th:if="${isEdit} and !${isOwner}">수정 권한이 없습니다.</p>
+    </form>
+  </div>
+</main>
+<div th:replace="~{partials/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/chat/js/chat-room-form.js"></script>
+</body>
+</html>
