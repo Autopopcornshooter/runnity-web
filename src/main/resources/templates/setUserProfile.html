@@ -12,12 +12,13 @@
 </head>
 <body>
 <header>
-  <a class="d-flex align-items-center text-decoration-none" th:href="@{/main}">
-    <i class="fa-solid fa-person-running text-primary fs-4 me-2"></i>
-    <span class="fw-bold fs-5 text-primary">Runnity</span>
-  </a>
+  <!--  <a class="d-flex align-items-center text-decoration-none" th:href="@{/main}">-->
+  <!--    <i class="fa-solid fa-person-running text-primary fs-4 me-2"></i>-->
+  <!--    <span class="fw-bold fs-5 text-primary">Runnity</span>-->
+  <!--  </a>-->
 </header>
-
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
 
 <div class="set-user-container">
   <form enctype="multipart/form-data" id="profileForm" method="post"
