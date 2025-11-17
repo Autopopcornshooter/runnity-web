@@ -115,7 +115,7 @@
 }
 
 .att-btn {
-  margin-left: auto;
+  width: 100%;
   padding: 6px 14px;
   font-size: 13px;
   border-radius: 8px;
@@ -123,15 +123,20 @@
   border: none;
   font-weight: 600;
   transition: 0.2s;
+  display: flex;
+  text-align: start;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .att-btn.yes {
-  background: #4A90E2;
-  color: white;
+  background: #ddd;
+  color: #333;
+
 }
 
 .att-btn.yes:hover {
-  background: #3c7ac1;
+  background: #ccc;
 }
 
 .att-btn.no {

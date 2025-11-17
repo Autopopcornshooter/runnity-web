@@ -87,9 +87,7 @@ async function submitSchedule() {
 
     alert("일정이 생성되었습니다.");
     closeModal();
-
-    // 필요하면 여기서 일정 목록 새로고침 or 상단 알림 갱신
-    // refreshScheduleList(roomId);
+    window.location.href = `/chat-room/my-chat-list/${roomId}`;
 
   } catch (err) {
     console.error("일정 생성 실패:", err);
@@ -111,7 +109,7 @@ window.addEventListener('room:active', (e) => {
   } else {
     openBtn.style.display = "none";
   }
-})
+});
 
 if (closeBtn) {
   closeBtn.addEventListener("click", closeModal);

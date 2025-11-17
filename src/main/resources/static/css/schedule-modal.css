@@ -1,5 +1,5 @@
 /* 모달 오버레이: 배경 반투명 + 화면 중앙 정렬 */
-.modal-overlay {
+.join-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
