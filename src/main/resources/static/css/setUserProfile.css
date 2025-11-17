@@ -35,9 +35,10 @@ body {
   cursor: pointer;
 }
 
-.container {
+.set-user-container {
   display: flex;
   padding-top: 50px;
+  padding-bottom: 150px;
   justify-content: center;
 }
 
@@ -79,8 +80,11 @@ body {
 
 
 header {
-  width: 100%;
   background-color: #f5f4ff;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 40px;
+  display: flex;
+  align-items: center;
 }
 
 .header-inner {
