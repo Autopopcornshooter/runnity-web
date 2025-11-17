@@ -20,7 +20,6 @@ public class MatchService {
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
 
-    // private static final String QUEUE_KEY = "match:queue:default";
     private static final String RESULT_KEY_FMT = "match:result:%s";
     private static String waitKey(RunnerLevel lv) { return "match:wait:" + lv.name(); }
     private static String geoKey (RunnerLevel lv) { return "match:geo:"  + lv.name(); }
@@ -31,18 +30,19 @@ public class MatchService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         if (user.getMatchState() == UserMatchState.MATCHED) throw new IllegalStateException("이미 매칭되었습니다.");
-        if (user.getMatchState() == UserMatchState.SEARCHING) return;
-
-        // 유저 위치 3km 반경 내, 같은 RunLevel 조건 추가 전 코드
-//        user.setMatchState(UserMatchState.SEARCHING);
-//        redisTemplate.opsForSet().add(QUEUE_KEY, String.valueOf(userId));
-//        userRepository.save(user);
-
-        user.setMatchState(UserMatchState.SEARCHING);
-        userRepository.save(user);
 
         String wKey = waitKey(user.getRunnerLevel());
         String gKey = geoKey(user.getRunnerLevel());
+
+        // 이미 SEARCHING인데 꼬였을 가능성 => Redis 쪽을 리셋하고 다시 넣는다
+        if (user.getMatchState() == UserMatchState.SEARCHING) {
+            redisTemplate.opsForSet().remove(wKey, String.valueOf(userId));
+            redisTemplate.opsForZSet().remove("match:wait:idx" + user.getRunnerLevel().name(), String.valueOf(userId));
+            redisTemplate.opsForZSet().remove(gKey, String.valueOf(userId));
+        }
+
+        user.setMatchState(UserMatchState.SEARCHING);
+        userRepository.save(user);
 
         // 매칭 먼저 잡은 순으로
         long now = System.currentTimeMillis();
@@ -56,13 +56,6 @@ public class MatchService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // 유저 위치 3km 반경 내, 같은 RunLevel 조건 추가 전 코드
-//        if (user.getMatchState() == UserMatchState.SEARCHING) {
-//            user.setMatchState(UserMatchState.IDLE);
-//            userRepository.save(user);
-//            redisTemplate.opsForSet().remove(QUEUE_KEY, String.valueOf(userId));
-//        }
-
         if (user.getMatchState() == UserMatchState.SEARCHING) {
             user.setMatchState(UserMatchState.IDLE);
             userRepository.save(user);
@@ -71,9 +64,7 @@ public class MatchService {
             String gKey = geoKey(user.getRunnerLevel());
 
             redisTemplate.opsForSet().remove(wKey, String.valueOf(userId));
-            // 매칭 대기순 제거
             redisTemplate.opsForZSet().remove("match:wait:idx" + user.getRunnerLevel().name(), String.valueOf(userId));
-            // GEO 정리(안 해도 Lua가 매칭 시 ZREM 하지만, 취소면 여기서 제거)
             redisTemplate.opsForZSet().remove(gKey, String.valueOf(userId));
         }
     }
@@ -84,24 +75,36 @@ public class MatchService {
             return Map.of("state","MATCHED","chatRoomId", Long.valueOf(result));
         }
 
-        // 유저 위치 3km 반경 내, 같은 RunLevel 조건 추가 전 코드
-//        Boolean queued = redisTemplate.opsForSet().isMember(QUEUE_KEY, String.valueOf(userId));
-//        return Map.of("state", (queued!=null && queued) ? "SEARCHING" : "IDLE");
-
-        RunnerLevel level = userRepository.findById(userId)
-            .map(u -> u.getRunnerLevel())
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        RunnerLevel level = user.getRunnerLevel();
+        String uid = String.valueOf(userId);
 
-        Boolean queued = redisTemplate.opsForSet()
-            .isMember(waitKey(level), String.valueOf(userId));
+        String wKey = waitKey(level);
+        String gKey = geoKey(level);
+        String idxKey = "match:wait:idx" + level.name();
 
-        if (queued == null || !queued) {
-            UserMatchState state = userRepository.findById(userId)
-                .map(u -> u.getMatchState())
-                .orElse(UserMatchState.IDLE);
-            if (state == UserMatchState.SEARCHING) {
-                return Map.of("state", "SEARCHING");
+        Boolean queued = redisTemplate.opsForSet().isMember(wKey, uid);
+
+        // queue 에 데이터가 쌓이지 않아서 추가해준 복구 로직
+        if ((queued == null || !queued) && user.getMatchState() == UserMatchState.SEARCHING) {
+            // Redis 쪽 상태를 한 번 깨끗하게 정리하고
+            redisTemplate.opsForSet().remove(wKey, uid);
+            redisTemplate.opsForZSet().remove(idxKey, uid);
+            redisTemplate.opsForZSet().remove(gKey, uid);
+
+            // 다시 제대로 큐에 넣어준다.
+            long now = System.currentTimeMillis();
+            redisTemplate.opsForSet().add(wKey, uid);
+            redisTemplate.opsForZSet().add(idxKey, uid, now);
+
+            // 유저 위치가 꼭 있어야 한다면, null 체크 한 번 정도 해줘도 좋음
+            if (user.getRegion() != null) {
+                pushGeo(user, gKey, uid);
             }
+
+            // 프론트 입장에서는 여전히 "SEARCHING"
+            return Map.of("state", "SEARCHING");
         }
 
         return Map.of("state", (queued != null && queued) ? "SEARCHING" : "IDLE");
