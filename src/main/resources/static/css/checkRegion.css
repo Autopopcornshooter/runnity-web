@@ -5,7 +5,7 @@ body {
   padding: 0;
 }
 
-.container {
+.check-region-container {
   display: flex;
   justify-content: center;
   /*height: 100vh;*/
@@ -13,8 +13,11 @@ body {
 
 
 header {
-  width: 100%;
   background-color: #f5f4ff;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 40px;
+  display: flex;
+  align-items: center;
 }
 
 .header-inner {

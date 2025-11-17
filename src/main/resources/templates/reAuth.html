@@ -3,16 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>비밀번호 인증</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}">
   <link rel="stylesheet" th:href="@{/css/signIn.css}">
 
 </head>
 <body>
 <header>
-  <img alt="Runnity 로고" th:src="@{/images/running.png}">
-  <h1>Runnity</h1>
+  <a class="d-flex align-items-center text-decoration-none" th:href="@{/main}">
+    <i class="fa-solid fa-person-running text-primary fs-4 me-2"></i>
+    <span class="fw-bold fs-5 text-primary">Runnity</span>
+  </a>
 </header>
 
-<div class="container">
+<div class="signIn-container">
   <form autocomplete="on" id="loginForm" method="post" th:action="@{/api/auth/re-auth}">
     <!-- CSRF -->
     <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
@@ -28,7 +35,8 @@
     <button class="login-btn" onclick="location.href='/main'">취소</button>
   </form>
 </div>
-
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
 
 <script>
   const loginForm = document.getElementById("loginForm");
