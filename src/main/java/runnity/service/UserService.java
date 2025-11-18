@@ -53,6 +53,7 @@ public class UserService {
             .region(region)
             .userRole(UserRole.ROLE_USER)
             .matchState(UserMatchState.IDLE)
+            .likecount(0)
             .build()
     );
   }
