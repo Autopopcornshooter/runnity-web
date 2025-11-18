@@ -55,14 +55,22 @@
       <div id="chatTitleWrap">
         <h2 id="chatTitle">채팅방 선택</h2>
         <p class="chat-desc" id="chatDesc" style="display:none;"></p>
+        <!-- 최근 일정 표시 바 -->
+        <div class="recent-schedule-bar" id="recentScheduleBar" style="display:none;">
+          <span id="recentScheduleText"></span>
+        </div>
+        <!-- 일정 생성 버튼 -->
+        <button class="schedule-create-btn" id="openScheduleModalBtn">
+          + 일정 만들기
+        </button>
       </div>
+
       <div class="chat-header-btn">
-        <button class="schedule-btn" id="openScheduleModalBtn" style="display:none;" type="button">
-          일정 만들기
-        </button>
-        <button class="schedule-check-btn" id="openScheduleCheckBtn" style="display:none;"
-                type="button"> 일정 참여하기
-        </button>
+
+
+        <!--        <button class="schedule-check-btn" id="openScheduleCheckBtn" style="display:none;"-->
+        <!--                type="button"> 일정 참여하기-->
+        <!--        </button>-->
         <button class="edit-btn" id="editBtn">채팅방 수정</button>
         <button class="exit-btn" id="exitBtn">나가기</button>
       </div>
@@ -151,6 +159,7 @@
 
       <!-- 참여 / 미참여 -->
       <div class="join-attendance">
+        <input id="participantStatus" name="participantStatus" type="hidden">
 
         <div class="att-row">
 
@@ -181,6 +190,7 @@
 
   </div>
 </div>
+
 
 <input id="currentRoomId" type="hidden" value="">
 <div th:replace="~{partials/footer :: footer}"></div>

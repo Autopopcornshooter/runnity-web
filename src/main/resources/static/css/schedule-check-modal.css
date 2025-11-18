@@ -148,6 +148,10 @@
   background: #ccc;
 }
 
+.att-btn.active {
+  background: #6675ff;
+}
+
 /* 삭제 버튼 */
 .join-actions {
   margin-top: 18px;

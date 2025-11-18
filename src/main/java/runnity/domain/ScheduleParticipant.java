@@ -8,10 +8,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ScheduleParticipant {
 
   @Id
@@ -30,4 +36,7 @@ public class ScheduleParticipant {
   @JoinColumn(name = "schedule_id")
   private Schedule schedule;
 
+  public void updateStatus(ParticipantStatus participantStatus) {
+    this.participantStatus = participantStatus;
+  }
 }
