@@ -95,7 +95,9 @@ async function markRoomAsRead(roomId){
     });
     // 읽음 처리 후 드롭다운 배지 새로고침
     window.dispatchEvent(new CustomEvent('unread:refresh'));
-  } catch(e){ console.warn('markRoomAsRead failed', e); }
+  } catch(e) {
+    console.log('my-chat-list.js 99번째 줄 오류 : ' + e);
+  }
 }
 
 // GROUP, DUO탭
@@ -259,24 +261,27 @@ async function openChat(roomId){
     const page=await fetchJSON(`/api/chat-rooms/${roomId}/messages?page=0&size=30`);
     (page.content||[]).reverse().forEach(m=>{
       if (isSystemPayload(m)) {
-        const txt = m.message || m.content || m.text || '알림';
+        const txt = m.message;
         addSystemMessage(txt);
         return;
       }
 
       addMessage(m.senderNickname,m.message,Number(m.senderId)===Number(userId), m.senderProfileUrl);
     });
-  }catch(e){ console.error("메시지 로드 실패:", e); }
+  } catch(e) {
+    console.log("메시지 로드 실패:", e);
+  }
 
-  setTimeout(()=>markRoomAsRead(currentRoomId),150);
+  setTimeout(()=>markRoomAsRead(currentRoomId),800);
 }
 
 async function onLeavePageOrRoom() {
   try {
     await markRoomAsRead(currentRoomId);
-  } catch(err) {
-    console.log("현재 방 나가기 my-chat-list.js onLeavePageOrRoom() 메서드 오류 : " + err);
+  } catch(e) {
+    console.log("현재 방 나가기 my-chat-list.js onLeavePageOrRoom() 메서드 오류 : " + e);
   }
+  currentRoomId = null;
   broadcastActiveRoom(null);
 }
 
@@ -297,7 +302,7 @@ $("#sendBtn").addEventListener("click", async ()=>{
     }));
     input.value="";
   }catch(e){
-    console.error("SEND 실패:",e);
+    console.log("SEND 실패:",e);
   }
 });
 
@@ -313,20 +318,24 @@ $("#exitBtn").addEventListener("click", async ()=>{
   const token=$('meta[name="_csrf"]').content;
   const header=$('meta[name="_csrf_header"]').content;
   const isRandom=(currentRoomType==="RANDOM");
-  const msg=isRandom?"운동을 완료하시겠습니까?":"채팅방에서 나가시겠습니까?";
+  const msg= isRandom ? "운동을 완료하시겠습니까?" : "채팅방에서 나가시겠습니까?";
   if(!confirm(msg)) return;
 
   await markRoomAsRead(currentRoomId);
-  await onLeavePageOrRoom();
-  const res=await fetch(`/api/chats/${currentRoomId}/leave`,{method:"DELETE",headers:{[header]:token}});
+  // await onLeavePageOrRoom();
+  const res=await fetch(`/api/chats/${currentRoomId}/leave`,
+      {
+        method:"DELETE",
+        headers:{[header]:token}
+      });
   if(res.ok){
-    if(isRandom) alert("운동이 완료되었습니다 👟");
+    currentRoomId=null;
     location.href="/chat-room/my-chat-list";
-    return;
+    $("#chatMessages").innerHTML='<p class="placeholder">왼쪽에서 채팅방을 선택하세요.</p>';
+    $("#chatTitle").textContent="채팅방 선택";
+  } else {
+    alert("나가기 오류 입니다. 다시 시도해주세요.");
   }
-  currentRoomId=null;
-  $("#chatMessages").innerHTML='<p class="placeholder">왼쪽에서 채팅방을 선택하세요.</p>';
-  $("#chatTitle").textContent="채팅방 선택";
 });
 
 // 초기화
@@ -339,9 +348,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   try{
     const map=await fetchJSON('/api/chat-rooms/unread-counts');
     Object.entries(map).forEach(([rid,cnt])=>setUnread(rid,Number(cnt)));
-  }
-  catch{
-
+  } catch(e) {
+    console.log("my-chat-list.js 348번째 줄 미확인 메세지 확인 오류 : " + e);
   }
 
   const m=location.pathname.match(/\/chat-room\/my-chat-list\/(\d+)$/);
@@ -356,7 +364,13 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     setActiveTab("GROUP"); filterRooms("GROUP");
   }
 
-  const onHide=async()=>{try{await markRoomAsRead(currentRoomId);}catch{}};
+  const onHide=async () => {
+    try {
+      await markRoomAsRead(currentRoomId);
+    } catch(e) {
+      console.log("my-chat-list.js 367번째 줄 오류 : " + e);
+    }
+  };
   window.addEventListener('beforeunload',onHide);
   window.addEventListener('pagehide',onHide);
   document.addEventListener('visibilitychange', () => {

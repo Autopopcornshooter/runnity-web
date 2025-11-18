@@ -29,6 +29,7 @@ public class MatchWorker {
 
     private String waitKey(RunnerLevel lv) { return "match:wait:" + lv.name(); }
     private String geoKey (RunnerLevel lv) { return "match:geo:"  + lv.name(); }
+    private String waitIdxKey (RunnerLevel lv) { return "match:wait:idx:"  + lv.name(); }
     private String resultKey(Long userId)  { return "match:result:" + userId; }
 
     @Scheduled(fixedDelay = 300)
@@ -37,11 +38,12 @@ public class MatchWorker {
             for (RunnerLevel level : RunnerLevel.values()) {
                 String wKey = waitKey(level);
                 String gKey = geoKey(level);
+                String idxKey = waitIdxKey(level);
 
                 @SuppressWarnings("unchecked")
                 List<String> pair = (List<String>) redis.execute(
                     duoMatchScript,
-                    java.util.Arrays.asList(wKey, gKey, "match:wait:idx" + level.name()),
+                    java.util.Arrays.asList(wKey, gKey, idxKey),
                     new Object[]{ "3000", String.valueOf(LOCK_TTL_MS) }
                 );
 
