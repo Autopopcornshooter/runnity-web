@@ -118,7 +118,7 @@ public class AlanService {
 
         // 시간별 요약 리스트
         List<Map<String, String>> hourlyList = new ArrayList<>();
-        Pattern p = Pattern.compile("- \\*\\*(\\d+)시간 후\\*\\*:\\s*온도\\s*([\\d.]+)°C,\\s*강수확률\\s*(\\d+)%");
+        Pattern p = Pattern.compile("\\s*-\\s*\\*\\*(\\d+)시간 후\\*\\*:\\s*온도\\s*([\\d.-]+)°C,\\s*강수확률\\s*(\\d+)%");
         Matcher m = p.matcher(content);
         while (m.find()) {
             Map<String, String> hour = new LinkedHashMap<>();
