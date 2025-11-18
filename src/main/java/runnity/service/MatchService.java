@@ -23,6 +23,7 @@ public class MatchService {
     private static final String RESULT_KEY_FMT = "match:result:%s";
     private static String waitKey(RunnerLevel lv) { return "match:wait:" + lv.name(); }
     private static String geoKey (RunnerLevel lv) { return "match:geo:"  + lv.name(); }
+    private static String waitIdxKey (RunnerLevel lv) { return "match:wait:idx:"  + lv.name(); }
 
     @Transactional
     public void queueMatch(Long userId) {
@@ -33,11 +34,12 @@ public class MatchService {
 
         String wKey = waitKey(user.getRunnerLevel());
         String gKey = geoKey(user.getRunnerLevel());
+        String idxKey = waitIdxKey(user.getRunnerLevel());
 
         // 이미 SEARCHING인데 꼬였을 가능성 => Redis 쪽을 리셋하고 다시 넣는다
         if (user.getMatchState() == UserMatchState.SEARCHING) {
             redisTemplate.opsForSet().remove(wKey, String.valueOf(userId));
-            redisTemplate.opsForZSet().remove("match:wait:idx" + user.getRunnerLevel().name(), String.valueOf(userId));
+            redisTemplate.opsForZSet().remove(idxKey, String.valueOf(userId));
             redisTemplate.opsForZSet().remove(gKey, String.valueOf(userId));
         }
 
@@ -47,7 +49,7 @@ public class MatchService {
         // 매칭 먼저 잡은 순으로
         long now = System.currentTimeMillis();
         redisTemplate.opsForSet().add(wKey, String.valueOf(userId));
-        redisTemplate.opsForZSet().add("match:wait:idx" + user.getRunnerLevel().name(), String.valueOf(userId), now);
+        redisTemplate.opsForZSet().add(idxKey, String.valueOf(userId), now);
         pushGeo(user, gKey, String.valueOf(userId));
     }
 
@@ -62,9 +64,10 @@ public class MatchService {
 
             String wKey = waitKey(user.getRunnerLevel());
             String gKey = geoKey(user.getRunnerLevel());
+            String idxKey = waitIdxKey(user.getRunnerLevel());
 
             redisTemplate.opsForSet().remove(wKey, String.valueOf(userId));
-            redisTemplate.opsForZSet().remove("match:wait:idx" + user.getRunnerLevel().name(), String.valueOf(userId));
+            redisTemplate.opsForZSet().remove(idxKey, String.valueOf(userId));
             redisTemplate.opsForZSet().remove(gKey, String.valueOf(userId));
         }
     }
@@ -82,7 +85,7 @@ public class MatchService {
 
         String wKey = waitKey(level);
         String gKey = geoKey(level);
-        String idxKey = "match:wait:idx" + level.name();
+        String idxKey = waitIdxKey(user.getRunnerLevel());
 
         Boolean queued = redisTemplate.opsForSet().isMember(wKey, uid);
 
