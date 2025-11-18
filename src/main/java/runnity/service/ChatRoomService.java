@@ -136,7 +136,6 @@ public class ChatRoomService {
         switch (request.getChatRoomType()) {
             case GROUP -> room = createGroupChatRoom(request, chatRoomImage);
             case DIRECT -> room = createDirectRoom(request.getMembers());
-            case RANDOM -> room = createRandomChatRoom();
             default -> throw new IllegalArgumentException("알 수 없는 채팅방 TYPE 입니다.");
         }
 
@@ -237,15 +236,6 @@ public class ChatRoomService {
         chatRoomRepository.save(room);
 
         addMembers(room, userIds);
-        return room;
-    }
-
-    // RANDOM 채팅방 생성 메서드 (미완성)
-    public ChatRoom createRandomChatRoom() {
-        ChatRoom room = ChatRoom.builder()
-            .chatRoomType(ChatRoomType.RANDOM)
-            .build();
-        chatRoomRepository.save(room);
         return room;
     }
 
