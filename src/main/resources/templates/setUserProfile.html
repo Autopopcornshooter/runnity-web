@@ -3,63 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>회원 정보 변경</title>
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}">
   <link rel="stylesheet" th:href="@{/css/setUserProfile.css}">
 </head>
 <body>
 <header>
-  <div class="header-inner">
-    <img alt="Runnity 로고" th:src="@{/images/topbarLogo.png}">
-    <h1>Runnity</h1>
-  </div>
+  <!--  <a class="d-flex align-items-center text-decoration-none" th:href="@{/main}">-->
+  <!--    <i class="fa-solid fa-person-running text-primary fs-4 me-2"></i>-->
+  <!--    <span class="fw-bold fs-5 text-primary">Runnity</span>-->
+  <!--  </a>-->
 </header>
-<!--<div class="container">-->
-<!--  &lt;!&ndash; 회원가입 폼 &ndash;&gt;-->
-<!--  <div class="signup-section">-->
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
 
-
-<!--    <form id="signUpForm" method="post" th:action="@{/userInfo/update}">-->
-<!--      &lt;!&ndash; CSRF &ndash;&gt;-->
-<!--      <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>-->
-
-<!--      <th:block th:unless="${isSNSLogin}">-->
-<!--        <label for="loginId">아이디</label>-->
-<!--        <input id="loginId" name="username" placeholder="변경할 아이디를 입력하세요"-->
-<!--               th:value="${formData.username}"-->
-<!--               type="text">-->
-<!--        <span id="idMessage"></span>-->
-<!--      </th:block>-->
-
-
-<!--      <th:block th:unless="${isSNSLogin}">-->
-<!--        <label for="password">비밀번호</label>-->
-<!--        <input id="password" name="password" placeholder="변경할 비밀번호를 입력하세요"-->
-<!--               th:value="${formData.password}"-->
-<!--               type="password">-->
-<!--        <span id="pwMessage"></span>-->
-<!--      </th:block>-->
-<!--      <th:block th:unless="${isSNSLogin}">-->
-<!--        <label for="passwordConfirm">비밀번호 확인</label>-->
-<!--        <input id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요"-->
-<!--               th:value="${formData.passwordConfirm}" type="password">-->
-<!--        <span id="pwConfirmMessage"></span>-->
-<!--      </th:block>-->
-<!--      <label for="nickname">닉네임</label>-->
-<!--      <input id="nickname" name="nickname" placeholder=" 변경할 닉네임을 입력하세요"-->
-<!--             th:value="${formData.nickname}"-->
-<!--             type="text">-->
-<!--      <span id="nicknameMessage"></span>-->
-
-<!--      <div class="btn-section">-->
-<!--        <button class="save-btn" type="submit">저장</button>-->
-<!--        <button class="cancel-btn" onclick="location.href='/main'">취소</button>-->
-<!--      </div>-->
-
-<!--    </form>-->
-<!--  </div>-->
-<!--</div>-->
-
-<div class="container">
+<div class="set-user-container">
   <form enctype="multipart/form-data" id="profileForm" method="post"
         th:action="@{/userInfo/update}">
     <!-- CSRF -->
@@ -118,7 +79,8 @@
 
   </form>
 </div>
-
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
 
 <script th:inline="javascript">
   const loginIdErrorMessage = /*[[${loginIdErrorMessage}]]*/ null;
