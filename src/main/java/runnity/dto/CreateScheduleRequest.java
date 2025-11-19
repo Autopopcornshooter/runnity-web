@@ -9,8 +9,14 @@ import lombok.Setter;
 public class CreateScheduleRequest {
 
   private Long roomId;
+
   private String title;
   private LocalDateTime startAt;
   private String detail;
+
+  private Long regionId;
+  private Double lat;
+  private Double lng;
+  private String address;
 
 }

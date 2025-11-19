@@ -17,6 +17,8 @@ public class ScheduleResponse {
   private String detail;
   private LocalDateTime startAt;
   private String location;
+  private double lat;
+  private double lng;
   private Long scheduleCreatorId;
   private Long memberId;
   private boolean isCreator;
@@ -29,12 +31,16 @@ public class ScheduleResponse {
   public static ScheduleResponse from(
       Schedule schedule, int yes, int no,
       ParticipantStatus myStatus, boolean isCreator, Long memberId) {
-
+    if (schedule == null) {
+      return null;
+    }
     return ScheduleResponse.builder()
         .scheduleId(schedule.getScheduleId())
         .title(schedule.getTitle())
         .detail(schedule.getDetail())
-//        .location(schedule.getRegion().getAddress())
+        .location(schedule.getRegion().getAddress())
+        .lat(schedule.getRegion().getLat())
+        .lng(schedule.getRegion().getLng())
         .startAt(schedule.getStartAt())
         .scheduleCreatorId(schedule.getScheduleCreator().getChatRoomMemberId())
         .memberId(memberId)

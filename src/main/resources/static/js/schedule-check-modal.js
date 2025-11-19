@@ -20,10 +20,17 @@ const scParticipantStatus = document.getElementById("participantStatus");
 let latestScheduleId = null
 let myChatRoomMemberId = null;
 
+let latestScheduleLat = null;
+let latestScheduleLng = null;
+
 //--모달 동작 관련--
 async function openJoinModal() {
   await loadRecentSchedule();
   scModal.style.display = "flex";
+//지도 세팅
+  setTimeout(() => {
+    initJoinMap();
+  }, 100);
 }
 
 function closeJoinModal() {
@@ -83,6 +90,12 @@ function fillScheduleData(data) {
   scTitle.textContent = data.title;
   scDesc.textContent = data.detail;
   scLocation.textContent = data.location ?? '-';
+
+  // 지도용 좌표 저장
+  scLocation.dataset.lat = data.lat;
+  scLocation.dataset.lng = data.lng;
+  latestScheduleLat = data.lat;
+  latestScheduleLng = data.lng;
 
   const dateObj = new Date(data.startAt);
   const now = new Date();
@@ -263,7 +276,7 @@ function fillRecentScheduleBar(data) {
   text.textContent = displayText;
   text.style.color = color;
   bar.style.display = "inline-flex";
-  
+
   // 클릭 시 모달 열기
   bar.onclick = () => {
     fillScheduleData(data);   // 기존 모달 데이터 작성
@@ -297,23 +310,44 @@ function formatStartTime(startAt) {
   return `${start.getMonth() + 1}월 ${start.getDate()}일 ${start.getHours()}시`;
 }
 
-//--지도 view 추가--
-let viewMap, viewMarker;
+let joinMap = null;
+let joinMarker = null;
 
-function loadScheduleViewMap(lat, lng) {
-  const pos = new naver.maps.LatLng(lat, lng);
+function initJoinMap() {
 
-  viewMap = new naver.maps.Map("scheduleViewMap", {
-    center: pos,
-    zoom: 14,
-    draggable: false,
-    scrollWheel: false,
-    disableDoubleClickZoom: true,
-    pinchZoom: false
-  });
+  const mapDiv = document.getElementById("scheduleViewMap");
+  if (!mapDiv) {
+    return;
+  }
 
-  viewMarker = new naver.maps.Marker({
-    position: pos,
-    map: viewMap
-  });
+  const lat = Number(scLocation.dataset.lat);
+  const lng = Number(scLocation.dataset.lng);
+  console.log("lat:", lat, "lng:", lng);
+  if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+    mapDiv.innerHTML = "위치 정보 없음";
+    return;
+  }
+
+  if (!joinMap) {
+    joinMap = new naver.maps.Map('scheduleViewMap', {
+      center: new naver.maps.LatLng(lat, lng),
+      zoom: 15,
+      draggable: true,
+      pinchZoom: true,
+      disableDoubleClickZoom: false,
+      scrollWheel: true,
+      keyboardShortcuts: true
+    });
+
+    joinMarker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(lat, lng),
+      map: joinMap,
+      clickable: false,
+      draggable: false
+    });
+  } else {
+    const pos = new naver.maps.LatLng(lat, lng);
+    joinMap.setCenter(pos);
+    joinMarker.setPosition(pos);
+  }
 }

@@ -45,7 +45,11 @@ async function submitSchedule() {
   const title = (titleInput.value || "").trim();
   const detail = (detailInput.value || "").trim();
   const startAt = dtInput.value;  // "2025-11-15T14:30" 같은 문자열
-  const regionId = regionInput.value ? Number(regionInput.value) : null;
+
+  const regionId = document.getElementById("scheduleRegionId").value;
+  const lat = document.getElementById("scheduleLat").value;
+  const lng = document.getElementById("scheduleLng").value;
+  const address = document.getElementById("scheduleAddress").value;
 
   if (!title) {
     alert("제목을 입력해주세요.");
@@ -72,8 +76,11 @@ async function submitSchedule() {
     title,
     detail,
     startAt,
-    regionId,
-    roomId // 서버 DTO에서 roomId 필드 받고 있으면 같이 전달
+    roomId, // 서버 DTO에서 roomId 필드 받고 있으면 같이 전달
+    regionId: regionId ? Number(regionId) : null,
+    lat: lat ? Number(lat) : null,
+    lng: lng ? Number(lng) : null,
+    address
   };
 
   try {
@@ -100,15 +107,6 @@ async function submitSchedule() {
 
 // 이벤트 바인딩
 
-document.addEventListener("DOMContentLoaded", (e) => {
-  const roomId = e.detail.roomId;
-  console.log("채팅방 활성화 이벤트")
-  if (roomId) {
-    openBtn.style.display = "inline-block";
-  } else {
-    openBtn.style.display = "none";
-  }
-});
 window.addEventListener('room:active', (e) => {
   const roomId = e.detail.roomId;
   console.log("채팅방 활성화 이벤트")
@@ -176,7 +174,7 @@ function updateCreateMapPosition(latlng) {
 
   naver.maps.Service.reverseGeocode({
     coords: latlng,
-    orders: [naver.maps.Service.OrderType.ADDR]
+    orders: naver.maps.Service.OrderType.ADDR
   }, function (status, response) {
     if (status !== naver.maps.Service.Status.OK) {
       return;
