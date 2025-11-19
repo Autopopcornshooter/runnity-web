@@ -66,7 +66,7 @@ searchBox.addEventListener('keypress', (e) => {
 // 변경: 이벤트 위임으로 like/chat/delete 모두 처리
 // ----------------------------
 if (friendList) {
-    friendList.addEventListener('click', function (e) {
+    friendList.addEventListener('click', async function (e) {
         const likeBtn = e.target.closest('.like-btn');
         if (likeBtn) {
             const friendItem = likeBtn.closest('.friend-item');
@@ -80,28 +80,35 @@ if (friendList) {
 
             const likeCountSpan = friendItem.querySelector(".likecount");
 
-            fetch(`/api/friends/${friendId}/like`, {
-                method: "POST",
-                headers: { [header]: token }
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error("서버 오류 발생");
-                    return response.json();
-                })
-                .then(updatedCount => {
-                    // 버튼 숨기고, 숫자 표시
-                    likeBtn.style.display = "none";
-                    if (likeCountSpan) {
-                        likeCountSpan.textContent = `추천수 : ${updatedCount}`;
-                        likeCountSpan.style.display = "inline-block";
-                    }
-                })
-                .catch(error => {
-                    alert("좋아요 처리 중 오류가 발생했습니다.");
-                    console.error(error);
+            try {
+                const response = await fetch(`/api/friends/${friendId}/like`, {
+                    method: "POST",
+                    headers: { [header]: token }
                 });
 
-            return; // 다른 핸들러 중복 실행 방지
+                const data = await response.json(); // 항상 JSON 읽기
+
+                if (!response.ok) {
+                    // 실패(이미 좋아요) → catch로 보내면서 data 포함
+                    throw { status: response.status, count: data };
+                }
+
+                // 성공 시
+                likeBtn.style.display = "none";
+                likeCountSpan.style.display = "inline-block";
+                likeCountSpan.textContent = `추천수 : ${data}`;
+
+            } catch (err) {
+                if (err.status === 400) {
+                    alert("이미 좋아요를 누른 사용자입니다.");
+                    likeBtn.style.display = "none";
+                    likeCountSpan.style.display = "inline-block";
+                    likeCountSpan.textContent = `추천수 : ${err.count}`;
+                } else {
+                    console.error(err);
+                    alert("좋아요 처리 중 오류가 발생했습니다.");
+                }
+            }
         }
 
         const chatBtn = e.target.closest('.chat-btn');
@@ -170,106 +177,3 @@ if (friendList) {
         }
     });
 }
-//
-//
-// // 좋아요 버튼
-// document.addEventListener("DOMContentLoaded", () => {
-//     document.querySelectorAll(".like-btn").forEach(button => {
-//         button.addEventListener("click", function() {
-//             const friendItem = this.closest(".friend-item");
-//             const friendId = friendItem.getAttribute("data-id");
-//
-//             if (!friendId) {
-//                 console.error("❌ friendId가 없습니다. HTML data-id 속성을 확인하세요.");
-//                 alert("유효하지 않은 사용자입니다.");
-//                 return;
-//             }
-//
-//             const likeCountSpan = friendItem.querySelector(".likecount");
-//
-//             fetch(`/api/friends/${friendId}/like`, {
-//                 method: "POST",
-//                 headers: {[header]: token}
-//             })
-//                 .then(response => {
-//                     if (!response.ok) throw new Error("서버 오류 발생");
-//                     return response.json();
-//                 })
-//                 .then(updatedCount => {
-//                     // 버튼 숨기고, 숫자 표시
-//                     this.style.display = "none";
-//                     likeCountSpan.textContent = `추천수 : ${updatedCount}`;
-//                     likeCountSpan.style.display = "inline-block";
-//                 })
-//                 .catch(error => {
-//                     alert("좋아요 처리 중 오류가 발생했습니다.");
-//                     console.error(error);
-//                 });
-//         });
-//     });
-// });
-// //채팅 버튼
-// document.addEventListener("DOMContentLoaded", function () {
-//     document.querySelectorAll(".chat-btn").forEach(btn => {
-//         btn.addEventListener("click", function () {
-//             const friendUserId = this.closest(".friend-item").getAttribute("data-userid");
-//
-//             if (!friendUserId) {
-//                 console.error("❌ friendId가 없습니다. HTML data-userid 속성을 확인하세요.");
-//                 alert("유효하지 않은 사용자입니다.");
-//                 return;
-//             }
-//
-//             fetch("/api/friends/chat", {
-//                 method: "POST",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     [header]: token
-//                 },
-//                 body: JSON.stringify({ friendUserId: friendUserId })
-//             })
-//                 .then(response => {
-//                     if (!response.ok) throw new Error("채팅방 생성 실패");
-//                     return response.text();
-//                 })
-//                 .then(roomId => {
-//                     // 채팅방 페이지로 이동
-//                     window.location.href = `/chat-room/my-chat-list`;
-//                 })
-//                 .catch(err => {
-//                     console.error(err);
-//                     alert("채팅방 생성 중 오류가 발생했습니다.");
-//                 });
-//         });
-//     });
-// });
-//
-// // 삭제 버튼
-// document.querySelectorAll(".delete-btn").forEach(button => {
-//     button.addEventListener("click", function() {
-//         const friendItem = this.closest(".friend-item");
-//         const friendId = friendItem.getAttribute("data-id");
-//
-//         if (!friendId) return;
-//
-//         const confirmDelete = confirm("정말 이 친구를 삭제하시겠습니까?");
-//         if (!confirmDelete) return;
-//
-//         fetch(`/api/friends/${friendId}/delete`, {
-//             method: "DELETE",
-//             headers: { [header]: token }
-//         })
-//             .then(res => {
-//                 if (!res.ok) throw new Error("삭제 실패");
-//                 return res.text();
-//             })
-//             .then(message => {
-//                 alert(message);
-//                 friendItem.remove(); // 화면에서 제거
-//             })
-//             .catch(err => {
-//                 console.error(err);
-//                 alert("친구 삭제 중 오류가 발생했습니다.");
-//             });
-//     });
-// });
