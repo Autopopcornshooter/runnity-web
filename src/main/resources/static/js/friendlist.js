@@ -14,10 +14,18 @@ const friendList = document.getElementById('friendList');
 searchBox.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const keyword = searchBox.value.trim();
-        if (!keyword) return;
+        if (!keyword) {               // ✔ 검색어 없으면 전체 페이지 리로드
+            window.location.href = "/friendlist";
+            return;
+        }
+        const url = keyword ? `/api/friends/searchOnList?nickname=${encodeURIComponent(keyword)}` : `/api/friends`;
+        // if (!keyword) return;
 
-        fetch(`/api/friends/searchOnList?nickname=${encodeURIComponent(keyword)}`)
-            .then(res => res.json())
+        fetch(url)//`/api/friends/searchOnList?nickname=${encodeURIComponent(keyword)}`)
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
             .then(data => {
                 friendList.innerHTML = ''; // 기존 목록 초기화
 
@@ -29,10 +37,17 @@ searchBox.addEventListener('keypress', (e) => {
                 data.forEach(friend => {
                     const div = document.createElement('div');
                     div.className = 'friend-item';
+                    // 변경: data-id, data-userid 속성 추가 (핸들러에서 사용)
+                    div.setAttribute('data-id', friend.id ?? '');
+                    div.setAttribute('data-userid', friend.userId ?? '');
+                    // 변경: likecount span 포함 (초기에는 display:none 가능)
+                    const likecountText = friend.likecount != null ? `추천수 : ${friend.likecount}` : '';
+                    const likecountStyle = (friend.likecount != null && friend.likecount > 0) ? 'inline-block' : 'none';
                     div.innerHTML = `
                             <span class="nickname">${friend.nickname}</span>
                             <div class="friend-button">
                                 <button class="btn btn-outline-secondary btn-sm like-btn">좋아요</button>
+                                <span class="likecount" th:text="${friend.likecount}" style="display:none;"></span>
                                 <button class="btn btn-outline-secondary btn-sm chat-btn">채팅 시작</button>
                                 <button class="btn btn-outline-secondary btn-sm delete-btn">친구 삭제</button>
                             </div>
@@ -45,12 +60,17 @@ searchBox.addEventListener('keypress', (e) => {
             });
     }
 });
-// 좋아요 버튼
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".like-btn").forEach(button => {
-        button.addEventListener("click", function() {
-            const friendItem = this.closest(".friend-item");
-            const friendId = friendItem.getAttribute("data-id");
+
+
+// ----------------------------
+// 변경: 이벤트 위임으로 like/chat/delete 모두 처리
+// ----------------------------
+if (friendList) {
+    friendList.addEventListener('click', async function (e) {
+        const likeBtn = e.target.closest('.like-btn');
+        if (likeBtn) {
+            const friendItem = likeBtn.closest('.friend-item');
+            const friendId = friendItem ? friendItem.getAttribute('data-id') : null;
 
             if (!friendId) {
                 console.error("❌ friendId가 없습니다. HTML data-id 속성을 확인하세요.");
@@ -60,35 +80,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const likeCountSpan = friendItem.querySelector(".likecount");
 
-            fetch(`/api/friends/${friendId}/like`, {
-                method: "POST",
-                headers: {[header]: token}
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error("서버 오류 발생");
-                    return response.json();
-                })
-                .then(updatedCount => {
-                    // 버튼 숨기고, 숫자 표시
-                    this.style.display = "none";
-                    likeCountSpan.textContent = `추천수 : ${updatedCount}`;
-                    likeCountSpan.style.display = "inline-block";
-                })
-                .catch(error => {
-                    alert("좋아요 처리 중 오류가 발생했습니다.");
-                    console.error(error);
+            try {
+                const response = await fetch(`/api/friends/${friendId}/like`, {
+                    method: "POST",
+                    headers: { [header]: token }
                 });
-        });
-    });
-});
-//채팅 버튼
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".chat-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-            const friendUserId = this.closest(".friend-item").getAttribute("data-userid");
+
+                const data = await response.json(); // 항상 JSON 읽기
+
+                if (!response.ok) {
+                    // 실패(이미 좋아요) → catch로 보내면서 data 포함
+                    throw { status: response.status, count: data };
+                }
+
+                // 성공 시
+                likeBtn.style.display = "none";
+                likeCountSpan.style.display = "inline-block";
+                likeCountSpan.textContent = `추천수 : ${data}`;
+
+            } catch (err) {
+                if (err.status === 400) {
+                    alert("이미 좋아요를 누른 사용자입니다.");
+                    likeBtn.style.display = "none";
+                    likeCountSpan.style.display = "inline-block";
+                    likeCountSpan.textContent = `추천수 : ${err.count}`;
+                } else {
+                    console.error(err);
+                    alert("좋아요 처리 중 오류가 발생했습니다.");
+                }
+            }
+        }
+
+        const chatBtn = e.target.closest('.chat-btn');
+        if (chatBtn) {
+            const friendItem = chatBtn.closest('.friend-item');
+            const friendUserId = friendItem ? friendItem.getAttribute('data-userid') : null;
 
             if (!friendUserId) {
-                console.error("❌ friendId가 없습니다. HTML data-userid 속성을 확인하세요.");
+                console.error("❌ friendUserId가 없습니다. HTML data-userid 속성을 확인하세요.");
                 alert("유효하지 않은 사용자입니다.");
                 return;
             }
@@ -113,36 +142,38 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.error(err);
                     alert("채팅방 생성 중 오류가 발생했습니다.");
                 });
-        });
-    });
-});
 
-// 삭제 버튼
-document.querySelectorAll(".delete-btn").forEach(button => {
-    button.addEventListener("click", function() {
-        const friendItem = this.closest(".friend-item");
-        const friendId = friendItem.getAttribute("data-id");
+            return;
+        }
 
-        if (!friendId) return;
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const friendItem = deleteBtn.closest('.friend-item');
+            const friendId = friendItem ? friendItem.getAttribute('data-id') : null;
 
-        const confirmDelete = confirm("정말 이 친구를 삭제하시겠습니까?");
-        if (!confirmDelete) return;
+            if (!friendId) return;
 
-        fetch(`/api/friends/${friendId}/delete`, {
-            method: "DELETE",
-            headers: { [header]: token }
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("삭제 실패");
-                return res.text();
+            const confirmDelete = confirm("정말 이 친구를 삭제하시겠습니까?");
+            if (!confirmDelete) return;
+
+            fetch(`/api/friends/${friendId}/delete`, {
+                method: "DELETE",
+                headers: { [header]: token }
             })
-            .then(message => {
-                alert(message);
-                friendItem.remove(); // 화면에서 제거
-            })
-            .catch(err => {
-                console.error(err);
-                alert("친구 삭제 중 오류가 발생했습니다.");
-            });
+                .then(res => {
+                    if (!res.ok) throw new Error("삭제 실패");
+                    return res.text();
+                })
+                .then(message => {
+                    alert(message);
+                    friendItem.remove(); // 화면에서 제거
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("친구 삭제 중 오류가 발생했습니다.");
+                });
+
+            return;
+        }
     });
-});
+}

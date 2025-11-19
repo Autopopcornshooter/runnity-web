@@ -1,23 +1,28 @@
 package runnity.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import runnity.domain.ChatRoom;
 import runnity.domain.Friend;
+import runnity.domain.FriendLike;
 import runnity.dto.FriendInfo;
-import runnity.service.ChatRoomService;
+import runnity.repository.FriendLikeRepository;
+import runnity.repository.FriendRepository;
 import runnity.service.FriendService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/friends")
 public class FriendApiController {
     private final FriendService friendService;
-    private final ChatRoomService chatRoomService;
+    private final FriendLikeRepository friendLikeRepository;
+    private final FriendRepository friendRepository;
 
     @PostMapping("/add")
     public ResponseEntity<String> addFriend(@RequestBody FriendInfo friendInfo) {
@@ -36,6 +41,16 @@ public class FriendApiController {
 
     @PostMapping("/{id}/like")
     public ResponseEntity<Integer> increaseLikecount(@PathVariable Long id) {
+        Long userId = friendService.getLogInUserID();
+        boolean alreadyLiked = friendLikeRepository.existsByUserIdAndFriendId(userId,id);
+        if (alreadyLiked) {
+            Optional<Friend> friend = friendRepository.findById(id);
+            int currentCount = friend.get().getLikecount();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(currentCount);
+        }
+
+        friendLikeRepository.save(new FriendLike(userId, id));
+
         int updatedCount = friendService.increaseLikeCount(id);
         return ResponseEntity.ok(updatedCount);
     }
