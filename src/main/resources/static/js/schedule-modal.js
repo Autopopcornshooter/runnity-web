@@ -17,7 +17,10 @@ function openModal() {
     alert("일정을 생성할 채팅방을 먼저 선택하세요.");
     return;
   }
-
+  //지도 초기화
+  document.getElementById("scheduleModal").style.display = "flex";
+  setTimeout(() => initCreateMap(), 200);
+  //
   console.log("currentRoomId: " + roomIdInput.value);
 
   titleInput.value = "";
@@ -130,6 +133,50 @@ if (modal) {
   });
 }
 
+let createMap, createMarker;
 
+function initCreateMap() {
+  const defaultCenter = new naver.maps.LatLng(37.5665, 126.9780); // 서울 기본 위치
+
+  createMap = new naver.maps.Map('scheduleCreateMap', {
+    center: defaultCenter,
+    zoom: 14
+  });
+
+  createMarker = new naver.maps.Marker({
+    position: defaultCenter,
+    map: createMap,
+    draggable: true
+  });
+
+  naver.maps.Event.addListener(createMap, 'click', function (e) {
+    createMarker.setPosition(e.coord);
+    updateCreateMapPosition(e.coord);
+  });
+
+  naver.maps.Event.addListener(createMarker, 'dragend', function (e) {
+    updateCreateMapPosition(e.coord);
+  });
+
+  updateCreateMapPosition(defaultCenter);
+}
+
+function updateCreateMapPosition(latlng) {
+  document.getElementById("scheduleLat").value = latlng.lat();
+  document.getElementById("scheduleLng").value = latlng.lng();
+
+  naver.maps.Service.reverseGeocode({
+    coords: latlng,
+    orders: [naver.maps.Service.OrderType.ADDR]
+  }, function (status, response) {
+    if (status !== naver.maps.Service.Status.OK) {
+      return;
+    }
+
+    const address = response.v2.address.roadAddress
+        || response.v2.address.jibunAddress;
+    document.getElementById("scheduleAddress").value = address;
+  });
+}
 
 

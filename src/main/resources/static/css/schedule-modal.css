@@ -213,3 +213,32 @@
 .schedule-create-btn:active {
   background-color: #2c3bb0;
 }
+
+.schedule-create-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+  height: 350px;
+}
+
+.schedule-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.schedule-right {
+  flex: 1;
+}
+
+.create-map-box {
+  width: 100%;
+  height: 100%;
+  background: #efefef;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

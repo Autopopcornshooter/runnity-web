@@ -228,4 +228,23 @@ function formatStartTime(startAt) {
   return `${start.getMonth() + 1}월 ${start.getDate()}일 ${start.getHours()}시`;
 }
 
+//--지도 view 추가--
+let viewMap, viewMarker;
 
+function loadScheduleViewMap(lat, lng) {
+  const pos = new naver.maps.LatLng(lat, lng);
+
+  viewMap = new naver.maps.Map("scheduleViewMap", {
+    center: pos,
+    zoom: 14,
+    draggable: false,
+    scrollWheel: false,
+    disableDoubleClickZoom: true,
+    pinchZoom: false
+  });
+
+  viewMarker = new naver.maps.Marker({
+    position: pos,
+    map: viewMap
+  });
+}
