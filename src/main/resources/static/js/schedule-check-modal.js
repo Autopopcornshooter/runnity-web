@@ -20,11 +20,17 @@ const scParticipantStatus = document.getElementById("participantStatus");
 let latestScheduleId = null
 let myChatRoomMemberId = null;
 
+let latestScheduleLat = null;
+let latestScheduleLng = null;
+
 //--모달 동작 관련--
-function openJoinModal() {
-  // loadRecentSchedule();
-  //TODO
+async function openJoinModal() {
+  await loadRecentSchedule();
   scModal.style.display = "flex";
+//지도 세팅
+  setTimeout(() => {
+    initJoinMap();
+  }, 100);
 }
 
 function closeJoinModal() {
@@ -73,7 +79,7 @@ async function loadRecentSchedule() {
 
 window.addEventListener('room:active', (e) => {
   loadRecentSchedule();
-})
+});
 
 //--일정 데이터 삽입--
 
@@ -85,6 +91,16 @@ function fillScheduleData(data) {
   scDesc.textContent = data.detail;
   scLocation.textContent = data.location ?? '-';
 
+  // 지도용 좌표 저장
+  scLocation.dataset.lat = data.lat;
+  scLocation.dataset.lng = data.lng;
+  latestScheduleLat = data.lat;
+  latestScheduleLng = data.lng;
+
+  const dateObj = new Date(data.startAt);
+  const now = new Date();
+  const diffHour = (now - dateObj) / (1000 * 60 * 60);
+
   const dateStr = data.startAt.replace("T", " ").slice(0, 16);
   scDate.textContent = `일시: ${dateStr}`;
 
@@ -92,17 +108,43 @@ function fillScheduleData(data) {
 
   scJoinCount.textContent = data.yesCount ?? 0;
   scDeclineCount.textContent = data.noCount ?? 0;
+
+  // ====== 이미 지난 일정 처리 ======
+  if (now > dateObj) {
+    // 일정 종료 후 5시간 이하
+    if (diffHour <= 5) {
+      scDate.style.color = "red";
+      scDate.textContent += "  (일정 시간이 지났습니다)";
+
+      // 버튼 비활성화
+      scJoinBtn.disabled = true;
+      scDeclineBtn.disabled = true;
+      scJoinBtn.classList.add("disabled");
+      scDeclineBtn.classList.add("disabled");
+    } else {
+      // 5시간보다 더 지났으면 UI에서 완전히 숨김
+      hideExpiredSchedule();
+      return;
+    }
+  } else {
+    // 정상 일정
+    scDate.style.color = "";
+    scJoinBtn.disabled = false;
+    scDeclineBtn.disabled = false;
+    scJoinBtn.classList.remove("disabled");
+    scDeclineBtn.classList.remove("disabled");
+  }
   //삭제버튼 활성/비활성화
   if (data.isCreator) {
     scDeleteBtn.style.display = "block";
   } else {
     scDeleteBtn.style.display = "none";
   }
-
   fillJoinStatus(data.participantStatus);
 }
 
 function fillJoinStatus(status) {
+  console.log(status);
   switch (status) {
     case "JOINED":
       toggleSelect(scJoinBtn);
@@ -114,6 +156,19 @@ function fillJoinStatus(status) {
       toggleSelect(null);
       break;
   }
+}
+
+//--만료된 일정 숨김--
+function hideExpiredSchedule() {
+
+  const bar = document.getElementById("recentScheduleBar");
+  if (bar) {
+    bar.style.display = "none";
+  }
+
+  closeJoinModal();
+
+  latestScheduleId = null;
 }
 
 //참가/불참 버튼 라디오 효과 추가
@@ -190,9 +245,36 @@ function fillRecentScheduleBar(data) {
     return;
   }
 
-  const formattedTime = formatStartTime(data.startAt);
-  text.textContent = `🕒 ${formattedTime} · ${data.title}`;
+  const start = new Date(data.startAt);
+  const now = new Date();
+  const diffHour = (now - start) / (1000 * 60 * 60);
 
+  let displayText = "";
+  let color = "";
+  let clickable = true;
+
+  // 🔥 완전 종료된 일정 (5시간 이상 지남)
+  if (diffHour > 5) {
+    bar.style.display = "none";
+    return;
+  }
+
+  // 🔥 종료 되었지만 5시간 이내
+  if (now > start) {
+    displayText = `⛔ 일정 종료됨 · ${data.title}`;
+    color = "red";
+    clickable = false;
+  }
+  // 🔥 정상 일정
+  else {
+    const formattedTime = formatStartTime(data.startAt);
+    displayText = `🕒 ${formattedTime} · ${data.title}`;
+    color = "";
+  }
+
+  // bar 표시
+  text.textContent = displayText;
+  text.style.color = color;
   bar.style.display = "inline-flex";
 
   // 클릭 시 모달 열기
@@ -228,4 +310,44 @@ function formatStartTime(startAt) {
   return `${start.getMonth() + 1}월 ${start.getDate()}일 ${start.getHours()}시`;
 }
 
+let joinMap = null;
+let joinMarker = null;
 
+function initJoinMap() {
+
+  const mapDiv = document.getElementById("scheduleViewMap");
+  if (!mapDiv) {
+    return;
+  }
+
+  const lat = Number(scLocation.dataset.lat);
+  const lng = Number(scLocation.dataset.lng);
+  console.log("lat:", lat, "lng:", lng);
+  if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+    mapDiv.innerHTML = "위치 정보 없음";
+    return;
+  }
+
+  if (!joinMap) {
+    joinMap = new naver.maps.Map('scheduleViewMap', {
+      center: new naver.maps.LatLng(lat, lng),
+      zoom: 15,
+      draggable: true,
+      pinchZoom: true,
+      disableDoubleClickZoom: false,
+      scrollWheel: true,
+      keyboardShortcuts: true
+    });
+
+    joinMarker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(lat, lng),
+      map: joinMap,
+      clickable: false,
+      draggable: false
+    });
+  } else {
+    const pos = new naver.maps.LatLng(lat, lng);
+    joinMap.setCenter(pos);
+    joinMarker.setPosition(pos);
+  }
+}

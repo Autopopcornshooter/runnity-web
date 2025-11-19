@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import runnity.domain.ChatRoom;
 import runnity.domain.ChatRoomMember;
 import runnity.domain.ParticipantStatus;
+import runnity.domain.Region;
 import runnity.domain.Schedule;
 import runnity.domain.ScheduleParticipant;
 import runnity.domain.User;
@@ -18,6 +19,7 @@ import runnity.dto.ScheduleResponse;
 import runnity.exceptions.UserNotFoundException;
 import runnity.repository.ChatRoomMemberRepository;
 import runnity.repository.ChatRoomRepository;
+import runnity.repository.RegionRepository;
 import runnity.repository.ScheduleParticipantRepository;
 import runnity.repository.ScheduleRepository;
 import runnity.repository.UserRepository;
@@ -33,23 +35,43 @@ public class ScheduleService {
   private final UserRepository userRepository;
   private final ChatRoomMemberRepository chatRoomMemberRepository;
   private final ScheduleParticipantRepository participantRepository;
+  private final RegionRepository regionRepository;
 
   @Transactional
-  public Schedule createSchedule(Long roomId, CreateScheduleRequest request) {
+  public ScheduleResponse createSchedule(Long roomId, CreateScheduleRequest request) {
     if (!roomId.equals(request.getRoomId())) {
       log.error("Room Id Not match");
       return null;
     }
+    Region region = null;
+    if (request.getRegionId() != null) {
+      region = regionRepository.findById(request.getRegionId()).orElse(null);
+    } else if (request.getLat() != null && request.getLng() != null) {
+      // 새로 Region 생성
+      region = Region.builder()
+          .address(request.getAddress())
+          .lat(request.getLat())
+          .lng(request.getLng())
+          .build();
+      regionRepository.save(region);
+    }
+
+    Long memberId = chatRoomMemberRepository.findByRoomAndUser(roomId,
+        getAuthenticatedUser().getUserId()).get().getChatRoomMemberId();
+
     Schedule schedule = Schedule.builder()
         .title(request.getTitle())
         .detail(request.getDetail())
         .chatRoom(getChatRoom(request))
         .startAt(request.getStartAt())
+        .region(region)
         .createdAt(LocalDateTime.now())
         .scheduleCreator(getCreator(request))
         .build();
+    scheduleRepository.save(schedule);
 
-    return scheduleRepository.save(schedule);
+    return ScheduleResponse.from(schedule, 0, 0, ParticipantStatus.PENDING, true,
+        schedule.getScheduleCreator().getChatRoomMemberId());
   }
 
 
@@ -61,8 +83,10 @@ public class ScheduleService {
 //    return getSchedule(roomId, recentSchedule);
     Schedule schedule = scheduleRepository
         .findTop1ByChatRoom_ChatRoomIdOrderByCreatedAtDesc(roomId)
-        .orElseThrow(() -> new RuntimeException("no schedule"));
-
+        .orElse(null);
+    if (schedule == null) {
+      return null;
+    }
     Long memberId = chatRoomMemberRepository.findByRoomAndUser(roomId,
         getAuthenticatedUser().getUserId()).get().getChatRoomMemberId();
 
