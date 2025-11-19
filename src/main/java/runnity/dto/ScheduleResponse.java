@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import runnity.domain.ParticipantStatus;
-import runnity.domain.Region;
 import runnity.domain.Schedule;
 
 @Getter
@@ -25,7 +24,7 @@ public class ScheduleResponse {
   private int yesCount;
   private int noCount;
 
-  private ParticipantStatus myStatus;
+  private ParticipantStatus participantStatus;
 
   public static ScheduleResponse from(
       Schedule schedule, int yes, int no,
@@ -42,7 +41,7 @@ public class ScheduleResponse {
         .isCreator(isCreator)
         .yesCount(yes)
         .noCount(no)
-        .myStatus(myStatus)
+        .participantStatus(myStatus)
         .build();
   }
 

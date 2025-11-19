@@ -21,9 +21,8 @@ let latestScheduleId = null
 let myChatRoomMemberId = null;
 
 //--모달 동작 관련--
-function openJoinModal() {
-  // loadRecentSchedule();
-  //TODO
+async function openJoinModal() {
+  await loadRecentSchedule();
   scModal.style.display = "flex";
 }
 
@@ -73,7 +72,7 @@ async function loadRecentSchedule() {
 
 window.addEventListener('room:active', (e) => {
   loadRecentSchedule();
-})
+});
 
 //--일정 데이터 삽입--
 
@@ -85,6 +84,10 @@ function fillScheduleData(data) {
   scDesc.textContent = data.detail;
   scLocation.textContent = data.location ?? '-';
 
+  const dateObj = new Date(data.startAt);
+  const now = new Date();
+  const diffHour = (now - dateObj) / (1000 * 60 * 60);
+
   const dateStr = data.startAt.replace("T", " ").slice(0, 16);
   scDate.textContent = `일시: ${dateStr}`;
 
@@ -92,17 +95,43 @@ function fillScheduleData(data) {
 
   scJoinCount.textContent = data.yesCount ?? 0;
   scDeclineCount.textContent = data.noCount ?? 0;
+
+  // ====== 이미 지난 일정 처리 ======
+  if (now > dateObj) {
+    // 일정 종료 후 5시간 이하
+    if (diffHour <= 5) {
+      scDate.style.color = "red";
+      scDate.textContent += "  (일정 시간이 지났습니다)";
+
+      // 버튼 비활성화
+      scJoinBtn.disabled = true;
+      scDeclineBtn.disabled = true;
+      scJoinBtn.classList.add("disabled");
+      scDeclineBtn.classList.add("disabled");
+    } else {
+      // 5시간보다 더 지났으면 UI에서 완전히 숨김
+      hideExpiredSchedule();
+      return;
+    }
+  } else {
+    // 정상 일정
+    scDate.style.color = "";
+    scJoinBtn.disabled = false;
+    scDeclineBtn.disabled = false;
+    scJoinBtn.classList.remove("disabled");
+    scDeclineBtn.classList.remove("disabled");
+  }
   //삭제버튼 활성/비활성화
   if (data.isCreator) {
     scDeleteBtn.style.display = "block";
   } else {
     scDeleteBtn.style.display = "none";
   }
-
   fillJoinStatus(data.participantStatus);
 }
 
 function fillJoinStatus(status) {
+  console.log(status);
   switch (status) {
     case "JOINED":
       toggleSelect(scJoinBtn);
@@ -114,6 +143,19 @@ function fillJoinStatus(status) {
       toggleSelect(null);
       break;
   }
+}
+
+//--만료된 일정 숨김--
+function hideExpiredSchedule() {
+
+  const bar = document.getElementById("recentScheduleBar");
+  if (bar) {
+    bar.style.display = "none";
+  }
+
+  closeJoinModal();
+
+  latestScheduleId = null;
 }
 
 //참가/불참 버튼 라디오 효과 추가
@@ -190,11 +232,38 @@ function fillRecentScheduleBar(data) {
     return;
   }
 
-  const formattedTime = formatStartTime(data.startAt);
-  text.textContent = `🕒 ${formattedTime} · ${data.title}`;
+  const start = new Date(data.startAt);
+  const now = new Date();
+  const diffHour = (now - start) / (1000 * 60 * 60);
 
+  let displayText = "";
+  let color = "";
+  let clickable = true;
+
+  // 🔥 완전 종료된 일정 (5시간 이상 지남)
+  if (diffHour > 5) {
+    bar.style.display = "none";
+    return;
+  }
+
+  // 🔥 종료 되었지만 5시간 이내
+  if (now > start) {
+    displayText = `⛔ 일정 종료됨 · ${data.title}`;
+    color = "red";
+    clickable = false;
+  }
+  // 🔥 정상 일정
+  else {
+    const formattedTime = formatStartTime(data.startAt);
+    displayText = `🕒 ${formattedTime} · ${data.title}`;
+    color = "";
+  }
+
+  // bar 표시
+  text.textContent = displayText;
+  text.style.color = color;
   bar.style.display = "inline-flex";
-
+  
   // 클릭 시 모달 열기
   bar.onclick = () => {
     fillScheduleData(data);   // 기존 모달 데이터 작성

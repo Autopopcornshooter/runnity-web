@@ -100,10 +100,15 @@ async function submitSchedule() {
 
 // 이벤트 바인딩
 
-if (openBtn) {
-  openBtn.addEventListener("click", openModal);
-}
-
+document.addEventListener("DOMContentLoaded", (e) => {
+  const roomId = e.detail.roomId;
+  console.log("채팅방 활성화 이벤트")
+  if (roomId) {
+    openBtn.style.display = "inline-block";
+  } else {
+    openBtn.style.display = "none";
+  }
+});
 window.addEventListener('room:active', (e) => {
   const roomId = e.detail.roomId;
   console.log("채팅방 활성화 이벤트")
@@ -113,6 +118,10 @@ window.addEventListener('room:active', (e) => {
     openBtn.style.display = "none";
   }
 });
+
+if (openBtn) {
+  openBtn.addEventListener("click", openModal);
+}
 
 if (closeBtn) {
   closeBtn.addEventListener("click", closeModal);
