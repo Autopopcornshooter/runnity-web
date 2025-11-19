@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.security.SecurityUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,7 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
   private final ChatRoomMemberRepository memberRepository;
 
+
   //일정 체크 창 열기 + 데이터 전달
   @GetMapping("/chat-rooms/{roomId}/schedules/recent")
   public ResponseEntity<ScheduleResponse> openRecentSchedule(@PathVariable Long roomId) {
@@ -35,9 +37,9 @@ public class ScheduleController {
 
   //일정 생성 => 리포지토리 저장
   @PostMapping("/chat-rooms/{roomId}/create-schedule")
-  public ResponseEntity<?> createSchedule(@PathVariable Long roomId,
+  public ResponseEntity<ScheduleResponse> createSchedule(@PathVariable Long roomId,
       @RequestBody CreateScheduleRequest request) {
-    scheduleService.createSchedule(roomId, request);
+    ScheduleResponse resposne = scheduleService.createSchedule(roomId, request);
     return ResponseEntity.ok().build();
   }
 

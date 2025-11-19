@@ -5,6 +5,9 @@
   <meta name="_csrf" th:content="${_csrf.token}">
   <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <title>내 채팅방 | Runnity</title>
+  <script
+      th:src="@{|https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder|}"
+      type="text/javascript"></script>
   <link href="/chat/css/my-chat-list.css" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/footer.css}"/>
   <link rel="stylesheet" th:href="@{/css/schedule-modal.css}"/>
@@ -60,17 +63,13 @@
           <span id="recentScheduleText"></span>
         </div>
         <!-- 일정 생성 버튼 -->
-        <button class="schedule-create-btn" id="openScheduleModalBtn">
+        <button class="schedule-create-btn" id="openScheduleModalBtn" style="display: none">
           + 일정 만들기
         </button>
       </div>
 
       <div class="chat-header-btn">
 
-
-        <!--        <button class="schedule-check-btn" id="openScheduleCheckBtn" style="display:none;"-->
-        <!--                type="button"> 일정 참여하기-->
-        <!--        </button>-->
         <button class="edit-btn" id="editBtn">채팅방 수정</button>
         <button class="exit-btn" id="exitBtn">나가기</button>
       </div>
@@ -97,34 +96,76 @@
     </div>
 
     <div class="modal-body">
-      <form id="scheduleForm">
-        <!-- 현재 채팅방 id (JS에서 세팅) -->
-        <input id="scheduleRoomId" type="hidden">
 
-        <div class="form-group">
-          <label for="scheduleTitle">모임 제목</label>
-          <input id="scheduleTitle" name="title" placeholder="예: 여의도 한강 러닝" required type="text">
+      <div class="schedule-create-wrapper">
+
+        <!-- LEFT (입력 폼) -->
+        <form class="schedule-left" id="scheduleForm">
+          <input id="scheduleRoomId" type="hidden">
+
+          <div class="form-group">
+            <label for="scheduleTitle">모임 제목</label>
+            <input id="scheduleTitle" name="title" placeholder="예: 여의도 한강 러닝" required type="text">
+          </div>
+
+          <div class="form-group">
+            <label for="scheduleDateTime">모임 시간</label>
+            <input id="scheduleDateTime" name="dateTime" required type="datetime-local">
+          </div>
+
+          <div class="form-group">
+            <label for="scheduleDetail">상세 설명</label>
+            <textarea id="scheduleDetail" name="detail" placeholder="페이스, 거리, 준비물 등 자유롭게 적어주세요."
+                      rows="4"></textarea>
+          </div>
+
+          <input id="scheduleRegionId" type="hidden">
+          <input id="scheduleLat" type="hidden">
+          <input id="scheduleLng" type="hidden">
+          <input id="scheduleAddress" type="hidden">
+
+        </form>
+
+        <!-- RIGHT (지도 영역) -->
+        <div class="schedule-right">
+          <div class="create-map-box" id="scheduleCreateMap">
+            지도 로딩 중...
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="scheduleDateTime">모임 시간</label>
-          <input id="scheduleDateTime" name="dateTime" required type="datetime-local">
-        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="primary-btn" id="scheduleSubmitBtn" type="button">생성하기</button>
+        <button class="secondary-btn" id="scheduleCancelBtn" type="button">취소</button>
+      </div>
+      <!--      <form id="scheduleForm">-->
+      <!--        &lt;!&ndash; 현재 채팅방 id (JS에서 세팅) &ndash;&gt;-->
+      <!--        <input id="scheduleRoomId" type="hidden">-->
 
-        <div class="form-group">
-          <label for="scheduleDetail">상세 설명</label>
-          <textarea id="scheduleDetail" name="detail" placeholder="페이스, 거리, 준비물 등 자유롭게 적어주세요."
-                    rows="3"></textarea>
-        </div>
+      <!--        <div class="form-group">-->
+      <!--          <label for="scheduleTitle">모임 제목</label>-->
+      <!--          <input id="scheduleTitle" name="title" placeholder="예: 여의도 한강 러닝" required type="text">-->
+      <!--        </div>-->
 
-        <!--        TODO 지도 API 추가-->
-        <input id="scheduleRegionId" type="hidden" value="">
+      <!--        <div class="form-group">-->
+      <!--          <label for="scheduleDateTime">모임 시간</label>-->
+      <!--          <input id="scheduleDateTime" name="dateTime" required type="datetime-local">-->
+      <!--        </div>-->
 
-        <div class="modal-actions">
-          <button class="primary-btn" id="scheduleSubmitBtn" type="button">생성하기</button>
-          <button class="secondary-btn" id="scheduleCancelBtn" type="button">취소</button>
-        </div>
-      </form>
+      <!--        <div class="form-group">-->
+      <!--          <label for="scheduleDetail">상세 설명</label>-->
+      <!--          <textarea id="scheduleDetail" name="detail" placeholder="페이스, 거리, 준비물 등 자유롭게 적어주세요."-->
+      <!--                    rows="3"></textarea>-->
+      <!--        </div>-->
+
+      <!--        &lt;!&ndash;        TODO 지도 API 추가&ndash;&gt;-->
+      <!--        <input id="scheduleRegionId" type="hidden" value="">-->
+
+      <!--        <div class="modal-actions">-->
+      <!--          <button class="primary-btn" id="scheduleSubmitBtn" type="button">생성하기</button>-->
+      <!--          <button class="secondary-btn" id="scheduleCancelBtn" type="button">취소</button>-->
+      <!--        </div>-->
+      <!--      </form>-->
     </div>
   </div>
 </div>
@@ -148,10 +189,7 @@
       </div>
 
       <!-- 지도 -->
-      <div class="join-map">
-        지도<br>(상호작용 불가능)
-      </div>
-
+      <div class="join-map" id="scheduleViewMap"></div>
       <!-- 위치 -->
       <div class="join-location">
         위치: <span id="joinLocation">-</span>

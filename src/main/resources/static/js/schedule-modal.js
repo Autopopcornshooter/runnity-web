@@ -17,7 +17,10 @@ function openModal() {
     alert("일정을 생성할 채팅방을 먼저 선택하세요.");
     return;
   }
-
+  //지도 초기화
+  document.getElementById("scheduleModal").style.display = "flex";
+  setTimeout(() => initCreateMap(), 200);
+  //
   console.log("currentRoomId: " + roomIdInput.value);
 
   titleInput.value = "";
@@ -42,7 +45,11 @@ async function submitSchedule() {
   const title = (titleInput.value || "").trim();
   const detail = (detailInput.value || "").trim();
   const startAt = dtInput.value;  // "2025-11-15T14:30" 같은 문자열
-  const regionId = regionInput.value ? Number(regionInput.value) : null;
+
+  const regionId = document.getElementById("scheduleRegionId").value;
+  const lat = document.getElementById("scheduleLat").value;
+  const lng = document.getElementById("scheduleLng").value;
+  const address = document.getElementById("scheduleAddress").value;
 
   if (!title) {
     alert("제목을 입력해주세요.");
@@ -69,8 +76,11 @@ async function submitSchedule() {
     title,
     detail,
     startAt,
-    regionId,
-    roomId // 서버 DTO에서 roomId 필드 받고 있으면 같이 전달
+    roomId, // 서버 DTO에서 roomId 필드 받고 있으면 같이 전달
+    regionId: regionId ? Number(regionId) : null,
+    lat: lat ? Number(lat) : null,
+    lng: lng ? Number(lng) : null,
+    address
   };
 
   try {
@@ -97,10 +107,6 @@ async function submitSchedule() {
 
 // 이벤트 바인딩
 
-if (openBtn) {
-  openBtn.addEventListener("click", openModal);
-}
-
 window.addEventListener('room:active', (e) => {
   const roomId = e.detail.roomId;
   console.log("채팅방 활성화 이벤트")
@@ -110,6 +116,10 @@ window.addEventListener('room:active', (e) => {
     openBtn.style.display = "none";
   }
 });
+
+if (openBtn) {
+  openBtn.addEventListener("click", openModal);
+}
 
 if (closeBtn) {
   closeBtn.addEventListener("click", closeModal);
@@ -130,6 +140,50 @@ if (modal) {
   });
 }
 
+let createMap, createMarker;
 
+function initCreateMap() {
+  const defaultCenter = new naver.maps.LatLng(37.5665, 126.9780); // 서울 기본 위치
+
+  createMap = new naver.maps.Map('scheduleCreateMap', {
+    center: defaultCenter,
+    zoom: 14
+  });
+
+  createMarker = new naver.maps.Marker({
+    position: defaultCenter,
+    map: createMap,
+    draggable: true
+  });
+
+  naver.maps.Event.addListener(createMap, 'click', function (e) {
+    createMarker.setPosition(e.coord);
+    updateCreateMapPosition(e.coord);
+  });
+
+  naver.maps.Event.addListener(createMarker, 'dragend', function (e) {
+    updateCreateMapPosition(e.coord);
+  });
+
+  updateCreateMapPosition(defaultCenter);
+}
+
+function updateCreateMapPosition(latlng) {
+  document.getElementById("scheduleLat").value = latlng.lat();
+  document.getElementById("scheduleLng").value = latlng.lng();
+
+  naver.maps.Service.reverseGeocode({
+    coords: latlng,
+    orders: naver.maps.Service.OrderType.ADDR
+  }, function (status, response) {
+    if (status !== naver.maps.Service.Status.OK) {
+      return;
+    }
+
+    const address = response.v2.address.roadAddress
+        || response.v2.address.jibunAddress;
+    document.getElementById("scheduleAddress").value = address;
+  });
+}
 
 

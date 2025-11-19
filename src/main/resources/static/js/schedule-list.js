@@ -79,16 +79,16 @@ function renderScheduleList(list) {
 // --------------------------------------------
 // 일정 상세 정보 재조회 후 기존 모달로 표시
 // --------------------------------------------
-async function openScheduleDetail(scheduleId) {
-  const roomId = document.getElementById("currentRoomId").value;
-
-  try {
-    const res = await fetch(`/chat-rooms/${roomId}/schedules/${scheduleId}`);
-    const data = await res.json();
-    
-    fillScheduleData(data);
-    openJoinModal();
-  } catch (err) {
-    console.error(err);
-  }
-}
+// async function openScheduleDetail(scheduleId) {
+//   const roomId = document.getElementById("currentRoomId").value;
+//
+//   try {
+//     const res = await fetch(`/chat-rooms/${roomId}/schedules/${scheduleId}`);
+//     const data = await res.json();
+//
+//     fillScheduleData(data);
+//     openJoinModal();
+//   } catch (err) {
+//     console.error(err);
+//   }
+// }
