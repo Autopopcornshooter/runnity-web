@@ -17,29 +17,8 @@
 <main class="content">
   <div class="page-container">
     <div class="search-bar">
-      <input placeholder="모임명, 지역을 검색해 주세요" type="text">
+      <input id="searchInput" placeholder="모임명, 지역을 검색해 주세요" type="text">
     </div>
-
-    <!--    <div class="chat-rooms">-->
-    <!--      <div class="chat-room-card" th:each="room : ${chatRooms}"-->
-    <!--           th:onclick="'joinAndGo(' + ${room.chatRoomId} + ')'">-->
-    <!--        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>-->
-    <!--        <img-->
-    <!--            alt="채팅방 이미지"-->
-    <!--            th:src="${room.imageUrl != null and room.imageUrl != '' ? room.imageUrl : '/images/image-upload.png'}">-->
-    <!--        <div class="chat-room-info">-->
-    <!--          <h2 th:text="${room.chatRoomName}">채팅방 이름</h2>-->
-    <!--          <p th:text="${room.description}">채팅방 설명</p>-->
-    <!--          <div class="chat-room-meta">-->
-    <!--            <span><img src="/images/runnity-address.png" style="width: 20px; height: 25px;"> <span-->
-    <!--                th:text="${room.region}">지역</span></span>-->
-    <!--            <span><img src="/images/runnity-person.png" style="width: 20px; height: 26px;"> <span-->
-    <!--                th:text="${#lists.size(room.members)}">0</span></span>-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
-
     <div class="chat-rooms">
       <div class="chat-room-card"
            th:each="room : ${chatRooms}"
@@ -56,10 +35,14 @@
           <h2 th:text="${room.chatRoomName}">채팅방 이름</h2>
           <p th:text="${room.description}">채팅방 설명</p>
           <div class="chat-room-meta">
-            <span><img src="/images/runnity-address.png" style="width: 20px; height: 25px;"> <span
-                th:text="${room.region}">지역</span></span>
-            <span><img src="/images/runnity-person.png" style="width: 20px; height: 26px;"> <span
-                th:text="${#lists.size(room.members)}">0</span></span>
+            <span>
+              <img src="/images/runnity-address.png" style="width: 20px; height: 25px;">
+              <span th:text="${room.region}">지역</span>
+            </span>
+            <span>
+              <img src="/images/runnity-person.png" style="width: 20px; height: 26px;">
+              <span th:text="${#lists.size(room.members)}">0</span>
+            </span>
           </div>
         </div>
       </div>

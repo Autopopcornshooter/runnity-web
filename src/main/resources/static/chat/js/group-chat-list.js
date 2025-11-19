@@ -100,3 +100,34 @@ document.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closePreview();
 });
+
+// 이미 가지고 오는 데이트들이 존재해서 그 데이터들을 활용하면 DOM에서 텍스트를 다시 파싱할 필요 X
+document.addEventListener("DOMContentLoaded", function () {
+
+  const searchInput = document.getElementById("searchInput");
+
+  if (searchInput) {
+    searchInput.addEventListener("keyup", function () {
+
+      const keyword = searchInput.value.toLowerCase().trim();
+
+      const roomCards = document.querySelectorAll(".chat-room-card");
+
+      roomCards.forEach((card) => {
+        const title = card.getAttribute("data-title")?.toLowerCase() || "";
+        const region = card.querySelector(".chat-room-meta span span")?.innerText.toLowerCase() || "";
+
+        const match =
+            title.includes(keyword) ||
+            region.includes(keyword);
+
+        // 매칭되면 보이고, 아니면 숨기기
+        if (match) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  }
+});
