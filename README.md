@@ -45,6 +45,7 @@
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" />
   <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=flat-square&logo=thymeleaf&logoColor=white" />
 </p>
+
 ### Backend/Database
 ### 개발 도구
 ### 배포 및 호스팅
