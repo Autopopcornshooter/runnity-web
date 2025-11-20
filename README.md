@@ -158,6 +158,75 @@ runnity-web
 
 ---
 ## ⚙️ 동작 화면
+<table align="center">
+  <tr>
+    <th>랜덤 듀오 매칭 & 채팅</th>
+    <th>그룹 러닝 채팅방</th>
+    <th>러닝 추천 코스 & 날씨 정보</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="/mnt/data/82cf6f43-f92c-4127-8491-4d921ec139e4.png" width="260" />
+    </td>
+    <td align="center">
+      <img src="/mnt/data/e2c8634f-4ce1-4b19-9b3e-84137f628614.png" width="260" />
+    </td>
+    <td align="center">
+      <img src="/mnt/data/a06a513c-461c-4585-9d0b-f49b0ed092e1.png" width="260" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      • 랜덤 듀오 매칭 진행 상황 시각화<br/>
+      • 매칭 완료 시 자동으로 채팅방 이동<br/>
+      • 실시간 채팅으로 러닝 일정 조율
+    </td>
+    <td>
+      • 지역/목적별 러닝 그룹 목록 조회<br/>
+      • 그룹 채팅으로 모임 공지 및 소통<br/>
+      • 인원 수, 모임 정보 한눈에 확인
+    </td>
+    <td>
+      • 현재 위치 기반 러닝 코스 추천<br/>
+      • 실시간 날씨·미세먼지 정보 제공<br/>
+      • 러닝에 적합한 날인지 요약 안내
+    </td>
+  </tr>
+
+  <tr>
+    <th>친구 검색 & 관리</th>
+    <th>회원가입 & 러너 프로필 설정</th>
+    <th>내 위치 설정</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="/mnt/data/489f1ab7-9762-41af-b142-343317348aac.png" width="260" />
+    </td>
+    <td align="center">
+      <img src="/mnt/data/bac107dd-045a-4827-b656-66f71ebb3e6c.png" width="260" />
+    </td>
+    <td align="center">
+      <img src="/mnt/data/403c77f1-32da-4c67-9655-3e389fdda5eb.png" width="260" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      • 닉네임으로 러너 검색<br/>
+      • 레벨·지역·추천수 정보 확인<br/>
+      • 친구 추가 후 바로 채팅 시작 가능
+    </td>
+    <td>
+      • 기본 회원 정보 및 러닝 레벨 입력<br/>
+      • 지도 기반 시작 위치 설정<br/>
+      • 온보딩 페이지에서 첫 러닝 준비
+    </td>
+    <td>
+      • 주소 검색 또는 현위치로 설정<br/>
+      • 지도에서 내 러닝 베이스 위치 선택<br/>
+      • 이후 매칭·추천 기능에 공통 활용
+    </td>
+  </tr>
+</table>
 
 ---
 ## 🔗 배포 주소
