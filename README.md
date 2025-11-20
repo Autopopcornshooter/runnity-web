@@ -76,7 +76,12 @@
 
 ---
 ## 🖼️ 와이어프레임(Figma)
-[<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&embed-host=share" allowfullscreen></iframe>](https://www.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&m=dev&t=k10cj99F2sPPlYhk-1)
+<p align="center">
+  <!-- Figma 열기 버튼처럼 보이게 -->
+  <a href="https://www.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&p=f&t=k10cj99F2sPPlYhk-0" target="_blank">
+    <img src="https://img.shields.io/badge/Figma에서_와이어프레임_보기-000000?style=for-the-badge&logo=figma&logoColor=white" />
+  </a>
+</p>
 
 ---
 ## 📜 프로젝트 관련 문서
