@@ -76,7 +76,7 @@
 
 ---
 ## 🖼️ 와이어프레임(Figma)
-<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&embed-host=share" allowfullscreen></iframe>
+[<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&embed-host=share" allowfullscreen></iframe>](https://www.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&m=dev&t=k10cj99F2sPPlYhk-1)
 
 ---
 ## 📜 프로젝트 관련 문서
