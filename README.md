@@ -107,6 +107,58 @@
 </p>
 
 ### 프로젝트 폴더 구조
+## 📁 프로젝트 폴더 구조
+```bash
+runnity-web
+├── .gradle
+├── .idea
+├── build
+├── gradle
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── runnity
+    │   │       ├── config
+    │   │       ├── controller
+    │   │       ├── domain
+    │   │       ├── dto
+    │   │       ├── exceptions
+    │   │       ├── handler
+    │   │       ├── repository
+    │   │       ├── service
+    │   │       ├── util
+    │   │       ├── worker
+    │   │       ├── RunnerLevel.java
+    │   │       ├── RunnityApplication.java
+    │   │       └── UserRole.java
+    │   └── resources
+    │       ├── prompts
+    │       ├── static
+    │       │   ├── chat
+    │       │   ├── css
+    │       │   ├── images
+    │       │   ├── js
+    │       │   └── .gitkeep
+    │       ├── templates
+    │       │   ├── chat
+    │       │   ├── partials
+    │       │   ├── checkRegion.html
+    │       │   ├── friend-search.html
+    │       │   ├── friendlist.html
+    │       │   ├── main.html
+    │       │   ├── reAuth.html
+    │       │   ├── setUserProfile.html
+    │       │   ├── signIn.html
+    │       │   ├── signUp.html
+    │       │   └── start.html
+    │       ├── .env
+    │       ├── application.properties
+    │       ├── application.yml
+    │       ├── application-local.yml
+    │       ├── application-prod.yml
+    │       └── data.sql
+    └── test
+
 ---
 ## ⚙️ 동작 화면
 ---
