@@ -137,8 +137,7 @@ runnity-web
     │       │   ├── chat
     │       │   ├── css
     │       │   ├── images
-    │       │   ├── js
-    │       │   └── .gitkeep
+    │       │   └── js
     │       ├── templates
     │       │   ├── chat
     │       │   ├── partials
@@ -155,9 +154,8 @@ runnity-web
     │       ├── application.properties
     │       ├── application.yml
     │       ├── application-local.yml
-    │       ├── application-prod.yml
-    │       └── data.sql
-    └── test
+    │       └── application-prod.yml
+```
 
 ---
 ## ⚙️ 동작 화면
