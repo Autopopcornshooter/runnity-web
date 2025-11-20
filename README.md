@@ -231,9 +231,9 @@ runnity-web
 
 ---
 ## 🔗 배포 주소
-<p align="center">
+<p align="left">
   <a href="https://3.38.59.108.nip.io" target="_blank">
-    <img src="https://img.shields.io/badge/Runnity 서비스 바로가기-4A90E2?style=for-the-badge&logo=google-chrome&logoColor=white" />
+    <img src="https://img.shields.io/badge/🌐Runnity 서비스 바로가기-8EBFF5?style=for-the-badge&logo=google-chrome&logoColor=white" />
   </a>
 </p>
 
