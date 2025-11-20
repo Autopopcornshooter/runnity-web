@@ -76,6 +76,8 @@
 
 ---
 ## 🖼️ 와이어프레임(Figma)
+<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&embed-host=share" allowfullscreen></iframe>
+
 ---
 ## 📜 프로젝트 관련 문서
 ### 요구사항 명세서
