@@ -239,7 +239,7 @@ runnity-web
 
 ---
 ## 🎬 시연 영상
-<p align="center">
+<p align="left">
   <a href="https://youtu.be/lUJz-Xf2BwI?si=kHtBJDh56MifQBoT" target="_blank">
     <img src="https://img.shields.io/badge/🎥Runnity 시연 영상 보기-FF4E45?style=for-the-badge&logo=youtube&logoColor=white" />
   </a>
