@@ -160,9 +160,42 @@ runnity-web
 ## ⚙️ 동작 화면
 <table align="center">
   <tr>
+    <th>회원가입 & 러너 프로필 설정</th>
+    <th>러닝 추천 코스 & 날씨 정보</th>
+    <th>내 위치 설정</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img alt="readme-5" src="https://github.com/user-attachments/assets/83d54575-13a4-4214-96ac-efea8771871f" width="260" />
+    </td>
+    <td align="center">
+      <img alt="readme-3" src="https://github.com/user-attachments/assets/462a10a3-6afb-4910-b231-ea4a7c0476a4" width="260" />
+    </td>
+    <td align="center">
+      <img alt="readme-6" src="https://github.com/user-attachments/assets/eb30b788-a271-4de5-94a7-acb5601806cb" width="260" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      • 기본 회원 정보 및 러닝 레벨 입력<br/>
+      • 지도 기반 시작 위치 설정<br/>
+      • 온보딩 페이지에서 첫 러닝 준비
+    </td>
+    <td>
+      • 현재 위치 기반 러닝 코스 추천<br/>
+      • 실시간 날씨·미세먼지 정보 제공<br/>
+      • 러닝에 적합한 날인지 요약 안내
+    </td>
+    <td>
+      • 주소 검색 또는 현위치로 설정<br/>
+      • 지도에서 내 러닝 베이스 위치 선택<br/>
+      • 이후 매칭·추천 기능에 공통 활용
+    </td>
+  </tr>
+  <tr>
     <th>랜덤 듀오 매칭 & 채팅</th>
     <th>그룹 러닝 채팅방</th>
-    <th>러닝 추천 코스 & 날씨 정보</th>
+    <th>친구 검색 & 관리</th>
   </tr>
   <tr>
     <td align="center">
@@ -172,9 +205,8 @@ runnity-web
       <img alt="readme-2" src="https://github.com/user-attachments/assets/1eeb8267-9bef-4f67-824c-a540eedbd3f7" width="260" />
     </td>
     <td align="center">
-      <img alt="readme-3" src="https://github.com/user-attachments/assets/462a10a3-6afb-4910-b231-ea4a7c0476a4" width="260" />
+      <img alt="readme-4" src="https://github.com/user-attachments/assets/31747d03-eebe-4311-a3fc-9632543957cc" width="260" />
     </td>
-
   </tr>
   <tr>
     <td>
@@ -188,43 +220,9 @@ runnity-web
       • 인원 수, 모임 정보 한눈에 확인
     </td>
     <td>
-      • 현재 위치 기반 러닝 코스 추천<br/>
-      • 실시간 날씨·미세먼지 정보 제공<br/>
-      • 러닝에 적합한 날인지 요약 안내
-    </td>
-  </tr>
-
-  <tr>
-    <th>친구 검색 & 관리</th>
-    <th>회원가입 & 러너 프로필 설정</th>
-    <th>내 위치 설정</th>
-  </tr>
-  <tr>
-    <td align="center">
-      <img alt="readme-4" src="https://github.com/user-attachments/assets/31747d03-eebe-4311-a3fc-9632543957cc" width="260" />
-    </td>
-    <td align="center">
-      <img alt="readme-5" src="https://github.com/user-attachments/assets/83d54575-13a4-4214-96ac-efea8771871f" width="260" />
-    </td>
-    <td align="center">
-      <img alt="readme-6" src="https://github.com/user-attachments/assets/eb30b788-a271-4de5-94a7-acb5601806cb" width="260" />
-    </td>
-  </tr>
-  <tr>
-    <td>
       • 닉네임으로 러너 검색<br/>
       • 레벨·지역·추천수 정보 확인<br/>
       • 친구 추가 후 바로 채팅 시작 가능
-    </td>
-    <td>
-      • 기본 회원 정보 및 러닝 레벨 입력<br/>
-      • 지도 기반 시작 위치 설정<br/>
-      • 온보딩 페이지에서 첫 러닝 준비
-    </td>
-    <td>
-      • 주소 검색 또는 현위치로 설정<br/>
-      • 지도에서 내 러닝 베이스 위치 선택<br/>
-      • 이후 매칭·추천 기능에 공통 활용
     </td>
   </tr>
 </table>
