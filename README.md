@@ -95,7 +95,7 @@
 </a>
 
 ### API 명세서
-<a href="https://www.postman.com/firetruck433-6240285/workspace/running-mate/collection/48127967-a495e0e6-8003-4ef6-b5d0-d5221c7778cf?action=share&source=copy-link&creator=48127967">
+<a href="https://documenter.getpostman.com/view/48127967/2sB3Wnw21o">
   🔗 API 명세서 링크
 </a>
 
