@@ -78,7 +78,7 @@
 ## 🖼️ 와이어프레임(Figma)
 <p align="left">
   <a href="https://www.figma.com/design/uyRSmnfy3wgtsXYqhIt6dG/Running-Mate?node-id=0-1&p=f&t=k10cj99F2sPPlYhk-0" target="_blank">
-    <img src="https://img.shields.io/badge/Figma에서_와이어프레임_보기-000000?style=for-the-badge&logo=figma&logoColor=white" />
+    <img src="https://img.shields.io/badge/Runnity Figma 보러가기-000000?style=for-the-badge&logo=figma&logoColor=white" />
   </a>
 </p>
 
@@ -102,7 +102,7 @@
 ### ERD(데이터베이스 설계)
 <p align="left">
   <a href="https://www.erdcloud.com/d/Cio6PnB6zkPWEoMhx" target="_blank">
-    <img src="https://img.shields.io/badge/Runnity ERD 보러가기-000000?style=for-the-badge&logo=erdcloud&logoColor=white" />
+    <img src="https://img.shields.io/badge/Runnity ERD 보러가기-0A84FF?style=for-the-badge&logo=databricks&logoColor=white" />
   </a>
 </p>
 
